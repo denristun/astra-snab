@@ -25,7 +25,7 @@ const App: React.FC = () => {
             aria-label='menu'
           ></IconButton>
           <Typography variant='h6' className={classes.title}>
-            Автоматизированная система
+            Автоматизированная система 12
           </Typography>
          
           <Button color='inherit' component={Link} to='/upload'>Загрузка файла</Button>
