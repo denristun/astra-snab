@@ -37,20 +37,21 @@ const UploadFileForm: React.FC = () => {
       body: JSON.stringify(documents),
     })
       .then((response) => response.json())
-      .then((json) => console.log(json))
+      .then((json) => {
+        console.log(json)
+        setLoading(false)
+      })
   }
 
   const [loading, setLoading] = useState(false)
-  const [uploadFile, setUploadFile] = useState(null)
 
   const onFileUpload = useCallback((event) => {
     setLoading(true)
     const excelFile = event.target.files[0]
-    setUploadFile(excelFile)
-  
+    renderFile(excelFile)
   }, [])
 
-  const renderFile = ((excelFile: File)=>{
+  const renderFile = ((excelFile: any)=>{
     setLoading(true)
     ExcelRenderer(excelFile, (error: any, response: any) => {
       if (error) {
@@ -58,7 +59,7 @@ const UploadFileForm: React.FC = () => {
       } else {
         fetchRows(response.rows)
       }
-      setLoading(false)
+     
     })
   })
 
@@ -67,7 +68,6 @@ const UploadFileForm: React.FC = () => {
   return (
     <section className={classes.section}>
       {loading && <CircularProgress />}
-        
 
       <form>
         <input
