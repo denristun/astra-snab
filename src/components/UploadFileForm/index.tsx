@@ -80,6 +80,24 @@ const UploadFileForm: React.FC = () => {
     renderFile(uploadFile)
   }
 
+  const checkExcelFile = (row: []) => {
+
+    const tableHeader = ['Дата',
+      'Поступление',
+      'Списание',
+      'Назначение платежа',
+      'Контрагент',
+      'Чек ожидает отправки в ФНС',
+      'Номер чека', 'Вид операции',
+      'Вх.номер',
+      'Вх.дата',
+      'Организация',
+      'Комментарий'
+    ]
+
+
+  }
+
   const classes = useStyles()
 
   return (

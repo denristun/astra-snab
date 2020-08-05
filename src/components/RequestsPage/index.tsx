@@ -47,7 +47,14 @@ const RequestsPage: React.FC = () => {
     <section>
        <div className={classes.table}>
          <div className={classes.table__header}>
-           <Cell text={'dasdasd'}/>
+           <Cell text='Статус' />
+           <Cell text='№ Заявки11'/>
+           <Cell text='№ Заявки111'/>
+           <Cell text='№ Заявки111111'/>
+         </div>
+         <div className={classes.table__rowData}>
+         <Cell text='11'/>
+          <Cell text='111'/>
          </div>
        </div>
 

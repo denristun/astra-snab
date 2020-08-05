@@ -1,17 +1,18 @@
 import React, { FunctionComponent } from 'react'
 
-import useStyles from './styles'
+import './styles.scss'
 
-// const classes = useStyles()
+
 
 type CellProps = {
     text: string,
+    // type: string
   }
   
 
 const Cell: FunctionComponent<CellProps> = ({text}) => {
     return (
-    <div >{ text }</div>
+    <div className='cell'>{ text }</div>
     )
 
 }

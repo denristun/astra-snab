@@ -2,18 +2,26 @@ import { makeStyles } from "@material-ui/core"
 
 export default makeStyles({
     table: {
-    backgroundColor: 'gray'
+        // backgroundColor: 'gray'
     },
-    table__header:{
+    table__header: {
+        display: 'flex',
+        flexDirection: 'row',
+        minHeight: '30px',
+       
+      
 
     },
-    result:{
-        backgroundColor: 'blue'
-    },
-    
-    managers:{
-        backgroundColor: 'black'
-    }
+    table__rowData: {
+    display: 'flex',
+},
+    result: {
+    backgroundColor: 'blue'
+},
+
+    managers: {
+    backgroundColor: 'black'
+}
  
 })
- 
+
