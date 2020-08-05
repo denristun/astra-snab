@@ -6,6 +6,17 @@ export default makeStyles({
     },
     section:{
       padding: '2rem'
+    },
+    error: {
+      margin: '.5rem'
+    },
+    fileName: {
+      float: 'right',
+      padding: '.5rem'
+    },
+    form:{
+      display: 'flex',
+      justifyContent: 'center'
     }
 })
  

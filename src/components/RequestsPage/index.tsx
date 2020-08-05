@@ -3,7 +3,13 @@
 import React, { useCallback, useState } from 'react'
 import { BankRequest } from '../../interfaces/BankRequest'
 
+import useStyles from './styles'
+import Cell from './Cell'
+
 const RequestsPage: React.FC = () => {
+
+  const classes = useStyles()
+
   const groupBy = (key: any) => (array: any) =>
     array.reduce(
       (objectsByKeyValue, obj) => ({
@@ -38,35 +44,32 @@ const RequestsPage: React.FC = () => {
   )
   const [loading, setLoading] = useState(false)
   return (
-    <div>
-        <p hidden={!loading}>Loading....</p>
-      <button disabled={loading} onClick={onButtonClick}>
-        Получить запросы
-      </button>
+    <section>
+       <div className={classes.table}>
+         <div className={classes.table__header}>
+           <Cell text={'dasdasd'}/>
+         </div>
+       </div>
 
-      {requests.map((request: any) => (
-        <div className='requestRow' key={request[0]}>
-          {' '}
-          <div className='requestRow__header'>{request[0]}</div>
-          <div className='requestRow__body'>
-            <table className='pure-table pure-table-bordered'>
-              <tbody>
-                {request[1].map((request: BankRequest) => (
-                  <tr key={request._id}>
-                    <td>{request.date}</td>
-                    <td>{request.type === 'income' ? request.value : ''}</td>
-                    <td>{request.type === 'outcome' ? request.value : ''}</td>
-                    <td>{request.comment}</td>
-                    <td>{request.destination}</td>
-                    <td>{request.client}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
-    </div>
+
+
+
+       <div className={classes.result}></div>
+       <div className={classes.managers}></div>
+
+    </section>
+   
+
+
+
+
+
+
+
+  
+
+     
+   
   )
 }
 
