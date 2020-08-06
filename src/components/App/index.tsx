@@ -4,6 +4,7 @@ import React from 'react'
 import { Switch, Route, Redirect, Link } from 'react-router-dom'
 import UploadFilePage from '../UploadFilePage'
 import RequestsPage from '../RequestsPage'
+import RequestPageKis from '../RequestPageKis'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
@@ -37,7 +38,8 @@ const App: React.FC = () => {
       <div>
         <Switch>
           <Route exact path='/upload' component={UploadFilePage} />
-          <Route exact path='/requests' component={RequestsPage} />
+          {/* <Route exact path='/requests' component={RequestsPage} /> */}
+          <Route exact path='/requests' component={RequestPageKis} />
           <Redirect to='/' />
         </Switch>
       </div>
