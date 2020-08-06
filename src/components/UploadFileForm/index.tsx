@@ -11,10 +11,19 @@ import useStyles from './styles'
 import Loader from '../Loader'
 
 const UploadFileForm: React.FC = () => {
-  const fetchRows = (rows: []) => {
+
+  const [loading, setLoading] = useState(false)
+  const [dbResponse, setDbResponse] = useState([])
+  const [checkFileError, setCheckFileError] = useState(false)
+  const [uploadFile, setUploadFile] = useState({ name: '' })
+  const [uploadData, setUploadData] = useState([])
+
+
+  const fetchRows = () => {
+    
     let documents: BankDocument[]
     documents = []
-    rows.forEach((row, index) => {
+    uploadData.forEach((row, index) => {
       if (index > 0) {
         let bankDocument = new BankDocument(
           row[0],
@@ -31,6 +40,8 @@ const UploadFileForm: React.FC = () => {
       }
     })
 
+    setUploadData([])
+
     fetch('http://localhost:8000/api/bank', {
       method: 'POST',
       headers: {
@@ -40,8 +51,7 @@ const UploadFileForm: React.FC = () => {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
-        setErrors(json.message)
+        setDbResponse(json.message)
         setLoading(false)
         setUploadFile({ name: '' })
       })
@@ -51,37 +61,44 @@ const UploadFileForm: React.FC = () => {
       })
   }
 
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState([])
-  const [uploadFile, setUploadFile] = useState({ name: '' })
-
-  const onFileUpload = useCallback(
+  const onChangeFile = useCallback(
     (event) => {
       const excelFile = event.target.files[0]
       setUploadFile(excelFile)
-      // renderFile(excelFile)
+      setCheckFileError(false)
+      renderFile(excelFile)
     },
     [setUploadFile]
   )
 
   const renderFile = (excelFile: any) => {
+    setDbResponse([])
     setLoading(true)
+    setUploadData([])
     ExcelRenderer(excelFile, (error: any, response: any) => {
       if (error) {
         setLoading(false)
       } else {
-        fetchRows(response.rows)
+        const isCorrectFile = checkExcelFile(response.rows[0])
+        if (!isCorrectFile) {
+          setCheckFileError(true)
+          setLoading(false)
+        }
+        else {
+          setUploadData(response.rows)
+          setLoading(false)
+        }
       }
     })
   }
 
   const formSubmitHandler = (event: SyntheticEvent): void => {
+    setLoading(true)
     event.preventDefault()
-    renderFile(uploadFile)
+    fetchRows()
   }
 
-  const checkExcelFile = (row: []) => {
-
+  const checkExcelFile = (rowHeader: []) => {
     const tableHeader = ['Дата',
       'Поступление',
       'Списание',
@@ -94,7 +111,7 @@ const UploadFileForm: React.FC = () => {
       'Организация',
       'Комментарий'
     ]
-
+    return JSON.stringify(tableHeader) === JSON.stringify(rowHeader)
 
   }
 
@@ -110,7 +127,7 @@ const UploadFileForm: React.FC = () => {
             id='contained-button-file'
             multiple
             type='file'
-            onChange={onFileUpload}
+            onChange={onChangeFile}
           />
           <label htmlFor='contained-button-file'>
             <Button
@@ -137,18 +154,63 @@ const UploadFileForm: React.FC = () => {
         </div>
       </form>
       {loading && <Loader />}
+      <div className={classes.alert}>  {checkFileError && <AlertBox type='error' message='fileError' />}     </div>
+      <div className={classes.alert}>  {uploadData.length>0 && <AlertBox type='info' uploadData={uploadData} />}     </div>
+  
       <div>
-        {errors.map((error: any) => (
-          <div key={error.bankDocument.id} className={classes.error}>
-            <Alert severity='error'>
-              <AlertTitle>Error</AlertTitle>
-              {error.error.name}
-            </Alert>
+        {dbResponse.map((response: any, index) => (
+          <div key={response.bankDocument.id} className={classes.alert}>
+            <AlertBox response={response} index={index + 2} />
           </div>
         ))}
       </div>
     </section>
   )
 }
+
+
+function AlertBox(props) {
+  let message = ''
+  let title = ''
+  let type: 'error' | 'info' | 'success' = 'error'
+  if (props.message === 'fileError'){
+    message = `Неправильный файл для загрузки.
+    Файл должен содержать столбцы "Дата|Поступление|Списание|
+    Назначение платежа|Контрагент|Чек ожидает отправки в ФНС|Номер чека|Вид операции|Вх.номер|Вх.дата|Организация|Комментарий`
+    title = 'Ошибка проверки корректности файла'
+    type = 'error'
+  }
+
+  if (props.uploadData){
+    title = 'Файл готов к загрузке'
+    message = `Количество записей ${props.uploadData.length - 1}.`
+    type = 'info'
+  }
+
+  if (props.response){
+      if(!props.response.error){
+      message = `Запись под №${props.index} уcпешно добавлена в базу данных`
+      title = 'Запись добавлена'
+      type = 'success'
+    }
+    
+    else if (props.response.error.name === 'MongoError' && props.response.error.code === 11000){
+      message = `Запись под №${props.index} уже имеется в базе данных`
+      title = 'Ошибка добавления в базу данных'
+      type = 'error'
+    }
+  
+  }
+
+  return (
+    <Alert severity={type}>
+      <AlertTitle>{title}</AlertTitle>
+      {message}
+    </Alert>
+  )
+}
+
+
+
 
 export default UploadFileForm

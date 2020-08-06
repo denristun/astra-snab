@@ -21,8 +21,9 @@ export class BankDocument{
         this.client = client
         this.organization = organization
         this.requests = []
-        this.id = hash({destination:this.destination, date: this.date, value: this.income || this.outcome})
+        this.id = hash({destination:this.destination, date: this.date, value: this.income || this.outcome, organization: this.organization, client:this.client})
         this.setRequests = comment
+        
     }
 //Обработка ячейки комментарий
   set setRequests(comment: string){

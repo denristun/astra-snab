@@ -7,7 +7,7 @@ export default makeStyles({
     section:{
       padding: '2rem'
     },
-    error: {
+    alert: {
       margin: '.5rem'
     },
     fileName: {
