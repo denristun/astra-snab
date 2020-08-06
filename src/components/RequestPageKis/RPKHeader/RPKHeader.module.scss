@@ -1,13 +1,66 @@
 .RPKHeader {
   position: fixed;
   display: block;
-  top:0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   padding-top: 64px;
-  z-index: -10;
+  z-index: 10;
+  height: 54px;
 
   background-color: #c7ffc2;
   width: 100%;
   text-align: center;
 
   transition: all 300ms ease-in-out;
+}
+
+.RPKHeader__table {
+  height: 54px;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+
+  align-items: center;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+
+  table {
+    width: 100%;
+    height: 100%;
+    // border-top: 1px solid #9a9cc9;
+    border-bottom: 1px solid #9a9cc9;
+    background-color: #c7ffc2;
+
+    th {
+      border-right: 1px solid #9a9cc9;
+      padding: 5px;
+      box-sizing: border-box;
+      border-spacing: 5px;
+      width:8%;
+      word-break:break-all; /* Перенос слов */
+
+      &:nth-child(1), &:nth-child(3) {
+        width:4%;
+      }
+
+      &:nth-child(2), &:nth-child(4) {
+        width:6%;
+      }
+
+      &:nth-child(8), &:nth-child(11), &:nth-child(12){
+        width:11%;
+      }
+
+      &:nth-last-child(1) {
+        border-right: none;
+      }
+    }
+  }
 }
