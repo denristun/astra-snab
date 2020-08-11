@@ -100,6 +100,9 @@ class RequestPageKis extends React.Component {
           </div>
           <div class='modalContent'>
             <h1>Заявка: <span>${request}</span></h1>
+            <form submit="${this.submitHandler(event)}">
+              
+            </form>
           </div>
         </div>
       </div>
@@ -110,6 +113,10 @@ class RequestPageKis extends React.Component {
     
     document.querySelector('.closeModalButton').addEventListener('click', () => this.destroyModal(element));
   };
+
+  submitHandler = (event) => {
+    console.log(event);
+  }
 
   render() {
     let incomeAll = 0;
