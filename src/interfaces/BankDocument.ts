@@ -12,6 +12,7 @@ export class BankDocument{
     organization: string
     requests: BankRequest[]
     id:string
+    error?: boolean
 
     constructor(date: string, income: number , outcome: number, destination: string, client: string, organization: string, comment: string){
         this.date = date
@@ -33,10 +34,10 @@ export class BankDocument{
         requests.forEach((request: string)=>{
             let [requestNumber, value, client] = request.trim().split(' ')
             if (requestNumber){
-                let valueInt = value ? Number.parseFloat(value.replace(/,/g,'.')) : this.income || this.outcome
+                let valueInt = value && !Number.isNaN(+value) ? Number.parseFloat(value.replace(/,/g,'.')) : this.income || this.outcome
                 client = client ? client: this.client
                 let type: BankRequestType = this.income ? 'income' : 'outcome'
-                const bankRequest = new BankRequest(requestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client)
+                const bankRequest = new BankRequest(requestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, false)
                 this.requests.push(bankRequest)
             }
         })
