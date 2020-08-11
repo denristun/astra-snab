@@ -3,7 +3,6 @@
 import React from 'react'
 import { Switch, Route, Redirect, Link } from 'react-router-dom'
 import UploadFilePage from '../UploadFilePage'
-import RequestsPage from '../RequestsPage'
 import RequestPageKis from '../RequestPageKis'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'

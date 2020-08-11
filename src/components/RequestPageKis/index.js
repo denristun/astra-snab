@@ -17,10 +17,7 @@ function headerShift(elem, param) {
 }
 
 class RequestPageKis extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   state = {
     loader: true,
   };
