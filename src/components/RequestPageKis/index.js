@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './RequestPageKis.module.scss';
-import 'font-awesome/css/font-awesome.min.css'; 
+import 'font-awesome/css/font-awesome.min.css';
 import RPKHeader from './RPKHeader';
 import RPKRequest from './RPKRequest';
 import { connect } from 'react-redux';
@@ -17,7 +17,6 @@ function headerShift(elem, param) {
 }
 
 class RequestPageKis extends React.Component {
-  
   state = {
     loader: true,
   };
@@ -31,20 +30,20 @@ class RequestPageKis extends React.Component {
         headerShift(RPKContant, null);
       }
     });
-    
+
     const urlGroups = 'http://10.36.2.56:8000/api/groups';
     try {
       let responseGroups = await fetch(urlGroups, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       });
       let groups = await responseGroups.json();
 
       this.getData(groups[0].group);
       // console.log(groups);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
   }
@@ -57,7 +56,7 @@ class RequestPageKis extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({group}),
+        body: JSON.stringify({ group }),
       });
       let data = await responseRequests.json();
       data.group = group;
@@ -77,7 +76,7 @@ class RequestPageKis extends React.Component {
 
   selectGroup = (group) => {
     // console.log('selectGroup: ', group);
-    this.setState({loader: true});
+    this.setState({ loader: true });
     this.getData(group);
   };
 
@@ -89,7 +88,7 @@ class RequestPageKis extends React.Component {
   destroyModal = (element) => {
     element.innerHTML = '';
     element.style.display = null;
-  }
+  };
 
   renderModal = (request, element) => {
     const html = `
@@ -100,8 +99,44 @@ class RequestPageKis extends React.Component {
           </div>
           <div class='modalContent'>
             <h1>Заявка: <span>${request}</span></h1>
-            <form submit="${this.submitHandler(event)}">
-              
+            <form class='formOutcome'>
+              <div class="form-group label-input">
+                <label for="name">Расход</label>
+                <input
+                  type="text"
+                  name="outcome"
+                  id="outcome"
+                  required
+                />
+              </div>
+              <div class="form-group label-input">
+                <label for="phone">Поставщик</label>
+                <input
+                  type="text"
+                  name="client"
+                  id="client"
+                  required
+                />
+              </div>
+              <div class="form-group label-input">
+                <label for="phone">Назначение платежа</label>
+                <input
+                  type="text"
+                  name="destination"
+                  id="destination"
+                  required
+                />
+              </div>
+              <div class="form-group label-input">
+                <label for="phone">Комментарий</label>
+                <input
+                  type="text"
+                  name="comment"
+                  id="comment"
+                  required
+                />
+              </div>
+              <button class='formOutcomeButton'>Добавить запись</button>
             </form>
           </div>
         </div>
@@ -110,13 +145,19 @@ class RequestPageKis extends React.Component {
 
     element.innerHTML = html;
     element.style.display = 'block';
-    
-    document.querySelector('.closeModalButton').addEventListener('click', () => this.destroyModal(element));
+
+    document
+      .querySelector('.closeModalButton')
+      .addEventListener('click', () => this.destroyModal(element));
+    document
+      .querySelector('.formOutcomeButton')
+      .addEventListener('click', (event) => this.submitHandler(event));
   };
 
   submitHandler = (event) => {
-    console.log(event);
-  }
+    event.preventDefault();
+    console.log('submitHandler');
+  };
 
   render() {
     let incomeAll = 0;
@@ -199,10 +240,13 @@ class RequestPageKis extends React.Component {
             }}
             trColor={'#398DEF'}
           />
-          <RPKGroups activeGroup={this.props.requests.group} selectGroup={this.selectGroup} />
+          <RPKGroups
+            activeGroup={this.props.requests.group}
+            selectGroup={this.selectGroup}
+          />
         </div>
 
-        <div id="OutcomePage" className={classes.OutcomePage}></div>
+        <div id='OutcomePage' className={classes.OutcomePage}></div>
       </div>
     );
   }
