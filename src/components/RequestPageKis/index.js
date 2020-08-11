@@ -1,5 +1,6 @@
 import React from 'react';
 import classes from './RequestPageKis.module.scss';
+import 'font-awesome/css/font-awesome.min.css'; 
 import RPKHeader from './RPKHeader';
 import RPKRequest from './RPKRequest';
 import { connect } from 'react-redux';
@@ -24,7 +25,7 @@ class RequestPageKis extends React.Component {
     loader: true,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const RPKContant = document.querySelector('[id="RPKContent"]');
     window.addEventListener('scroll', function () {
       if (window.pageYOffset > 10) {
@@ -33,21 +34,36 @@ class RequestPageKis extends React.Component {
         headerShift(RPKContant, null);
       }
     });
-
-    this.getData();
-  }
-
-  async getData() {
-    const url = 'http://10.36.2.56:8000/api/bank';
+    
+    const urlGroups = 'http://10.36.2.56:8000/api/groups';
     try {
-      let response = await fetch(url, {
+      let responseGroups = await fetch(urlGroups, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
+        }
       });
-      let data = await response.json();
-      console.log(data);
+      let groups = await responseGroups.json();
+
+      this.getData(groups[0].group);
+      // console.log(groups);
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  async getData(group) {
+    const urlRequests = 'http://10.36.2.56:8000/api/requests_by_group';
+    try {
+      let responseRequests = await fetch(urlRequests, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({group}),
+      });
+      let data = await responseRequests.json();
+      data.group = group;
       this.props.renderData(data);
 
       this.setState({
@@ -55,11 +71,47 @@ class RequestPageKis extends React.Component {
       });
     } catch (e) {
       this.props.renderData({ error: e });
+
+      this.setState({
+        loader: false,
+      });
     }
   }
 
-  addOutcome = (operationProps) => {
-    console.log(operationProps.request);
+  selectGroup = (group) => {
+    // console.log('selectGroup: ', group);
+    this.setState({loader: true});
+    this.getData(group);
+  };
+
+  addOutcome = (request) => {
+    const element = document.querySelector('#OutcomePage');
+    this.renderModal(request, element);
+  };
+
+  destroyModal = (element) => {
+    element.innerHTML = '';
+    element.style.display = null;
+  }
+
+  renderModal = (request, element) => {
+    const html = `
+      <div class='backdrop'>
+        <div class='modal'>
+          <div class='closeModalButton'>
+            <i class="fa fa-times"></i>
+          </div>
+          <div class='modalContent'>
+            <h1>Заявка: <span>${request}</span></h1>
+          </div>
+        </div>
+      </div>
+    `;
+
+    element.innerHTML = html;
+    element.style.display = 'block';
+    
+    document.querySelector('.closeModalButton').addEventListener('click', () => this.destroyModal(element));
   };
 
   render() {
@@ -143,8 +195,10 @@ class RequestPageKis extends React.Component {
             }}
             trColor={'#398DEF'}
           />
-          <RPKGroups />
+          <RPKGroups activeGroup={this.props.requests.group} selectGroup={this.selectGroup} />
         </div>
+
+        <div id="OutcomePage" className={classes.OutcomePage}></div>
       </div>
     );
   }

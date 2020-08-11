@@ -10,7 +10,7 @@ export default (props) => {
     <div
       id='RPKButton'
       request={props.request}
-      onClick={() => props.addOutcome({request: props.request})}
+      onClick={() => props.addOutcome(props.request)}
       className={insertClasses.join(' ')}
     >
       Добавить расход <FontAwesomeIcon icon={faPlusCircle} size='2x' />

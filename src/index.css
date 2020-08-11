@@ -15,3 +15,74 @@ background-color: black;
   background-color: #333333;
   font-size: 1rem;
 }
+
+.swiper-container {
+  height:100%;
+}
+
+.swiper-slide {
+  
+}
+  
+.slideKis {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width:100%;
+  height: 100%;
+}
+
+.slideKisActive {
+  background-color: #C7FFC2;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+
+.modal {
+  position: absolute;
+  top: 50%; left: 50%;
+  background-color: #ffffff;
+  z-index: 7;
+
+  min-width: 50%;
+  min-height: 50%;
+  transform: translate(-50%, -50%);
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.closeModalButton {
+  position: fixed;
+  right: 5px; top: 0;
+  padding: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+  font-size: 30px;
+  color: #398DEF;
+}
+
+.modalContent {
+  padding: 20px;
+  box-sizing: border-box;
+  color: #333333;
+}
+
+.modalContent h1 {
+  font-size: 18px;
+}
+
+.modalContent h1 span {
+  color: #53A54C;
+}

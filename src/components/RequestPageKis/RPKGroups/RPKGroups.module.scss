@@ -21,15 +21,13 @@
     width:3%;
     cursor: pointer;
   }
+
+  .swiperContent {
+    display: inline-block;
+    width: 94%;
+  }
 }
 
-.swiperContent {
-  display: inline-block;
-  width: 94%;
+.nextArrow{}
 
-
-}
-
-.swiper-slide {
-  height: 100% !important;
-}
+.prewArrow{}

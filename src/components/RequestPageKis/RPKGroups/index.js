@@ -5,16 +5,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 // Import Swiper React components
+import SwiperCore, { Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/swiper.scss';
 
+// install Swiper components
+SwiperCore.use([Navigation]);
+
 let insertClasses = [classes.RPKGroups];
 
 class RPKGroups extends React.Component {
   componentDidMount() {
-    // this.getData();
+    this.getData();
   }
 
   getData = async () => {
@@ -28,8 +32,8 @@ class RPKGroups extends React.Component {
         },
       });
       let data = await response.json();
-      this.props.renderData(data);
       // console.log(data);
+      this.props.renderData(data);
     } catch (e) {
       // console.log(e);
       this.props.renderData({ error: e });
@@ -37,9 +41,10 @@ class RPKGroups extends React.Component {
   };
 
   render() {
+    // console.log(this.props);
     return (
       <div className={insertClasses.join(' ')}>
-        <div className={classes.Arrow}>
+        <div className={classes.Arrow} id='prewArrow'>
           <FontAwesomeIcon icon={faCaretLeft} size='2x' />
         </div>
 
@@ -49,17 +54,43 @@ class RPKGroups extends React.Component {
           ) : (
             <Swiper
               slidesPerView={20}
+              navigation={{
+                nextEl: '#nextArrow',
+                prevEl: '#prewArrow',
+              }}
               // onSlideChange={() => console.log('slide change')}
               // onSwiper={(swiper) => console.log(swiper)}
             >
-              {this.props.groups.names.map((element, index) => {
-                return <SwiperSlide key={index} >{element}</SwiperSlide>;
+              {this.props.groups.map((element, index) => {
+                let slideClasses = ['slideKis'];
+                if (
+                  this.props.activeGroup &&
+                  this.props.activeGroup === element.group
+                ) {
+                  slideClasses.push('slideKisActive');
+                }
+                // console.log(element.group+' || '+this.props.activeGroup);
+                return (
+                  <SwiperSlide key={index}>
+                    <div
+                      className={slideClasses.join(' ')}
+                      onClick={
+                        this.props.activeGroup &&
+                        this.props.activeGroup === element.group
+                          ? null
+                          : this.props.selectGroup.bind(this, element.group)
+                      }
+                    >
+                      {element.group}
+                    </div>
+                  </SwiperSlide>
+                );
               })}
             </Swiper>
           )}
         </div>
 
-        <div className={classes.Arrow}>
+        <div className={classes.Arrow} id='nextArrow'>
           <FontAwesomeIcon icon={faCaretRight} size='2x' />
         </div>
       </div>
