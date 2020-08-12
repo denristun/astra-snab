@@ -63,7 +63,7 @@ background-color: black;
   line-height: 16px;
 }
 
-.closeModalButton {
+/* .closeModalButton {
   position: fixed;
   right: 5px; top: 0;
   padding: 10px;
@@ -71,18 +71,11 @@ background-color: black;
   box-sizing: border-box;
   font-size: 30px;
   color: #398DEF;
+} */
+
+.modal i {
+  color: #398DEF;
+  cursor: pointer;
 }
 
-.modalContent {
-  padding: 20px;
-  box-sizing: border-box;
-  color: #333333;
-}
 
-.modalContent h1 {
-  font-size: 18px;
-}
-
-.modalContent h1 span {
-  color: #53A54C;
-}

@@ -1,6 +1,6 @@
 import React from 'react';
+
 import classes from './RequestPageKis.module.scss';
-import 'font-awesome/css/font-awesome.min.css';
 import RPKHeader from './RPKHeader';
 import RPKRequest from './RPKRequest';
 import { connect } from 'react-redux';
@@ -60,6 +60,7 @@ class RequestPageKis extends React.Component {
       });
       let data = await responseRequests.json();
       data.group = group;
+      console.log(data);
       this.props.renderData(data);
 
       this.setState({
@@ -80,88 +81,22 @@ class RequestPageKis extends React.Component {
     this.getData(group);
   };
 
-  addOutcome = (request) => {
-    const element = document.querySelector('#OutcomePage');
-    this.renderModal(request, element);
-  };
+  getClientsFromRequests = (requests) => {
+    let clients = [];
+    Object.keys(requests).forEach(request => {
+      typeof(requests[request]) === 'object' && requests[request][1].map(operation => {
+        clients.push(operation.client);
+      })
+    });
+    const uniqueClients = new Set(clients);
 
-  destroyModal = (element) => {
-    element.innerHTML = '';
-    element.style.display = null;
-  };
-
-  renderModal = (request, element) => {
-    const html = `
-      <div class='backdrop'>
-        <div class='modal'>
-          <div class='closeModalButton'>
-            <i class="fa fa-times"></i>
-          </div>
-          <div class='modalContent'>
-            <h1>Заявка: <span>${request}</span></h1>
-            <form class='formOutcome'>
-              <div class="form-group label-input">
-                <label for="name">Расход</label>
-                <input
-                  type="text"
-                  name="outcome"
-                  id="outcome"
-                  required
-                />
-              </div>
-              <div class="form-group label-input">
-                <label for="phone">Поставщик</label>
-                <input
-                  type="text"
-                  name="client"
-                  id="client"
-                  required
-                />
-              </div>
-              <div class="form-group label-input">
-                <label for="phone">Назначение платежа</label>
-                <input
-                  type="text"
-                  name="destination"
-                  id="destination"
-                  required
-                />
-              </div>
-              <div class="form-group label-input">
-                <label for="phone">Комментарий</label>
-                <input
-                  type="text"
-                  name="comment"
-                  id="comment"
-                  required
-                />
-              </div>
-              <button class='formOutcomeButton'>Добавить запись</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    `;
-
-    element.innerHTML = html;
-    element.style.display = 'block';
-
-    document
-      .querySelector('.closeModalButton')
-      .addEventListener('click', () => this.destroyModal(element));
-    document
-      .querySelector('.formOutcomeButton')
-      .addEventListener('click', (event) => this.submitHandler(event));
-  };
-
-  submitHandler = (event) => {
-    event.preventDefault();
-    console.log('submitHandler');
-  };
+    return [...uniqueClients];
+  }
 
   render() {
     let incomeAll = 0;
     let outcomeAll = 0;
+    const clientsList = this.getClientsFromRequests(this.props.requests);    
 
     return (
       <div className={insertClasses.join(' ')}>
@@ -198,7 +133,7 @@ class RequestPageKis extends React.Component {
                     <RPKButton
                       key={index.toString() + Math.random()}
                       request={request[0]}
-                      addOutcome={this.addOutcome}
+                      clientList={clientsList}
                     />
                   );
 
@@ -223,7 +158,7 @@ class RequestPageKis extends React.Component {
               <div>
                 <h1>Error {this.props.requests.error}</h1>
                 <button onClick={() => console.log(this.props.requests)}>
-                  sdsds
+                  Кнопка
                 </button>
               </div>
             )}
@@ -246,7 +181,7 @@ class RequestPageKis extends React.Component {
           />
         </div>
 
-        <div id='OutcomePage' className={classes.OutcomePage}></div>
+        <div id='OutcomePage'></div>
       </div>
     );
   }
