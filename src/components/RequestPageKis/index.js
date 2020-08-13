@@ -60,7 +60,7 @@ class RequestPageKis extends React.Component {
       });
       let data = await responseRequests.json();
       data.group = group;
-      console.log(data);
+      // console.log(data);
       this.props.renderData(data);
 
       this.setState({

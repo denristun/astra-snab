@@ -16,15 +16,85 @@ export default class RPKOutcomePage extends React.Component {
     this.modal = document.createElement('div');
     this.state = {
       formData: {
-        invalid: true,
+        isValid: false,
         type: 'outcome',
         status: false,
-
-        textFields: {
-
-        }
-      }
-    }
+        textFields: [
+          {
+            name: 'value',
+            fullWidth: true,
+            autoFocus: false,
+            id: 'filled-number',
+            label: 'Расход',
+            type: 'number',
+            multiline: false,
+            rowsMax: 1,
+            defaultValue: '',
+            variant: 'filled',
+            touched: false,
+            isValid: false,
+            validation: {
+              required: true,
+              minLength: 1,
+            },
+          },
+          {
+            name: 'client',
+            fullWidth: true,
+            autoFocus: false,
+            id: 'filled-search',
+            label: 'Поставщик',
+            type: 'search',
+            multiline: false,
+            rowsMax: 1,
+            defaultValue: '',
+            variant: 'filled',
+            touched: false,
+            isValid: false,
+            validation: {
+              required: true,
+              minLength: 3,
+            },
+          },
+          {
+            name: 'destination',
+            fullWidth: true,
+            autoFocus: false,
+            id: 'filled-multiline-flexible',
+            label: 'Назначение платежа',
+            type: false,
+            multiline: true,
+            rowsMax: 4,
+            defaultValue: '',
+            variant: 'filled',
+            touched: false,
+            isValid: false,
+            validation: {
+              required: true,
+              minLength: 3,
+            },
+          },
+          {
+            name: 'comment',
+            fullWidth: true,
+            autoFocus: false,
+            id: 'filled-multiline-flexible',
+            label: 'Комментарий',
+            type: false,
+            multiline: true,
+            rowsMax: 4,
+            defaultValue: '',
+            variant: 'filled',
+            touched: false,
+            isValid: false,
+            validation: {
+              required: true,
+              minLength: 3,
+            },
+          },
+        ],
+      },
+    };
   }
 
   componentDidMount() {
@@ -33,6 +103,58 @@ export default class RPKOutcomePage extends React.Component {
 
   componentWillUnmount() {
     document.body.removeChild(this.modal);
+  }
+
+  onChangeHandler = (name, event) => {
+    // const formData = {...this.state.formData};
+    // const control = {...formData.textFields.find(textField => textField.name === name)};
+    
+    // control.touched = true;
+    // control.defaultValue = event.target.value;
+    // control.isValid = this.validateControl(control.defaultValue, control.validation);
+    // // control.autoFocus = true;
+
+    // for(let i=0;i<formData.textFields.length;i++){
+    //   if(formData.textFields[i].name === name){
+    //     formData.textFields[i] = control;
+    //   }
+    // }
+
+    // this.setState({
+    //   formData
+    // })
+
+
+    const formData = this.state.formData;
+    const control = formData.textFields.find(textField => textField.name === name);
+    
+    control.touched = true;
+    control.defaultValue = event.target.value;
+    control.isValid = this.validateControl(control.defaultValue, control.validation);
+    control.autoFocus = true;
+
+    formData.textFields.map(textField => {
+      if (textField.name === name) {
+        return (control);
+      } else {
+        textField.autoFocus = false;
+        return textField;
+      }
+    })
+
+    this.setState({
+      formData
+    })
+
+  };
+
+  validateControl = (value, validations) => {
+    let isValid = true;
+    Object.keys(validations).forEach(validation => {
+
+    })
+
+    return isValid;
   }
 
   render() {
@@ -62,18 +184,39 @@ export default class RPKOutcomePage extends React.Component {
                 </Box>
               </Grid>
               <Grid className={classes.RPKOutcomePage__content}>
-                <Box mb={3}>
+                {this.state.formData.textFields.map((textField, index) => {
+                  return (
+                    <Box key={index + Math.random()} mb={2}>
+                      <TextField
+                        name={textField.name}
+                        fullWidth={textField.fullWidth}
+                        autoFocus={textField.autoFocus}
+                        id={textField.id}
+                        label={textField.label}
+                        type={textField.type.toString()}
+                        multiline={textField.multiline}
+                        rowsMax={textField.rowsMax}
+                        defaultValue={textField.defaultValue}
+                        variant={textField.variant}
+                        touched={textField.touched.toString()}
+                        validation={textField.validation}
+                        variant={textField.variant}
+                        onChange={event => this.onChangeHandler(textField.name, event)}
+                      />
+                    </Box>
+                  );
+                })}
+
+                {/* <Box mb={3}>
                   <TextField
                     fullWidth
                     name='value'
                     id='filled-number'
                     label='Расход'
                     type='number'
-                    value='1111'
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    defaultValue=''
                     variant='filled'
+                    rowsMax={4}
                   />
                 </Box>
                 <Box mb={3}>
@@ -82,7 +225,7 @@ export default class RPKOutcomePage extends React.Component {
                     id='filled-search'
                     label='Поставщик'
                     name='client'
-                    type='search'
+                    // type='search'
                     variant='filled'
                   />
                 </Box>
@@ -92,7 +235,8 @@ export default class RPKOutcomePage extends React.Component {
                     id='filled-multiline-flexible'
                     label='Назначение платежа'
                     name='destination'
-                    multiline
+                    type={false}
+                    multiline={true}
                     rowsMax={4}
                     // value={value}
                     // onChange={handleChange}
@@ -111,7 +255,7 @@ export default class RPKOutcomePage extends React.Component {
                     // onChange={handleChange}
                     variant='filled'
                   />
-                </Box>
+                </Box> */}
               </Grid>
               <Grid
                 container
