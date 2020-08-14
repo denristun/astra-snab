@@ -21,10 +21,10 @@ export default class RPKOutcomePage extends React.Component {
         status: false,
         textFields: [
           {
+            autoFocus: false,
             name: 'value',
             fullWidth: true,
-            autoFocus: false,
-            id: 'filled-number',
+            id: 'outcomeFormInput',
             label: 'Расход',
             type: 'number',
             multiline: false,
@@ -37,12 +37,12 @@ export default class RPKOutcomePage extends React.Component {
               required: true,
               minLength: 1,
             },
+            helperText: '',
           },
           {
             name: 'client',
             fullWidth: true,
-            autoFocus: false,
-            id: 'filled-search',
+            id: 'outcomeFormInput',
             label: 'Поставщик',
             type: 'search',
             multiline: false,
@@ -55,12 +55,13 @@ export default class RPKOutcomePage extends React.Component {
               required: true,
               minLength: 3,
             },
+            helperText: '',
+            autoFocus: false,
           },
           {
             name: 'destination',
             fullWidth: true,
-            autoFocus: false,
-            id: 'filled-multiline-flexible',
+            id: 'outcomeFormInput',
             label: 'Назначение платежа',
             type: false,
             multiline: true,
@@ -68,17 +69,18 @@ export default class RPKOutcomePage extends React.Component {
             defaultValue: '',
             variant: 'filled',
             touched: false,
-            isValid: false,
+            isValid: true,
             validation: {
               required: true,
               minLength: 3,
             },
+            helperText: '',
+            autoFocus: false,
           },
           {
             name: 'comment',
             fullWidth: true,
-            autoFocus: false,
-            id: 'filled-multiline-flexible',
+            id: 'outcomeFormInput',
             label: 'Комментарий',
             type: false,
             multiline: true,
@@ -91,6 +93,8 @@ export default class RPKOutcomePage extends React.Component {
               required: true,
               minLength: 3,
             },
+            helperText: '',
+            autoFocus: false,
           },
         ],
       },
@@ -99,184 +103,160 @@ export default class RPKOutcomePage extends React.Component {
 
   componentDidMount() {
     document.body.appendChild(this.modal);
+    this.setListeners();
   }
 
   componentWillUnmount() {
     document.body.removeChild(this.modal);
   }
 
-  onChangeHandler = (name, event) => {
-    // const formData = {...this.state.formData};
-    // const control = {...formData.textFields.find(textField => textField.name === name)};
-    
-    // control.touched = true;
-    // control.defaultValue = event.target.value;
-    // control.isValid = this.validateControl(control.defaultValue, control.validation);
-    // // control.autoFocus = true;
+  setListeners = () => {
+    document.querySelectorAll('#outcomeFormInput').forEach((el) => {
+      el.addEventListener('blur', (event) =>
+        this.blurTextField(
+          event.target.getAttribute('name'),
+          event.target.value
+        )
+      );
+    });
 
-    // for(let i=0;i<formData.textFields.length;i++){
-    //   if(formData.textFields[i].name === name){
-    //     formData.textFields[i] = control;
-    //   }
-    // }
-
-    // this.setState({
-    //   formData
-    // })
-
-
-    const formData = this.state.formData;
-    const control = formData.textFields.find(textField => textField.name === name);
-    
-    control.touched = true;
-    control.defaultValue = event.target.value;
-    control.isValid = this.validateControl(control.defaultValue, control.validation);
-    control.autoFocus = true;
-
-    formData.textFields.map(textField => {
-      if (textField.name === name) {
-        return (control);
-      } else {
-        textField.autoFocus = false;
-        return textField;
+    this.modal.addEventListener('mouseup', event => {
+      if (event.target.getAttribute('id') === 'outcomeFormInput') {
+        event.target.focus()
       }
     })
-
-    this.setState({
-      formData
-    })
-
   };
 
-  validateControl = (value, validations) => {
+  blurTextField = (textFieldName, textFieldValue) => {
+    const formData = this.state.formData;
+    const textField = formData.textFields.find(
+      (textField) => textField.name === textFieldName
+    );
+
+    textField.touched = true;
+    textField.defaultValue = textFieldValue;
+    const validations = this.textFieldValidation(
+      textFieldValue,
+      textField.validation
+    );
+    textField.isValid = validations.isValid;
+    textField.isValid === false
+      ? (textField.helperText = validations.validationFailedMessage)
+      : (textField.helperText = '');
+
+    formData.textFields.map((textFieldEl) => {
+      if (textFieldEl.name === textField.name) {
+        return textField;
+      } else {
+        return textFieldEl;
+      }
+    });
+
+    this.setState({
+      formData,
+    });
+    this.setListeners();
+  };
+
+  textFieldValidation = (value, validations) => {
     let isValid = true;
-    Object.keys(validations).forEach(validation => {
+    let validationFailedMessage = '';
+    Object.keys(validations).forEach((validation) => {
+      if (validation === 'required') {
+        isValid = value.trim().length >= 0 && isValid;
+        isValid === false
+          ? (validationFailedMessage = 'Поле не заполнено')
+          : (validationFailedMessage = '');
+      }
+      if (validation === 'minLength') {
+        isValid = value.trim().length >= validations[validation] && isValid;
+        isValid === false
+          ? (validationFailedMessage =
+              'Недостаточно символов. Минимум: ' + validations[validation])
+          : (validationFailedMessage = '');
+      }
+    });
 
-    })
+    return { isValid, validationFailedMessage };
+  };
 
-    return isValid;
+  addButtonClicked = () => {
+    console.log('Button');
   }
 
   render() {
-    // console.log(this.props.clientList);
+    // console.log(this.state.formData);
     return ReactDOM.createPortal(
-      <div className={insertClasses.join(' ')}>
+      <div className={insertClasses.join(' ')} key="sanddwich">
         <div className='backdrop'>
           <div className='modal'>
-            <form>
-              <Grid
-                container
-                direction='row'
-                justify='space-between'
-                alignItems='center'
-                className={classes.RPKOutcomePage__title}
-              >
-                <Box ml={1}>
-                  <h3>
-                    Добавить расход к заявке: <span>{this.props.request}</span>
-                  </h3>
-                </Box>
-                <Box mr={0.5}>
-                  <i
-                    className='fa fa-times fa-2x'
-                    onClick={() => this.props.closeModal()}
-                  ></i>
-                </Box>
-              </Grid>
-              <Grid className={classes.RPKOutcomePage__content}>
-                {this.state.formData.textFields.map((textField, index) => {
-                  return (
-                    <Box key={index + Math.random()} mb={2}>
-                      <TextField
-                        name={textField.name}
-                        fullWidth={textField.fullWidth}
-                        autoFocus={textField.autoFocus}
-                        id={textField.id}
-                        label={textField.label}
-                        type={textField.type.toString()}
-                        multiline={textField.multiline}
-                        rowsMax={textField.rowsMax}
-                        defaultValue={textField.defaultValue}
-                        variant={textField.variant}
-                        touched={textField.touched.toString()}
-                        validation={textField.validation}
-                        variant={textField.variant}
-                        onChange={event => this.onChangeHandler(textField.name, event)}
-                      />
-                    </Box>
-                  );
-                })}
-
-                {/* <Box mb={3}>
-                  <TextField
-                    fullWidth
-                    name='value'
-                    id='filled-number'
-                    label='Расход'
-                    type='number'
-                    defaultValue=''
-                    variant='filled'
-                    rowsMax={4}
-                  />
-                </Box>
-                <Box mb={3}>
-                  <TextField
-                    fullWidth
-                    id='filled-search'
-                    label='Поставщик'
-                    name='client'
-                    // type='search'
-                    variant='filled'
-                  />
-                </Box>
-                <Box mb={3}>
-                  <TextField
-                    fullWidth
-                    id='filled-multiline-flexible'
-                    label='Назначение платежа'
-                    name='destination'
-                    type={false}
-                    multiline={true}
-                    rowsMax={4}
-                    // value={value}
-                    // onChange={handleChange}
-                    variant='filled'
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    id='filled-multiline-flexible'
-                    label='Комментарий'
-                    name='comment'
-                    multiline
-                    rowsMax={4}
-                    // value={value}
-                    // onChange={handleChange}
-                    variant='filled'
-                  />
-                </Box> */}
-              </Grid>
-              <Grid
-                container
-                direction='row'
-                justify='flex-end'
-                alignItems='center'
-                className={classes.RPKOutcomePage__button}
-              >
-                <Box m={3}>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    size='large'
-                    className={classes.button}
-                    startIcon={<SaveIcon />}
-                  >
-                    Добавить запись
-                  </Button>
-                </Box>
-              </Grid>
-            </form>
+            <Grid
+              container
+              direction='row'
+              justify='space-between'
+              alignItems='center'
+              className={classes.RPKOutcomePage__title}
+            >
+              <Box ml={1}>
+                <h3>
+                  Добавить расход к заявке: <span>{this.props.request}</span>
+                </h3>
+              </Box>
+              <Box mr={0.5}>
+                <i
+                  className='fa fa-times fa-2x'
+                  onClick={() => this.props.closeModal()}
+                ></i>
+              </Box>
+            </Grid>
+            <Grid className={classes.RPKOutcomePage__content}>
+              {this.state.formData.textFields.map((textField, index) => {
+                const keyValue = index + Math.random();
+                return (
+                  <Box key={keyValue} mb={2}>
+                    <TextField
+                      name={textField.name}
+                      fullWidth={textField.fullWidth}
+                      autoFocus={textField.autoFocus}
+                      id={textField.id}
+                      label={textField.label}
+                      type={textField.type.toString()}
+                      multiline={textField.multiline}
+                      rowsMax={textField.rowsMax}
+                      defaultValue={textField.defaultValue}
+                      variant={textField.variant}
+                      touched={textField.touched.toString()}
+                      error={
+                        textField.touched
+                          ? !textField.isValid
+                          : textField.touched
+                      }
+                      helperText={textField.helperText}
+                    />
+                  </Box>
+                );
+              })}
+            </Grid>
+            <Grid
+              container
+              direction='row'
+              justify='flex-end'
+              alignItems='center'
+              className={classes.RPKOutcomePage__button}
+            >
+              <Box m={3}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='large'
+                  className={classes.button}
+                  startIcon={<SaveIcon />}
+                  onClick={() => this.addButtonClicked()}
+                >
+                  Добавить запись
+                </Button>
+              </Box>
+            </Grid>
           </div>
         </div>
       </div>,
