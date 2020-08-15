@@ -19,6 +19,7 @@ function headerShift(elem, param) {
 class RequestPageKis extends React.Component {
   state = {
     loader: true,
+    update: true,
   };
 
   async componentDidMount() {
@@ -83,24 +84,47 @@ class RequestPageKis extends React.Component {
 
   getClientsFromRequests = (requests) => {
     let clients = [];
-    Object.keys(requests).forEach(request => {
-      typeof(requests[request]) === 'object' && requests[request][1].map(operation => {
-        clients.push(operation.client);
-      })
+    Object.keys(requests).forEach((request) => {
+      typeof requests[request] === 'object' &&
+        requests[request][1].map((operation) => {
+          clients.push(operation.client);
+        });
     });
     const uniqueClients = new Set(clients);
 
     return [...uniqueClients];
+  };
+
+  addOutcomeOperation = (formData) => {
+    const requests = this.props.requests;
+    Object.keys(requests).forEach(key => {
+      // console.log(requests[key][0]);
+      if (typeof(requests[key][0]) !== 'undefined' && requests[key][0] === formData.request) {
+        requests[key][1].push(formData);
+      }
+    })
+    this.props.renderData(requests);
+    this.setState({
+      loader: false,
+      update: !this.state.update
+    })
+
+  };
+
+  sortOperatoions = (sortType) => {
+    if (sortType === 'client') {
+      console.log(this.props);
+    }
   }
 
   render() {
     let incomeAll = 0;
     let outcomeAll = 0;
-    const clientsList = this.getClientsFromRequests(this.props.requests);    
+    const clientsList = this.getClientsFromRequests(this.props.requests);
 
     return (
       <div className={insertClasses.join(' ')}>
-        <RPKHeader />
+        <RPKHeader sortOperatoions={this.sortOperatoions} />
 
         {this.state.loader ? (
           <div>
@@ -134,6 +158,7 @@ class RequestPageKis extends React.Component {
                       key={index.toString() + Math.random()}
                       request={request[0]}
                       clientList={clientsList}
+                      addOutcomeOperation={this.addOutcomeOperation}
                     />
                   );
 

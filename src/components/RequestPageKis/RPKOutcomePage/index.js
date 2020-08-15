@@ -120,11 +120,11 @@ export default class RPKOutcomePage extends React.Component {
       );
     });
 
-    this.modal.addEventListener('mouseup', event => {
+    this.modal.addEventListener('mouseup', (event) => {
       if (event.target.getAttribute('id') === 'outcomeFormInput') {
-        event.target.focus()
+        event.target.focus();
       }
-    })
+    });
   };
 
   blurTextField = (textFieldName, textFieldValue) => {
@@ -180,14 +180,92 @@ export default class RPKOutcomePage extends React.Component {
     return { isValid, validationFailedMessage };
   };
 
-  addButtonClicked = () => {
-    console.log('Button');
+  validateForm = () => {
+    const formData = this.state.formData;
+    let isFormValid = true;
+    formData.textFields = formData.textFields.map((textField) => {
+      const textFieldValue = document.querySelector(
+        '[name=' + textField.name + ']'
+      ).value;
+      textField.touched = true;
+      textField.defaultValue = textFieldValue;
+      const validations = this.textFieldValidation(
+        textFieldValue,
+        textField.validation
+      );
+      textField.isValid = validations.isValid;
+      textField.isValid === false
+        ? (textField.helperText = validations.validationFailedMessage)
+        : (textField.helperText = '');
+
+      isFormValid = isFormValid && textField.isValid;
+
+      return textField;
+    });
+
+    formData.isValid = isFormValid;
+
+    return formData;
+  };
+
+  getFormatDate = (date) => {
+    let day = date.getDate().toString();
+    let month = date.getMonth().toString();
+    let year = date.getFullYear().toString();
+
+    if (day.length<2) { day='0'+day; }
+    if (month.length<2) { month='0'+month; }
+
+    return (day+'.'+month+'.'+year);
   }
+
+  addButtonClicked = () => {
+    this.buttonLoaderActivator('show');
+    const formData = this.validateForm();
+    if (formData.isValid) {
+      const stateTextFields = this.state.formData.textFields;
+      let formTextFields = {};
+      stateTextFields.forEach((textField) => {
+        formTextFields[textField.name] = document.querySelector(
+          '[name=' + textField.name + ']'
+        ).value;
+      });
+      formTextFields.value = (+formTextFields.value).toFixed(2);
+      formTextFields.request = this.props.request;
+      formTextFields.date = this.getFormatDate(new Date());
+      formTextFields.status = false;
+      formTextFields.type = 'outcome';
+
+      // console.log(formTextFields);
+
+      this.props.addOutcomeOperation(formTextFields);
+     
+    } else {
+      this.setState({
+        formData,
+      });
+    } 
+
+    this.buttonLoaderActivator('hide');
+  };
+
+  buttonLoaderActivator = (prop) => {
+    switch (prop) {
+      case 'show':
+        document.querySelector('#formButton').style.display = 'none';
+        document.querySelector('.lds-dual-ring').style.display = 'block';
+        break;
+      case 'hide':
+        document.querySelector('#formButton').style.display = null;
+        document.querySelector('.lds-dual-ring').style.display = 'none';
+        break;
+    }
+  };
 
   render() {
     // console.log(this.state.formData);
     return ReactDOM.createPortal(
-      <div className={insertClasses.join(' ')} key="sanddwich">
+      <div className={insertClasses.join(' ')} key='sanddwich'>
         <div className='backdrop'>
           <div className='modal'>
             <Grid
@@ -246,6 +324,7 @@ export default class RPKOutcomePage extends React.Component {
             >
               <Box m={3}>
                 <Button
+                  id='formButton'
                   variant='contained'
                   color='primary'
                   size='large'
@@ -255,6 +334,10 @@ export default class RPKOutcomePage extends React.Component {
                 >
                   Добавить запись
                 </Button>
+                <div
+                  className='lds-dual-ring'
+                  style={{ display: 'none' }}
+                ></div>
               </Box>
             </Grid>
           </div>

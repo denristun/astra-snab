@@ -70,6 +70,14 @@
       &:nth-child(8) {
         border-right: none;
       }
+
     }
   }
+}
+
+.sort {
+  position: absolute;
+  transform: rotate(90deg);
+  margin-top: -10px;
+  color:#398def;
 }

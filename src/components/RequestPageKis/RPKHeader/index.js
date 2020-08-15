@@ -1,5 +1,7 @@
 import React from 'react';
 import classes from './RPKHeader.module.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 let insertClasses = [classes.RPKHeader];
 function headerShift(elem, param) {
@@ -30,7 +32,17 @@ class RPKHeader extends React.Component {
                 <th>От кого</th>
                 <th>Реализация</th>
                 <th>Расход</th>
-                <th>Поставщик</th>
+                <th
+                  onClick={() => this.props.sortOperatoions('client')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className={classes.sort} style={{marginLeft:'120px'}}>
+                    <FontAwesomeIcon icon={faCaretLeft} />
+                    <div style={{margin:'15px', display:'inline-block'}}></div>
+                    <FontAwesomeIcon icon={faCaretRight} /> 
+                  </div>
+                  Поставщик
+                </th>
                 <th>Назначение платежа</th>
                 <th>Комментарий</th>
               </tr>
