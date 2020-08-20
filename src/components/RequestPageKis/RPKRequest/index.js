@@ -29,7 +29,7 @@ export default class RPKRequest extends React.Component {
                       display: 'flex',
                       flexGrow: 1,
                       height:
-                        this.props.operation.type === 'income' ? '70%' : '100%',
+                        this.props.operation.type === 'income' ? '65%' : '100%',
                       justifyContent: 'center',
                       alignItems: 'center',
                     }}
@@ -45,7 +45,7 @@ export default class RPKRequest extends React.Component {
                       style={{
                         display: 'flex',
                         flexGrow: 1,
-                        height: '30%',
+                        height: '35%',
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: '#FFF5C2',
@@ -62,7 +62,7 @@ export default class RPKRequest extends React.Component {
                       flexGrow: 1,
                       height:
                         this.props.operation.type === 'outcome'
-                          ? '70%'
+                          ? '65%'
                           : '100%',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -79,7 +79,7 @@ export default class RPKRequest extends React.Component {
                       style={{
                         display: 'flex',
                         flexGrow: 1,
-                        height: '30%',
+                        height: '35%',
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: '#FFF5C2',

@@ -63,6 +63,11 @@ background-color: black;
   line-height: 16px;
 }
 
+.headerKis > header {
+  position: relative;
+  z-index: 20;
+}
+
 /* .closeModalButton {
   position: fixed;
   right: 5px; top: 0;
@@ -77,5 +82,4 @@ background-color: black;
   color: #398DEF;
   cursor: pointer;
 }
-
 

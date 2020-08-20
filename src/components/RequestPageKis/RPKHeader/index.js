@@ -36,7 +36,7 @@ class RPKHeader extends React.Component {
                   onClick={() => this.props.sortOperatoions('client')}
                   style={{ cursor: 'pointer' }}
                 >
-                  <div className={classes.sort} style={{marginLeft:'120px'}}>
+                  <div className={classes.sort}>
                     <FontAwesomeIcon icon={faCaretLeft} />
                     <div style={{margin:'15px', display:'inline-block'}}></div>
                     <FontAwesomeIcon icon={faCaretRight} /> 

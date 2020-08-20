@@ -22,7 +22,7 @@ class RPKGroups extends React.Component {
   }
 
   getData = async () => {
-    const url = 'http://10.36.2.56:8000/api/groups';
+    const url = 'https://astra-snab-server.herokuapp.com/api/groups';
 
     try {
       const response = await fetch(url, {

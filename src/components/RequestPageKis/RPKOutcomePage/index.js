@@ -230,7 +230,7 @@ export default class RPKOutcomePage extends React.Component {
           '[name=' + textField.name + ']'
         ).value;
       });
-      formTextFields.value = (+formTextFields.value).toFixed(2);
+      formTextFields.value = +(+formTextFields.value).toFixed(2);
       formTextFields.request = this.props.request;
       formTextFields.date = this.getFormatDate(new Date());
       formTextFields.status = false;

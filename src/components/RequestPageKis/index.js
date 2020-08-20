@@ -32,7 +32,7 @@ class RequestPageKis extends React.Component {
       }
     });
 
-    const urlGroups = 'http://10.36.2.56:8000/api/groups';
+    const urlGroups = 'https://astra-snab-server.herokuapp.com/api/groups';
     try {
       let responseGroups = await fetch(urlGroups, {
         method: 'GET',
@@ -50,7 +50,7 @@ class RequestPageKis extends React.Component {
   }
 
   async getData(group) {
-    const urlRequests = 'http://10.36.2.56:8000/api/requests_by_group';
+    const urlRequests = 'https://astra-snab-server.herokuapp.com/api/requests_by_group';
     try {
       let responseRequests = await fetch(urlRequests, {
         method: 'POST',
@@ -109,6 +109,7 @@ class RequestPageKis extends React.Component {
       update: !this.state.update
     })
 
+    console.log(this.props.requests);
   };
 
   sortOperatoions = (sortType) => {
