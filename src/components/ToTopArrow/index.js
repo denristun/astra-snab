@@ -12,8 +12,6 @@ window.addEventListener("scroll", () => {
   }
 });
 
-let t;
-
 export default class ToTopArrow extends React.Component {
   insertClasses = [classes.ToTopArrow];
 

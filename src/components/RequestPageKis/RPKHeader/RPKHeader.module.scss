@@ -78,8 +78,10 @@
 .sort {
   position: absolute;
   transform: rotate(90deg);
-  margin-top: -10px;
   color:#398def;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   // left:60%;
   // transform: translate(-50%, 0);
 }

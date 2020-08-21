@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import classes from './RequestPageKis.module.scss';
-import RPKHeader from './RPKHeader';
-import RPKRequest from './RPKRequest';
-import { connect } from 'react-redux';
-import RPKButton from './RPKButton';
-import RPKResultLine from './RPKResultLine';
-import Loader from '../Loader';
-import RPKGroups from './RPKGroups';
+import classes from "./RequestPageKis.module.scss";
+import RPKHeader from "./RPKHeader";
+import RPKRequest from "./RPKRequest";
+import { connect } from "react-redux";
+import RPKButton from "./RPKButton";
+import RPKResultLine from "./RPKResultLine";
+import Loader from "../Loader";
+import RPKGroups from "./RPKGroups";
 
 let insertClasses = [classes.RequestPageKis];
 function headerShift(elem, param) {
@@ -24,20 +24,20 @@ class RequestPageKis extends React.Component {
 
   async componentDidMount() {
     const RPKContant = document.querySelector('[id="RPKContent"]');
-    window.addEventListener('scroll', function () {
+    window.addEventListener("scroll", function () {
       if (window.pageYOffset > 10) {
-        headerShift(RPKContant, '16px');
+        headerShift(RPKContant, "16px");
       } else {
         headerShift(RPKContant, null);
       }
     });
 
-    const urlGroups = 'https://astra-snab-server.herokuapp.com/api/groups';
+    const urlGroups = "https://astra-snab-server.herokuapp.com/api/groups";
     try {
       let responseGroups = await fetch(urlGroups, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       let groups = await responseGroups.json();
@@ -50,12 +50,13 @@ class RequestPageKis extends React.Component {
   }
 
   async getData(group) {
-    const urlRequests = 'https://astra-snab-server.herokuapp.com/api/requests_by_group';
+    const urlRequests =
+      "https://astra-snab-server.herokuapp.com/api/requests_by_group";
     try {
       let responseRequests = await fetch(urlRequests, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ group }),
       });
@@ -85,7 +86,7 @@ class RequestPageKis extends React.Component {
   getClientsFromRequests = (requests) => {
     let clients = [];
     Object.keys(requests).forEach((request) => {
-      typeof requests[request] === 'object' &&
+      typeof requests[request] === "object" &&
         requests[request][1].map((operation) => {
           clients.push(operation.client);
         });
@@ -96,27 +97,47 @@ class RequestPageKis extends React.Component {
   };
 
   addOutcomeOperation = (formData) => {
-    const requests = this.props.requests;
-    Object.keys(requests).forEach(key => {
-      // console.log(requests[key][0]);
-      if (typeof(requests[key][0]) !== 'undefined' && requests[key][0] === formData.request) {
-        requests[key][1].push(formData);
-      }
-    })
-    this.props.renderData(requests);
-    this.setState({
-      loader: false,
-      update: !this.state.update
-    })
-
-    console.log(this.props.requests);
+    this.sendOutcomeOperationToServer(formData, this.props.requests);
   };
 
-  sortOperatoions = (sortType) => {
-    if (sortType === 'client') {
-      console.log(this.props);
+  async sendOutcomeOperationToServer(formData, requests) {
+    try {
+      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      Object.keys(requests).forEach((key) => {
+        if (
+          typeof requests[key][0] !== "undefined" &&
+          requests[key][0] === data.request
+        ) {
+          requests[key][1].push(data);
+        }
+      });
+
+      this.props.renderData(requests);
+      this.setState({
+        loader: false,
+        update: !this.state.update,
+      });
+
+    } catch (e) {
+      console.log(e);
     }
   }
+
+  sortOperatoions = (sortType) => {
+    if (sortType === "value") {
+      
+    }
+  };
 
   render() {
     let incomeAll = 0;
@@ -124,7 +145,7 @@ class RequestPageKis extends React.Component {
     const clientsList = this.getClientsFromRequests(this.props.requests);
 
     return (
-      <div className={insertClasses.join(' ')}>
+      <div className={insertClasses.join(" ")}>
         <RPKHeader sortOperatoions={this.sortOperatoions} />
 
         {this.state.loader ? (
@@ -134,14 +155,14 @@ class RequestPageKis extends React.Component {
         ) : (
           <div>
             {!this.props.requests.error ? (
-              <div className={classes.content} id='RPKContent'>
+              <div className={classes.content} id="RPKContent">
                 {this.props.requests.map((request, index) => {
                   let operations = [];
                   let income = 0;
                   let outcome = 0;
 
                   for (let i = 0; i < request[1].length; i++) {
-                    request[1][i].type === 'income' && +request[1][i].value > 0
+                    request[1][i].type === "income" && +request[1][i].value > 0
                       ? (income = income + request[1][i].value)
                       : (outcome = outcome + request[1][i].value);
                     operations.push(
@@ -149,7 +170,7 @@ class RequestPageKis extends React.Component {
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
-                        trColor={i % 2 ? '#EBEBEB' : '#FFFFFF'}
+                        trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
                       />
                     );
                   }
@@ -167,11 +188,11 @@ class RequestPageKis extends React.Component {
                     <RPKResultLine
                       key={index.toString() + Math.random()}
                       operation={{
-                        title: 'Итог',
+                        title: "Итог",
                         income,
                         outcome,
                       }}
-                      trColor={'#53A54C'}
+                      trColor={"#53A54C"}
                     />
                   );
                   incomeAll += income;
@@ -195,11 +216,11 @@ class RequestPageKis extends React.Component {
           <RPKResultLine
             key={Math.random()}
             operation={{
-              title: 'СУММЫ',
+              title: "СУММЫ",
               income: incomeAll,
               outcome: outcomeAll,
             }}
-            trColor={'#398DEF'}
+            trColor={"#398DEF"}
           />
           <RPKGroups
             activeGroup={this.props.requests.group}
@@ -207,7 +228,7 @@ class RequestPageKis extends React.Component {
           />
         </div>
 
-        <div id='OutcomePage'></div>
+        <div id="OutcomePage"></div>
       </div>
     );
   }
@@ -221,7 +242,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    renderData: (data) => dispatch({ type: 'RENDER_DATA', data }),
+    renderData: (data) => dispatch({ type: "RENDER_DATA", data }),
   };
 }
 
