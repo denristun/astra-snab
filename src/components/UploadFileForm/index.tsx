@@ -79,7 +79,7 @@ const UploadFileForm: React.FC = () => {
   const fetchDocuments = (documents) => {
     console.log(documents)
 
-    fetch('http://localhost:8000/api/bank', {
+    fetch('https://astra-snab-server.herokuapp.com/api/bank', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -201,10 +201,7 @@ const UploadFileForm: React.FC = () => {
   <div key={index}  className={classes.alert}>  {<AlertBox type={alert.type} message={alert.message} />}</div>
  ))
      
-        
-     
 }
-
       <div>
         {dbResponse.map((response: any, index) => (
           <div key={response.bankDocument.id} className={classes.alert}>
@@ -215,7 +212,6 @@ const UploadFileForm: React.FC = () => {
     </section>
   )
 }
-
 
 function AlertBox(props) {
   let message = props.message
@@ -257,8 +253,6 @@ function AlertBox(props) {
     </Alert>
   )
 }
-
-
 
 
 export default UploadFileForm
