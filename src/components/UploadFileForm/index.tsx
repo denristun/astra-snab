@@ -74,8 +74,6 @@ const UploadFileForm: React.FC = () => {
   }
 
   const fetchDocuments = (documents) => {
-    console.log(documents)
-
     fetch('https://astra-snab-server.herokuapp.com/api/bank', {
       method: 'POST',
       headers: {
@@ -88,10 +86,14 @@ const UploadFileForm: React.FC = () => {
         setDbResponse(json.message)
         setLoading(false)
         setUploadFile({ name: '' })
+        setAlerts([])
+        setUploadDocuments(null)
       })
       .catch((error) => {
         setLoading(false)
         setUploadFile({ name: '' })
+        setAlerts([])
+        setUploadDocuments(null)
       })
   }
 
@@ -101,6 +103,7 @@ const UploadFileForm: React.FC = () => {
       setAlerts([])
       setUploadDocuments(BankDocument[0])
       const excelFile = event.target.files[0]
+      event.target.value = ''
       setUploadFile(excelFile)
       setCheckFileError(false)
      const upload = await renderFile(excelFile)
@@ -108,14 +111,10 @@ const UploadFileForm: React.FC = () => {
         if (!isCorrectFile) {
           setCheckFileError(true)
           setLoading(false)
-       
         }
         else{
           prepareRequests(upload.rows.filter(e => e.length))
         }
-      
-
-      
     },
     [setUploadFile, setUploadData]
   )
@@ -131,9 +130,7 @@ const UploadFileForm: React.FC = () => {
   const formSubmitHandler = (event: SyntheticEvent): void => {
     setLoading(true)
     event.preventDefault()
-    // prepareRequests()
     fetchDocuments(uploadDocuments)
-    // console.log(uploadDocuments)
   }
 
   const checkExcelFile = async (rowHeader: []) => {
@@ -165,6 +162,7 @@ const UploadFileForm: React.FC = () => {
             multiple
             type='file'
             onChange={onChangeFile}
+            disabled={loading || !!uploadFile.name}
           />
           <label htmlFor='contained-button-file'>
             <Button
@@ -172,7 +170,7 @@ const UploadFileForm: React.FC = () => {
               color='primary'
               startIcon={<CloudUploadIcon />}
               component='span'
-              disabled={loading}
+              disabled={loading || !!uploadFile.name}
             >
               Выбрать файл
             </Button>
