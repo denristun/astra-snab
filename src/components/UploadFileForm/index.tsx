@@ -23,20 +23,15 @@ const UploadFileForm: React.FC = () => {
   const [alerts, setAlerts] = useState(AlertMessage[0])
 
 
-  const prepareRequests = () => {
+
+  const prepareRequests = (upload) => {
     setAlerts([])
     setLoading(true)
     let documents: BankDocument[] = []
     let alertsMessages: AlertMessage[] = []
-
-    uploadData.forEach((row, index) => {
+    upload.forEach((row, index) => {
       if (index > 0) {
-        if (!checkCommentCell(row[11])){
-        const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[11] ? row[11]: 'Пустая ячейка'}"`
-        const commentAlert = new AlertMessage('warning', message,'commentError')
-        alertsMessages.push(commentAlert)
-        }
-        else{
+        if (checkCommentCell(row[11]) ){
           let bankDocument = new BankDocument(
             row[0],
             row[1],
@@ -50,30 +45,32 @@ const UploadFileForm: React.FC = () => {
             documents.push(bankDocument)
           }
         }
+        else{
+          const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[11] ? row[11]: 'Пустая ячейка'}"`
+          const commentAlert = new AlertMessage('warning', message,'commentError')
+          alertsMessages.push(commentAlert)
+        }
       
       }
     })
     setAlerts(alertsMessages)
     setUploadData([])
     setUploadDocuments(documents)
-    fetchDocuments(documents)
+    console.log(documents)
     setLoading(false)
   }
 
   const checkCommentCell = (commentCell: string) => {
-    const requestRegExp = new RegExp('[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6} [0-9]{1,10},[0-9]{1,2}(|$)[^;]{1,50}(;|$)', 'gi')
-    const requestRegExp2 = new RegExp('[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}$')
-    const requestRegExp3 = new RegExp('[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6} [^;]{1,255}$')
+    const requestRegExp = new RegExp('([а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}( |(\/[0-9,а-я,А-Я]{1,3}){1,4} )[0-9]{1,10}(,|.)[0-9]{1,2}(|$)[^;]{1,50}(;|$)){1,10}', 'gi')
+    const requestRegExp2 = new RegExp('[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}((\/[0-9,а-я,А-Я]{1,3}){1,4}|$)$')
+    const requestRegExp3 = new RegExp('^[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}( |(\/[0-9,а-я,А-Я]{1,3}){1,4} )[^;]{1,255}$')
 
     if (commentCell){
-      return (commentCell.match(requestRegExp) || []).length 
+    const semicolonCount = (commentCell.match(/;/g) || []).length + 1
+      return ((commentCell.match(requestRegExp) || []).length === semicolonCount)
       || (commentCell.match(requestRegExp2) || []).length 
-      | (commentCell.match(requestRegExp3) || []).length 
+      || (commentCell.match(requestRegExp3) || []).length
     }
-   
-  
-
-
   }
 
   const fetchDocuments = (documents) => {
@@ -99,45 +96,47 @@ const UploadFileForm: React.FC = () => {
   }
 
   const onChangeFile = useCallback(
-    (event) => {
+
+    async (event) => {
+      setAlerts([])
+      setUploadDocuments(BankDocument[0])
       const excelFile = event.target.files[0]
       setUploadFile(excelFile)
       setCheckFileError(false)
-      renderFile(excelFile)
-    },
-    [setUploadFile]
-  )
-
-  const renderFile = (excelFile: any) => {
-    setDbResponse([])
-    setLoading(true)
-    setUploadData([])
-
-    ExcelRenderer(excelFile, (error: any, response: any) => {
-      if (error) {
-        setLoading(false)
-      } else {
-        const isCorrectFile = checkExcelFile(response.rows[0])
+     const upload = await renderFile(excelFile)
+     const isCorrectFile = await checkExcelFile(upload.rows[0])
         if (!isCorrectFile) {
           setCheckFileError(true)
           setLoading(false)
+       
         }
-        else {
-          setUploadData(response.rows)
-          setLoading(false)
+        else{
+          prepareRequests(upload.rows.filter(e => e.length))
         }
-      }
+      
+
+      
+    },
+    [setUploadFile, setUploadData]
+  )
+
+  const renderFile = async (excelFile: any) => {
+    setDbResponse([])
+    setLoading(true)
+    setUploadData([])
+    return await ExcelRenderer(excelFile, (error: any, response: any) => {
     })
   }
 
   const formSubmitHandler = (event: SyntheticEvent): void => {
     setLoading(true)
     event.preventDefault()
-    // fetchRows()
-    prepareRequests()
+    // prepareRequests()
+    fetchDocuments(uploadDocuments)
+    // console.log(uploadDocuments)
   }
 
-  const checkExcelFile = (rowHeader: []) => {
+  const checkExcelFile = async (rowHeader: []) => {
     const tableHeader = ['Дата',
       'Поступление',
       'Списание',
@@ -150,7 +149,7 @@ const UploadFileForm: React.FC = () => {
       'Организация',
       'Комментарий'
     ]
-    return JSON.stringify(tableHeader) === JSON.stringify(rowHeader)
+    return await JSON.stringify(tableHeader) === JSON.stringify(rowHeader)
   }
 
   const classes = useStyles()
@@ -194,7 +193,7 @@ const UploadFileForm: React.FC = () => {
 
       {loading && <Loader />}
       <div className={classes.alert}>  {checkFileError && <AlertBox type='error' message='fileError' />}     </div>
-      <div className={classes.alert}>  {uploadData.length > 0 && <AlertBox type='info' uploadData={uploadData} />}     </div>
+      <div className={classes.alert}>  {uploadDocuments && <AlertBox type='info' uploadDocuments={uploadDocuments} alerts={alerts}/>}     </div>
       {alerts &&
        
  alerts.map((alert: AlertMessage, index)=>(
@@ -225,9 +224,9 @@ function AlertBox(props) {
     type = 'error'
   }
 
-  if (props.uploadData) {
-    title = 'Файл готов к загрузке'
-    message = `Количество записей ${props.uploadData.length - 1}.`
+  if (props.uploadDocuments) {
+    title = `Файл готов к загрузке. Всего записей ${props.uploadDocuments.length + props.alerts.length}.` 
+    message = `Корректных ${props.uploadDocuments.length} шт. С ошибками ${props.alerts.length} шт.`
     type = 'info'
   }
 

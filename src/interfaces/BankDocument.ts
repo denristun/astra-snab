@@ -37,7 +37,9 @@ export class BankDocument{
                 let valueInt = value && !Number.isNaN(+value) ? Number.parseFloat(value.replace(/,/g,'.')) : this.income || this.outcome
                 client = client ? client: this.client
                 let type: BankRequestType = this.income ? 'income' : 'outcome'
-                const bankRequest = new BankRequest(requestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, false)
+                console.log(requestNumber)
+                const correctRequestNumber = requestNumber.match(/[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}/g)[0]
+                const bankRequest = new BankRequest(correctRequestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, false)
                 this.requests.push(bankRequest)
             }
         })
