@@ -22,8 +22,6 @@ const UploadFileForm: React.FC = () => {
   const [uploadDocuments, setUploadDocuments] = useState(BankDocument[0])
   const [alerts, setAlerts] = useState(AlertMessage[0])
 
-
-
   const prepareRequests = (upload) => {
     setAlerts([])
     setLoading(true)
@@ -98,7 +96,6 @@ const UploadFileForm: React.FC = () => {
   }
 
   const onChangeFile = useCallback(
-
     async (event) => {
       setAlerts([])
       setUploadDocuments(BankDocument[0])
@@ -240,7 +237,6 @@ function AlertBox(props) {
       title = 'Ошибка добавления в базу данных'
       type = 'error'
     }
-   
   }
 
   return (
