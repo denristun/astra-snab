@@ -22,7 +22,7 @@ export default class RPKButton extends React.Component {
 
   render() {
     return (
-      <div id='RPKButton' className={insertClasses.join(' ')}>
+      <div id='RPKButton' className={insertClasses.join(' ')}  operationid={this.props.operationId} display='true' >
         <div className={classes.RPKButton__add} onClick={() => this.onToggle()}>
           Добавить расход <FontAwesomeIcon icon={faPlusCircle} size='2x' />
         </div>

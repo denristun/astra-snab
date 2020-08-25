@@ -85,3 +85,46 @@
   // left:60%;
   // transform: translate(-50%, 0);
 }
+
+.filter {
+  background-color:#3f51b5;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 3px;
+  color:#ffffff;
+  width:60%;
+  margin: auto;
+  margin-top: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color:#398def;
+  }
+}
+
+.filterLine{
+  background-color: #ffffff;
+  position: absolute; 
+  border: #398def 2px solid;
+  border-radius: 5px;
+  padding-bottom: -2px;
+  overflow: hidden;
+  opacity: .8;
+  margin-top: 3px;
+  margin-left: 30px;
+  display: none;
+}
+
+.divIcon {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  background-color: green;
+  // padding-left: 20px;
+  // padding-right: 20px;
+
+  svg {
+    color: #398def;
+  }
+}

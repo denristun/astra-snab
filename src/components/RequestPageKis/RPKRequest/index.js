@@ -7,7 +7,7 @@ export default class RPKRequest extends React.Component {
   render() {
     // console.log(this.props.operation);
     return (
-      <div className={this.insertClasses.join(' ')}>
+      <div className={this.insertClasses.join(' ')} operationid={this.props.operationId} display='true' >
         <div className={classes.RPKRequest__table}>
           <table>
             <tbody>

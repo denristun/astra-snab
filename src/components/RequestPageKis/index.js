@@ -22,6 +22,9 @@ class RequestPageKis extends React.Component {
     update: true,
   };
 
+  originState = {};
+  filters = {};
+
   async componentDidMount() {
     const RPKContant = document.querySelector('[id="RPKContent"]');
     window.addEventListener("scroll", function () {
@@ -64,6 +67,7 @@ class RequestPageKis extends React.Component {
       data.group = group;
       // console.log(data);
       this.props.renderData(data);
+      this.originState = data;
 
       this.setState({
         loader: false,
@@ -127,7 +131,6 @@ class RequestPageKis extends React.Component {
         loader: false,
         update: !this.state.update,
       });
-
     } catch (e) {
       console.log(e);
     }
@@ -135,18 +138,26 @@ class RequestPageKis extends React.Component {
 
   sortOperatoions = (sortType) => {
     if (sortType === "value") {
-      
     }
   };
 
+  requestNumberFilter = (value) => {
+    // value.trim().length > 0
+    //   : 
+  }
+
   render() {
+    // console.log(this.originState);
     let incomeAll = 0;
     let outcomeAll = 0;
     const clientsList = this.getClientsFromRequests(this.props.requests);
 
     return (
       <div className={insertClasses.join(" ")}>
-        <RPKHeader sortOperatoions={this.sortOperatoions} />
+        <RPKHeader
+          sortOperatoions={this.sortOperatoions}
+          requestNumberFilter={this.requestNumberFilter}
+        />
 
         {this.state.loader ? (
           <div>
@@ -157,6 +168,7 @@ class RequestPageKis extends React.Component {
             {!this.props.requests.error ? (
               <div className={classes.content} id="RPKContent">
                 {this.props.requests.map((request, index) => {
+                  let opertionID = request[0];
                   let operations = [];
                   let income = 0;
                   let outcome = 0;
@@ -170,6 +182,7 @@ class RequestPageKis extends React.Component {
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
+                        operationId={opertionID}
                         trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
                       />
                     );
@@ -180,6 +193,7 @@ class RequestPageKis extends React.Component {
                       key={index.toString() + Math.random()}
                       request={request[0]}
                       clientList={clientsList}
+                      operationId={opertionID}
                       addOutcomeOperation={this.addOutcomeOperation}
                     />
                   );
@@ -192,6 +206,7 @@ class RequestPageKis extends React.Component {
                         income,
                         outcome,
                       }}
+                      operationId={opertionID}
                       trColor={"#53A54C"}
                     />
                   );
@@ -204,9 +219,6 @@ class RequestPageKis extends React.Component {
             ) : (
               <div>
                 <h1>Error {this.props.requests.error}</h1>
-                <button onClick={() => console.log(this.props.requests)}>
-                  Кнопка
-                </button>
               </div>
             )}
           </div>
@@ -220,6 +232,7 @@ class RequestPageKis extends React.Component {
               income: incomeAll,
               outcome: outcomeAll,
             }}
+            operationId="totalResult"
             trColor={"#398DEF"}
           />
           <RPKGroups
