@@ -23,6 +23,7 @@ export default class RPKRequest extends React.Component {
                     ? this.props.operation.client
                     : ''}
                 </td>
+                <td></td>
                 <td>
                   <div
                     style={{

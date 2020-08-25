@@ -11,6 +11,7 @@ export default (props) => {
           <tr style={{ backgroundColor: props.trColor }}>
             <td></td>
             <td></td>
+            <td></td>
             <td>{props.operation.title}</td>
             <td id='income' operationid={props.operationId}>{parseFloat(+props.operation.income).toFixed(2)+' руб.'}</td>
             <td id='outcome' operationid={props.operationId}>{parseFloat(+props.operation.outcome).toFixed(2)+' руб.'}</td>

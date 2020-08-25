@@ -8,6 +8,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { Grid, TextField, Box } from "@material-ui/core";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 let insertClasses = [classes.RPKHeader];
 function headerShift(elem, param) {
@@ -42,12 +43,33 @@ class RPKHeader extends React.Component {
 
   closeFilterLines = (filterLineId) => {
     document.querySelectorAll("[type=filterLine]").forEach((filterLine) => {
-      if (filterLine.getAttribute("display") === "true" && filterLine.getAttribute("id") !== filterLineId) {
+      if (
+        filterLine.getAttribute("display") === "true" &&
+        filterLine.getAttribute("id") !== filterLineId
+      ) {
         filterLine.style.display = "none";
         filterLine.setAttribute("display", "false");
       }
     });
   };
+
+  clearFilter = (filterName) => {
+    document.querySelector('#'+filterName+'[type="clearFilterButton"]').style.display = 'none';
+    // console.log(document.querySelector('[name="'+filterName+'"] input'));
+  }
+
+  changeFilterValue = (filterName, value) => {
+    if (value.trim().length>0){
+      document.querySelector('#'+filterName+'[type="clearFilterButton"]').style.display = 'inline-block';
+    } else {
+      document.querySelector('#'+filterName+'[type="clearFilterButton"]').style.display = 'none';
+    }
+
+    this.props.changeFilter(
+      filterName,
+      value
+    )
+  }
 
   render() {
     return (
@@ -64,6 +86,18 @@ class RPKHeader extends React.Component {
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                   </div>
+
+                  <div
+                    id='status'
+                    type="clearFilterButton"
+                    className={classes.filter+' '+classes.clearFilter}
+                    style={{backgroundColor: '#C67B7B'}}
+                    onClick={() => this.clearFilter('status')}
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+
                   <div
                     id="status"
                     type="filterLine"
@@ -77,11 +111,22 @@ class RPKHeader extends React.Component {
                       alignItems="center"
                     >
                       <Box>
-                        <TextField
-                          name="statusFilter"
-                          variant="filled"
-                          label="Выберете статус"
-                        />
+                        <Autocomplete
+                          name="status"
+                          options={this.props.clientsList}
+                          getOptionLabel={(option) => option}
+                          style={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Выберете статус"
+                              variant="filled"
+                            />
+                          )}
+                          onInputChange={(event, newInputValue) =>
+                            this.changeFilterValue('status', newInputValue)
+                          }
+                        />                        
                       </Box>
                       <Box>
                         <FontAwesomeIcon
@@ -103,6 +148,18 @@ class RPKHeader extends React.Component {
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                   </div>
+
+                  <div
+                    id='request'
+                    type="clearFilterButton"
+                    className={classes.filter+' '+classes.clearFilter}
+                    style={{backgroundColor: '#C67B7B'}}
+                    onClick={() => this.clearFilter('request')}
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+
                   <div
                     id="request"
                     type="filterLine"
@@ -117,9 +174,15 @@ class RPKHeader extends React.Component {
                     >
                       <Box>
                         <TextField
-                          name="requestFilter"
+                          name="request"
                           variant="filled"
                           label="Вводите № заявки"
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              "request",
+                              event.target.value
+                            )
+                          }
                         />
                       </Box>
                       <Box>
@@ -135,6 +198,7 @@ class RPKHeader extends React.Component {
                   </div>
                 </th>
                 <th>От кого</th>
+                <th>Кому</th>
                 <th>Реализация</th>
                 <th>Расход</th>
                 {/* <th

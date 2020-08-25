@@ -23,7 +23,7 @@ class RequestPageKis extends React.Component {
   };
 
   originState = {};
-  filters = {};
+  filtersList = {};
 
   async componentDidMount() {
     const RPKContant = document.querySelector('[id="RPKContent"]');
@@ -46,9 +46,12 @@ class RequestPageKis extends React.Component {
       let groups = await responseGroups.json();
 
       this.getData(groups[0].group);
-      // console.log(groups);
+      // console.log(this.originState);
     } catch (e) {
       console.log(e);
+      this.setState({
+        loader: false,
+      });
     }
   }
 
@@ -67,7 +70,9 @@ class RequestPageKis extends React.Component {
       data.group = group;
       // console.log(data);
       this.props.renderData(data);
+
       this.originState = data;
+      // console.log(this.originState);
 
       this.setState({
         loader: false,
@@ -141,9 +146,9 @@ class RequestPageKis extends React.Component {
     }
   };
 
-  requestNumberFilter = (value) => {
-    // value.trim().length > 0
-    //   : 
+  changeFilter = (filterName, value) => {
+    this.filtersList[filterName] = value;
+    console.log(this.filtersList);
   }
 
   render() {
@@ -151,12 +156,14 @@ class RequestPageKis extends React.Component {
     let incomeAll = 0;
     let outcomeAll = 0;
     const clientsList = this.getClientsFromRequests(this.props.requests);
+    // console.log(clientsList);
 
     return (
       <div className={insertClasses.join(" ")}>
         <RPKHeader
           sortOperatoions={this.sortOperatoions}
-          requestNumberFilter={this.requestNumberFilter}
+          changeFilter={this.changeFilter}
+          clientsList={clientsList}
         />
 
         {this.state.loader ? (
