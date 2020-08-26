@@ -9,12 +9,12 @@ export class BankRequest{
     destination: string
     date: string
     client: string
-    status: boolean
+    status: string
     _id?: string
     organization: string
     
     constructor (request: string, value: number, type: BankRequestType, bankId: string, 
-        comment: string, destination: string, date: string,   client: string, status: boolean, organization:string){
+        comment: string, destination: string, date: string,   client: string, status: string, organization:string){
         
         this.request = request
         this.value = value

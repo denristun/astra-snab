@@ -42,7 +42,7 @@ export class BankDocument{
                 let type: BankRequestType = this.income ? 'income' : 'outcome'
                 const correctRequestNumber = requestNumber.match(/[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}/g)[0]
                 this.requestsSum += valueInt
-                const bankRequest = new BankRequest(correctRequestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, false, this.organization)
+                const bankRequest = new BankRequest(correctRequestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, "", this.organization)
                 console.log("bankRequests", bankRequest)
                 this.requests.push(bankRequest)
             }
