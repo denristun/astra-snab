@@ -11,8 +11,10 @@ export class BankRequest{
     client: string
     status: boolean
     _id?: string
+    organization: string
     
-    constructor (request: string, value: number, type: BankRequestType, bankId: string, comment: string, destination: string, date: string,   client: string, status: boolean){
+    constructor (request: string, value: number, type: BankRequestType, bankId: string, 
+        comment: string, destination: string, date: string,   client: string, status: boolean, organization:string){
         
         this.request = request
         this.value = value
@@ -23,6 +25,7 @@ export class BankRequest{
         this.date = date
         this.client = client
         this.status = status
+        this.organization = organization
 
     }
 }

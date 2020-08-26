@@ -29,7 +29,7 @@ const UploadFileForm: React.FC = () => {
     let alertsMessages: AlertMessage[] = []
     upload.forEach((row, index) => {
       if (index > 0) {
-        if (checkCommentCell(row[11]) ){
+        if (checkCommentCell(row[11])) {
           let bankDocument = new BankDocument(
             row[0],
             row[1],
@@ -39,16 +39,23 @@ const UploadFileForm: React.FC = () => {
             row[10],
             row[11]
           )
-          if (bankDocument.date) {
+          if (bankDocument.error) {
+            const message = `Сумма заявок не сходится с платёжным документом в строке 
+            №${index + 1} "${row[11]}" Сумма документа: ${bankDocument.income || bankDocument.outcome} Сумма заявок: ${bankDocument.requestsSum}`
+            const commentAlert = new AlertMessage('warning', message, 'commentError')
+            alertsMessages.push(commentAlert)
+          }
+
+          if (bankDocument.date && !bankDocument.error) {
             documents.push(bankDocument)
           }
         }
-        else{
-          const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[11] ? row[11]: 'Пустая ячейка'}"`
-          const commentAlert = new AlertMessage('warning', message,'commentError')
+        else {
+          const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[11] ? row[11] : 'Пустая ячейка'}"`
+          const commentAlert = new AlertMessage('warning', message, 'commentError')
           alertsMessages.push(commentAlert)
         }
-      
+
       }
     })
     setAlerts(alertsMessages)
@@ -63,11 +70,11 @@ const UploadFileForm: React.FC = () => {
     const requestRegExp2 = new RegExp('[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}((\/[0-9,а-я,А-Я]{1,3}){1,4}|$)$')
     const requestRegExp3 = new RegExp('^[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}( |(\/[0-9,а-я,А-Я]{1,3}){1,4} )[^;]{1,255}$')
 
-    if (commentCell){
-    const semicolonCount = (commentCell.match(/;/g) || []).length + 1
+    if (commentCell) {
+      const semicolonCount = (commentCell.match(/;/g) || []).length + 1
       return ((commentCell.match(requestRegExp) || []).length === semicolonCount)
-      || (commentCell.match(requestRegExp2) || []).length 
-      || (commentCell.match(requestRegExp3) || []).length
+        || (commentCell.match(requestRegExp2) || []).length
+        || (commentCell.match(requestRegExp3) || []).length
     }
   }
 
@@ -103,15 +110,15 @@ const UploadFileForm: React.FC = () => {
       event.target.value = ''
       setUploadFile(excelFile)
       setCheckFileError(false)
-     const upload = await renderFile(excelFile)
-     const isCorrectFile = await checkExcelFile(upload.rows[0])
-        if (!isCorrectFile) {
-          setCheckFileError(true)
-          setLoading(false)
-        }
-        else{
-          prepareRequests(upload.rows.filter(e => e.length))
-        }
+      const upload = await renderFile(excelFile)
+      const isCorrectFile = await checkExcelFile(upload.rows[0])
+      if (!isCorrectFile) {
+        setCheckFileError(true)
+        setLoading(false)
+      }
+      else {
+        prepareRequests(upload.rows.filter(e => e.length))
+      }
     },
     [setUploadFile, setUploadData]
   )
@@ -188,14 +195,14 @@ const UploadFileForm: React.FC = () => {
 
       {loading && <Loader />}
       <div className={classes.alert}>  {checkFileError && <AlertBox type='error' message='fileError' />}     </div>
-      <div className={classes.alert}>  {uploadDocuments && <AlertBox type='info' uploadDocuments={uploadDocuments} alerts={alerts}/>}     </div>
+      <div className={classes.alert}>  {uploadDocuments && <AlertBox type='info' uploadDocuments={uploadDocuments} alerts={alerts} />}     </div>
       {alerts &&
-       
- alerts.map((alert: AlertMessage, index)=>(
-  <div key={index}  className={classes.alert}>  {<AlertBox type={alert.type} message={alert.message} />}</div>
- ))
-     
-}
+
+        alerts.map((alert: AlertMessage, index) => (
+          <div key={index} className={classes.alert}>  {<AlertBox type={alert.type} message={alert.message} />}</div>
+        ))
+
+      }
       <div>
         {dbResponse.map((response: any, index) => (
           <div key={response.bankDocument.id} className={classes.alert}>
@@ -210,7 +217,7 @@ const UploadFileForm: React.FC = () => {
 function AlertBox(props) {
   let message = props.message
   let title = ''
-  let type: 'error' | 'info' | 'success'| 'warning' = props.type 
+  let type: 'error' | 'info' | 'success' | 'warning' = props.type
   if (props.message === 'fileError') {
     message = `Неправильный файл для загрузки.
     Файл должен содержать столбцы "Дата|Поступление|Списание|
@@ -220,7 +227,7 @@ function AlertBox(props) {
   }
 
   if (props.uploadDocuments) {
-    title = `Файл готов к загрузке. Всего записей ${props.uploadDocuments.length + props.alerts.length}.` 
+    title = `Файл готов к загрузке. Всего записей ${props.uploadDocuments.length + props.alerts.length}.`
     message = `Корректных ${props.uploadDocuments.length} шт. С ошибками ${props.alerts.length} шт.`
     type = 'info'
   }
