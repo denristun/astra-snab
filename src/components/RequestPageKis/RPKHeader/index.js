@@ -22,8 +22,7 @@ class RPKHeader extends React.Component {
         name: "status",
         type: "autocomplete",
         tfVariant: "filled",
-        tfLabel: "Выберете статус",
-        value: "",
+        tfLabel: "Выберите статус",
         key: Math.random(),
       },
       request: {
@@ -31,7 +30,55 @@ class RPKHeader extends React.Component {
         type: "textfield",
         variant: "filled",
         label: "Вводите № заявки",
-        defaultValue: "",
+        key: Math.random(),
+      },
+      client: {
+        name: "client",
+        type: "autocomplete",
+        tfVariant: "filled",
+        tfLabel: "Выберите клиента",
+        key: Math.random(),
+      },
+      organization: {
+        name: "organization",
+        type: "autocomplete",
+        tfVariant: "filled",
+        tfLabel: "Выберите организацию",
+        key: Math.random(),
+      },
+      income: {
+        name: "income",
+        type: "textfield",
+        variant: "filled",
+        label: "Вводите сумму",
+        key: Math.random(),
+      },
+      outcome: {
+        name: "outcome",
+        type: "textfield",
+        variant: "filled",
+        label: "Вводите сумму",
+        key: Math.random(),
+      },
+      provider: {
+        name: "provider",
+        type: "autocomplete",
+        tfVariant: "filled",
+        tfLabel: "Выберите поставщика",
+        key: Math.random(),
+      },
+      destination: {
+        name: "destination",
+        type: "textfield",
+        variant: "filled",
+        label: "Назначение платежа",
+        key: Math.random(),
+      },
+      comment: {
+        name: "comment",
+        type: "textfield",
+        variant: "filled",
+        label: "Комментарий",
         key: Math.random(),
       },
     },
@@ -94,7 +141,7 @@ class RPKHeader extends React.Component {
   };
 
   changeFilterValue = (filterName, value) => {
-    if (value.trim().length > 0) {
+    if (value && value.trim().length > 0) {
       document.querySelector(
         "#" + filterName + '[type="clearFilterButton"]'
       ).style.display = "inline-block";
@@ -102,6 +149,15 @@ class RPKHeader extends React.Component {
       document.querySelector(
         "#" + filterName + '[type="clearFilterButton"]'
       ).style.display = "none";
+    }
+
+    if (this.state.textFields[filterName].type === "autocomplete" && value && value.trim().length>0) { 
+      document.querySelector(
+        "#" + filterName + "[type=filterLine]"
+      ).style.display = "none";
+      document
+        .querySelector("#" + filterName + "[type=filterLine]")
+        .setAttribute("display", "false");
     }
 
     this.props.changeFilter(filterName, value);
@@ -116,9 +172,12 @@ class RPKHeader extends React.Component {
               <tr>
                 <th>
                   Статус
+                  <br />
                   <div
                     className={classes.filter}
-                    onClick={() => this.toggleFilterLine("status")}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.status.name)
+                    }
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                   </div>
@@ -127,7 +186,9 @@ class RPKHeader extends React.Component {
                     type="clearFilterButton"
                     className={classes.filter + " " + classes.clearFilter}
                     style={{ backgroundColor: "#C67B7B" }}
-                    onClick={() => this.clearFilter("status")}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.status.name)
+                    }
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                     <FontAwesomeIcon icon={faTimes} />
@@ -148,12 +209,13 @@ class RPKHeader extends React.Component {
                         <Autocomplete
                           key={this.state.textFields.status.key}
                           name={this.state.textFields.status.name}
-                          // options={
-                          //   this.props.uniqueFilters.uniqueStatusList.length > 0 && this.props.uniqueFilters.uniqueStatusList[0] !== ''
-                          //     ? this.props.uniqueFilters.uniqueStatusList
-                          //     : new Array
-                          // }
-                          options={this.props.uniqueFilters.uniqueClientList}
+                          options={
+                            this.props.uniqueFilters.uniqueStatusList.length >
+                              0 &&
+                            this.props.uniqueFilters.uniqueStatusList[0] !== ""
+                              ? this.props.uniqueFilters.uniqueStatusList
+                              : new Array()
+                          }
                           getOptionLabel={(option) => option}
                           style={{ width: 300 }}
                           renderInput={(params) => (
@@ -164,7 +226,7 @@ class RPKHeader extends React.Component {
                             />
                           )}
                           // value={this.state.textFields.status.value}
-                          onInputChange={(event, newInputValue) =>
+                          onChange={(event, newInputValue) =>
                             this.changeFilterValue(
                               this.state.textFields.status.name,
                               newInputValue
@@ -178,7 +240,11 @@ class RPKHeader extends React.Component {
                           size="2x"
                           color="#398def"
                           style={{ cursor: "pointer", padding: "10px" }}
-                          onClick={() => this.toggleFilterLine("status")}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.status.name
+                            )
+                          }
                         />
                       </Box>
                     </Grid>
@@ -186,6 +252,7 @@ class RPKHeader extends React.Component {
                 </th>
                 <th>
                   № Заявки
+                  <br />
                   <div
                     className={classes.filter}
                     onClick={() => this.toggleFilterLine("request")}
@@ -220,9 +287,6 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.request.name}
                           variant={this.state.textFields.request.variant}
                           label={this.state.textFields.request.label}
-                          defaultValue={
-                            this.state.textFields.request.defaultValue
-                          }
                           onChange={(event) =>
                             this.changeFilterValue(
                               "request",
@@ -243,42 +307,517 @@ class RPKHeader extends React.Component {
                     </Grid>
                   </div>
                 </th>
-                <th>Клиент</th>
-                <th>Организация</th>
-                <th>Реализация</th>
-                <th>Расход</th>
-                {/* <th
-                  onClick={() => this.props.sortOperatoions("value")}
-                  style={{ cursor: "pointer" }}
-                >
+                <th>
+                  Клиент
+                  <br />
                   <div
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.client.name)
+                    }
                   >
-                    <div className={classes.sort}>
-                      <FontAwesomeIcon icon={faCaretLeft} />
-                      <div
-                        style={{ margin: "15px", display: "inline-block" }}
-                      ></div>
-                      <FontAwesomeIcon icon={faCaretRight} />
-                    </div>
-                    <div
-                      style={{
-                        display: "block",
-                      }}
-                    >
-                      Расход
-                    </div>
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
                   </div>
-                </th> */}
-                <th>Поставщик</th>
-                <th>Назначение платежа</th>
-                <th>Комментарий</th>
+                  <div
+                    id={this.state.textFields.client.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.client.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.client.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <Autocomplete
+                          key={this.state.textFields.client.key}
+                          name={this.state.textFields.client.name}
+                          options={
+                            this.props.uniqueFilters.uniqueClientList.length >
+                              0 &&
+                            this.props.uniqueFilters.uniqueClientList[0] !== ""
+                              ? this.props.uniqueFilters.uniqueClientList
+                              : new Array()
+                          }
+                          getOptionLabel={(option) => option}
+                          style={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label={this.state.textFields.client.tfLabel}
+                              variant={this.state.textFields.client.tfVariant}
+                            />
+                          )}
+                          // value={this.state.textFields.status.value}
+                          onChange={(event, newInputValue) =>
+                            this.changeFilterValue(
+                              this.state.textFields.client.name,
+                              newInputValue
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.client.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Организация
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(
+                        this.state.textFields.organization.name
+                      )
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.organization.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.organization.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.organization.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <Autocomplete
+                          key={this.state.textFields.organization.key}
+                          name={this.state.textFields.organization.name}
+                          options={
+                            this.props.uniqueFilters.uniqueOrganizationList
+                              .length > 0 &&
+                            this.props.uniqueFilters
+                              .uniqueOrganizationList[0] !== ""
+                              ? this.props.uniqueFilters.uniqueOrganizationList
+                              : new Array()
+                          }
+                          getOptionLabel={(option) => option}
+                          style={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label={this.state.textFields.organization.tfLabel}
+                              variant={
+                                this.state.textFields.organization.tfVariant
+                              }
+                            />
+                          )}
+                          // value={this.state.textFields.status.value}
+                          onChange={(event, newInputValue) =>
+                            this.changeFilterValue(
+                              this.state.textFields.organization.name,
+                              newInputValue
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.organization.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Реализация
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.income.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.income.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.income.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.income.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <TextField
+                          key={this.state.textFields.income.key}
+                          name={this.state.textFields.income.name}
+                          variant={this.state.textFields.income.variant}
+                          label={this.state.textFields.income.label}
+                          type="number"
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              this.state.textFields.income.name,
+                              event.target.value
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.income.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Расход
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.outcome.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.outcome.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.outcome.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.outcome.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <TextField
+                          key={this.state.textFields.outcome.key}
+                          name={this.state.textFields.outcome.name}
+                          variant={this.state.textFields.outcome.variant}
+                          label={this.state.textFields.outcome.label}
+                          type="number"
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              this.state.textFields.outcome.name,
+                              event.target.value
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.outcome.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Поставщик
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.provider.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.provider.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.provider.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.provider.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <Autocomplete
+                          key={this.state.textFields.provider.key}
+                          name={this.state.textFields.provider.name}
+                          options={
+                            this.props.uniqueFilters.uniqueProviderList.length >
+                              0 &&
+                            this.props.uniqueFilters.uniqueProviderList[0] !==
+                              ""
+                              ? this.props.uniqueFilters.uniqueProviderList
+                              : new Array()
+                          }
+                          getOptionLabel={(option) => option}
+                          style={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label={this.state.textFields.provider.tfLabel}
+                              variant={this.state.textFields.provider.tfVariant}
+                            />
+                          )}
+                          // value={this.state.textFields.status.value}
+                          onChange={(event, newInputValue) =>
+                            this.changeFilterValue(
+                              this.state.textFields.provider.name,
+                              newInputValue
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.provider.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Назначение платежа
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(
+                        this.state.textFields.destination.name
+                      )
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.destination.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.destination.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.destination.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <TextField
+                          key={this.state.textFields.destination.key}
+                          name={this.state.textFields.destination.name}
+                          variant={this.state.textFields.destination.variant}
+                          label={this.state.textFields.destination.label}
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              this.state.textFields.destination.name,
+                              event.target.value
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.destination.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Комментарий
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.comment.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.comment.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.comment.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.comment.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    style={{ marginLeft: "-100px" }}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <TextField
+                          key={this.state.textFields.comment.key}
+                          name={this.state.textFields.comment.name}
+                          variant={this.state.textFields.comment.variant}
+                          label={this.state.textFields.comment.label}
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              this.state.textFields.comment.name,
+                              event.target.value
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.comment.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
               </tr>
             </tbody>
           </table>

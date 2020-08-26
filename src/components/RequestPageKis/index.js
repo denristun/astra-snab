@@ -23,7 +23,7 @@ class RequestPageKis extends React.Component {
     update: true,
   };
 
-  originState = {};
+  // originState = {};
   filtersList = {};
 
   async componentDidMount() {
@@ -72,7 +72,7 @@ class RequestPageKis extends React.Component {
       // console.log(data);
       this.props.renderData(data);
 
-      this.originState = data;
+      localStorage.setItem('originState', JSON.stringify(data));
       // console.log(this.originState);
 
       this.setState({
@@ -96,26 +96,34 @@ class RequestPageKis extends React.Component {
   getUniqueFilters = (requests) => {
     let clients = [];
     let status = [];
+    let organizations = [];
+    let providers = [];
 
     Object.keys(requests).forEach((request) => {
       typeof requests[request] === "object" &&
         requests[request][1].map((operation) => {
-          clients.push(operation.client);
-        });
-      typeof requests[request] === "object" &&
-        requests[request][1].map((operation) => {
+          if (operation.type === "income") {
+            clients.push(operation.client);
+          } else {
+            providers.push(operation.client);
+          }
+          organizations.push(operation.organization);
           status.push(operation.status);
         });
     });
 
     const uniqueStatus = new Set(status);
     const uniqueClients = new Set(clients);
+    const uniqueOrganizations = new Set(organizations);
+    const uniqueProviders = new Set(providers);
 
     return {
       uniqueStatusList: [...uniqueStatus],
       uniqueClientList: [...uniqueClients],
-    }
-  }
+      uniqueProviderList: [...uniqueProviders],
+      uniqueOrganizationList: [...uniqueOrganizations],
+    };
+  };
 
   addOutcomeOperation = (formData) => {
     this.sendOutcomeOperationToServer(formData, this.props.requests);
@@ -162,28 +170,66 @@ class RequestPageKis extends React.Component {
     this.filtersList[filterName] = value;
     console.log(this.filtersList);
 
-    let filterOriginState = this.originState;
+    let filterOriginState = JSON.parse(localStorage.getItem('originState'));
+    // console.log(filterOriginState);
 
     Object.keys(this.filtersList).forEach(key => {
-      if (key === 'request' && this.filtersList[key].trim().length>0) {
-        filterOriginState = filterOriginState.filter(element => {
-          if (element[0].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
-            return element;
-          }          
-        })
+      if (this.filtersList[key] !== null && this.filtersList[key].trim().length > 0) {
+        // console.log(key);
+        filterOriginState = filterOriginState.filter((element) => {
+          if (typeof(element[1]) !== 'undefined'){
+            element[1] = element[1].filter(operation => {
+              console.log(key);
+              switch(key) {
+                case 'client':
+                  // console.log('client');
+                  if(operation.type === 'income' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
+                    return operation;
+                  }
+                  break;
+                case 'provider':
+                  if(operation.type === 'outcome' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
+                    return operation;
+                  }
+                  break;
+                case 'income':
+                  if(operation.type === 'income' && operation.value.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
+                    return operation;
+                  }
+                  break;
+                case 'outcome':
+                  if(operation.type === 'outcome' && operation.value.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
+                    return operation;
+                  }
+                  break;
+                default:
+                  if(operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
+                    return operation;
+                  }
+                  break;
+              }
+              
+
+            });
+
+            if (element[1].length>0) {
+              return element;
+            }
+          }
+        });
       }
-      
-    })
+    });
+
+    console.log(filterOriginState); 
 
     this.props.renderData(filterOriginState);
-
-  }
+  };
 
   render() {
     // console.log(this.originState);
     let incomeAll = 0;
     let outcomeAll = 0;
-    
+
     const uniqueFilters = this.getUniqueFilters(this.props.requests);
     // console.log(uniqueFilters);
 
