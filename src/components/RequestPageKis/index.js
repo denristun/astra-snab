@@ -10,6 +10,7 @@ import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
 let insertClasses = [classes.RequestPageKis];
+
 function headerShift(elem, param) {
   if (elem) {
     elem.style.paddingTop = param;
@@ -92,18 +93,29 @@ class RequestPageKis extends React.Component {
     this.getData(group);
   };
 
-  getClientsFromRequests = (requests) => {
+  getUniqueFilters = (requests) => {
     let clients = [];
+    let status = [];
+
     Object.keys(requests).forEach((request) => {
       typeof requests[request] === "object" &&
         requests[request][1].map((operation) => {
           clients.push(operation.client);
         });
+      typeof requests[request] === "object" &&
+        requests[request][1].map((operation) => {
+          status.push(operation.status);
+        });
     });
+
+    const uniqueStatus = new Set(status);
     const uniqueClients = new Set(clients);
 
-    return [...uniqueClients];
-  };
+    return {
+      uniqueStatusList: [...uniqueStatus],
+      uniqueClientList: [...uniqueClients],
+    }
+  }
 
   addOutcomeOperation = (formData) => {
     this.sendOutcomeOperationToServer(formData, this.props.requests);
@@ -149,21 +161,38 @@ class RequestPageKis extends React.Component {
   changeFilter = (filterName, value) => {
     this.filtersList[filterName] = value;
     console.log(this.filtersList);
+
+    let filterOriginState = this.originState;
+
+    Object.keys(this.filtersList).forEach(key => {
+      if (key === 'request' && this.filtersList[key].trim().length>0) {
+        filterOriginState = filterOriginState.filter(element => {
+          if (element[0].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+            return element;
+          }          
+        })
+      }
+      
+    })
+
+    this.props.renderData(filterOriginState);
+
   }
 
   render() {
     // console.log(this.originState);
     let incomeAll = 0;
     let outcomeAll = 0;
-    const clientsList = this.getClientsFromRequests(this.props.requests);
-    // console.log(clientsList);
+    
+    const uniqueFilters = this.getUniqueFilters(this.props.requests);
+    // console.log(uniqueFilters);
 
     return (
       <div className={insertClasses.join(" ")}>
         <RPKHeader
           sortOperatoions={this.sortOperatoions}
           changeFilter={this.changeFilter}
-          clientsList={clientsList}
+          uniqueFilters={uniqueFilters}
         />
 
         {this.state.loader ? (
@@ -199,7 +228,7 @@ class RequestPageKis extends React.Component {
                     <RPKButton
                       key={index.toString() + Math.random()}
                       request={request[0]}
-                      clientList={clientsList}
+                      uniqueFilters={uniqueFilters}
                       operationId={opertionID}
                       addOutcomeOperation={this.addOutcomeOperation}
                     />

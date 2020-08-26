@@ -262,6 +262,8 @@ export default class RPKOutcomePage extends React.Component {
         document.querySelector("#formButton").style.display = null;
         document.querySelector(".lds-dual-ring").style.display = "none";
         break;
+      default:
+        break;
     }
   };
 
