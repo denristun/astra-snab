@@ -34,6 +34,15 @@ export default class RPKRequestChangeDialog extends React.Component {
         this.setState({ open: false })
     }
 
+
+    deleteButtonClicked() {
+
+    }
+
+    changeButtonClicked(){
+        
+    }
+
     render() {
         return (
             <div className={classes.RPKRequestChangeDialog}>
@@ -174,7 +183,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                             size="large"
                             className={classes.button}
                             startIcon={<DeleteForeverIcon />}
-                            onClick={() => this.addButtonClicked()}
+                            onClick={() => this.deleteButtonClicked()}
                         >
                             Удалить?
                   </Button>
@@ -186,7 +195,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                             size="large"
                             className={classes.button}
                             startIcon={<SaveIcon />}
-                            onClick={() => this.addButtonClicked()}
+                            onClick={() => this.changeButtonClicked()}
                         >
                             Изменить запись
                   </Button>

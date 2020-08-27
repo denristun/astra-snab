@@ -131,6 +131,31 @@ class RequestPageKis extends React.Component {
     this.sendOutcomeOperationToServer(formData, this.props.requests);
   };
 
+  deleteOperation = (operationId) => {
+    this.deleteOperationFromServer(operationId, this.props.requests);
+  }
+
+
+  async deleteOperationFromServer (operationId) {
+
+    try{
+      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json(); 
+    }
+    catch (e) {
+      console.log(e);
+    }
+
+  }
+
   async sendOutcomeOperationToServer(formData, requests) {
     try {
       const url = "https://astra-snab-server.herokuapp.com/api/request";
