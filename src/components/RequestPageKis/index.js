@@ -50,6 +50,8 @@ class RequestPageKis extends React.Component {
       let groups = await responseGroups.json();
 
       this.getData(groups[0].group);
+      localStorage.setItem('group', JSON.stringify(groups[0].group));
+
       // console.log(this.originState);
     } catch (e) {
       console.log(e);
@@ -91,7 +93,13 @@ class RequestPageKis extends React.Component {
   }
 
   selectGroup = (group) => {
-    // console.log('selectGroup: ', group);
+    document.querySelectorAll('[type="clearFilterButton"]').forEach(element => {
+      element.style.display = "none";
+    })
+    localStorage.setItem('group', JSON.stringify(group));
+    this.filtersList = {};
+    this._rpkHeader.updateState();
+
     this.setState({ loader: true });
     this.getData(group);
   };
@@ -252,74 +260,58 @@ class RequestPageKis extends React.Component {
     }
   };
 
-  
-
-
 
   changeFilter = (filterName, value) => {
     this.filtersList[filterName] = value;
-    console.log(this.filtersList);
+    // console.log(this.filtersList);
 
     let filterOriginState = JSON.parse(localStorage.getItem('originState'));
     // console.log(filterOriginState);
 
     Object.keys(this.filtersList).forEach(key => {
       if (this.filtersList[key] !== null && this.filtersList[key].trim().length > 0) {
-        // console.log(key);
         filterOriginState = filterOriginState.filter((element) => {
-          if (typeof(element[1]) !== 'undefined'){
-            element[1] = element[1].filter(operation => {
-              console.log(key);
-              switch(key) {
-                case 'client':
-                  // console.log('client');
-                  if(operation.type === 'income' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
-                    return operation;
-                  }
-                  break;
-                case 'provider':
-                  if(operation.type === 'outcome' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
-                    return operation;
-                  }
-                  break;
-                case 'income':
-                  if(operation.type === 'income' && operation.value.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
-                    return operation;
-                  }
-                  break;
-                case 'outcome':
-                  if(operation.type === 'outcome' && operation.value.toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
-                    return operation;
-                  }
-                  break;
-                default:
-                  if(operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase())) {
-                    return operation;
-                  }
-                  break;
+          element[1] = element[1].filter(operation => {
+            if(key === 'client' || key === 'provider') {
+              if(key === 'client' && operation.type === 'income' && operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+                return operation;
               }
-              
-
-            });
-
-            if (element[1].length>0) {
-              return element;
+              if(key === 'provider' && operation.type === 'outcome' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+                return operation;
+              }
+              return;
             }
-          }
+
+            if(key === 'income' || key === 'outcome') {
+              if(key === 'income' && operation.type === 'income' && operation.value.toString().toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+                return operation;
+              }
+              if(key === 'outcome' && operation.type === 'outcome' && operation.value.toString().toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+                return operation;
+              }
+              return;
+            }
+
+            if(operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+              return operation;
+            }
+          })
+
+          if (typeof(element[1]) !== 'undefined' && element[1].length>0){
+            return element;
+          } 
         });
       }
     });
 
-    console.log(filterOriginState); 
+    // console.log(filterOriginState); 
 
     this.props.renderData(filterOriginState);
-  };
-
-
- 
+    // console.log(this.props.requests.length);
+  }; 
 
   render() {
-    // console.log(this.originState);
+    // console.log(this.props.requests);
     let incomeAll = 0;
     let outcomeAll = 0;
 
@@ -332,6 +324,7 @@ class RequestPageKis extends React.Component {
           sortOperatoions={this.sortOperatoions}
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
+          ref={(func) => {this._rpkHeader = func}}
         />
          <RPKRequestChangeDialog  
          changeOperation={this.changeOperation} 
@@ -344,7 +337,7 @@ class RequestPageKis extends React.Component {
           </div>
         ) : (
           <div>
-            {!this.props.requests.error ? (
+            {!this.props.requests.error && this.props.requests.length>0 ? (
               <div className={classes.content} id="RPKContent">
                 {this.props.requests.map((request, index) => {
                   let opertionID = request[0];
@@ -397,8 +390,8 @@ class RequestPageKis extends React.Component {
                 })}
               </div>
             ) : (
-              <div>
-                <h1>Error {this.props.requests.error}</h1>
+              <div style={{display:'flex',marginTop:100,justifyContent:'center',alignItems:'center'}}>
+                <h3>Нет данных {this.props.requests.error}</h3>
               </div>
             )}
           </div>
@@ -416,7 +409,7 @@ class RequestPageKis extends React.Component {
             trColor={"#398DEF"}
           />
           <RPKGroups
-            activeGroup={this.props.requests.group}
+            activeGroup={this.props.requests.group || JSON.parse(localStorage.getItem('group'))}
             selectGroup={this.selectGroup}
           />
         </div>

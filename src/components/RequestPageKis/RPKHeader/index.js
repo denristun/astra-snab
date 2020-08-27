@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Grid, TextField, Box } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 let insertClasses = [classes.RPKHeader];
 function headerShift(elem, param) {
@@ -83,6 +84,16 @@ class RPKHeader extends React.Component {
       },
     },
   };
+
+  updateState = () => {
+    const state = this.state;
+    Object.keys(this.state.textFields).forEach(textField => {
+      this.state.textFields[textField].key = Math.random();
+    })
+    this.setState({
+      textFields: state.textFields
+    });
+  }
 
   componentDidMount() {
     const RPKHeaderContainer = document.querySelector('[id="RPKHeader"]');
