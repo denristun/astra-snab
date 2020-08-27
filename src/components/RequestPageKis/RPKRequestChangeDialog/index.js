@@ -1,0 +1,208 @@
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import { Grid, Box, TextField } from "@material-ui/core";
+import SaveIcon from "@material-ui/icons/Save";
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import classes from "./RPKRequestChangeDialog.module.scss";
+
+export default class RPKRequestChangeDialog extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.handleShow = this.handleShow.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.state = {
+            canDelete : false,
+            open: false,
+            operation: {},
+            formData: {
+                isValid: false,
+                type: "outcome",
+                status: false,
+            },
+        };
+    }
+
+    handleShow(operation) {
+        this.setState({ open: true })
+        this.setState({operation: operation})
+        console.log(operation)
+    }
+    handleClose() {
+        this.setState({ open: false })
+    }
+
+    render() {
+        return (
+            <div className={classes.RPKRequestChangeDialog}>
+                <Dialog
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="form-dialog-title"
+                    maxWidth="md"
+                    fullWidth={true}
+                >
+                    <Grid
+                        container
+                        direction="row"
+                        justify="space-between"
+                        alignItems="center"
+                        className={classes.RPKRequestChangeDialog__title}
+                    >
+                        <Box ml={1}>
+                            <h3>
+                                Изменить операцию
+                  </h3>
+                        </Box>
+                        <Box mr={0.5}>
+                            <i
+                                className="fa fa-times fa-2x"
+                                onClick={() => this.handleClose()}
+                            ></i>
+                        </Box>
+                    </Grid>
+                    <DialogContent>
+                        <form autoComplete="off">
+                            <Grid className={classes.RPKRequestChangeDialog__content}>
+                                    <Box key="operationRequest" mb={2}>
+                                    <TextField
+                                    defaultValue = {this.state.operation.request}
+                                   		autoFocus = {false}
+                                           name = "request"
+                                           fullWidth = {true}
+                                           id = "requestFormInput"
+                                           label = "Номер заявки"
+                                           type = "text"
+                                           multiline = {false}
+                                           rowsMax = {1}
+                                           variant = "filled"
+                                           helperText = ""
+                                    />
+                                </Box>
+                                <Box key="operationValue" mb={2}>
+                                    <TextField
+                                           defaultValue = {this.state.operation.value}
+                                   		   autoFocus = {false}
+                                           name = "value"
+                                           fullWidth = {true}
+                                           id = "valueFormInput"
+                                           label = "Количество"
+                                           type = "number"
+                                           multiline = {false}
+                                           rowsMax = {1}
+                                           variant = "filled"
+                                           helperText = ""
+                                    />
+                                </Box>
+                                <Box key="operationClient" mb={2}>
+                                    <TextField
+                                   defaultValue = {this.state.operation.client}
+                                   		autoFocus = {false}
+                                           name = "client"
+                                           fullWidth = {true}
+                                           id = "clientFormInput"
+                                           label = "Контрагент"
+                                           type = "text"
+                                           multiline = {false}
+                                           rowsMax = {1}
+                                           variant = "filled"
+                                           helperText = ""
+                                    />
+                                </Box>
+                                <Box key="operationOrganization" mb={2}>
+                                    <TextField
+                                    defaultValue = {this.state.operation.organization}
+                                   		autoFocus = {false}
+                                           name = "organization"
+                                           fullWidth = {true}
+                                           id = "organizationFormInput"
+                                           label = "Организация"
+                                           type = "text"
+                                           multiline = {false}
+                                           rowsMax = {1}
+                                           variant = "filled"
+                                           helperText = ""
+                                    />
+                                </Box>
+                                <Box key="operationComment" mb={2}>
+                                    <TextField
+                                    value = {this.state.operation.comment}
+                                   		autoFocus = {false}
+                                           name = "comment"
+                                           fullWidth = {true}
+                                           id = "commentFormInput"
+                                           label = "Комментарий"
+                                           type = "text"
+                                           multiline = {false}
+                                           rowsMax = {1}
+                                           variant = "filled"
+                                           helperText = ""
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid
+                                container
+                                direction="row"
+                                justify="flex-end"
+                                alignItems="center"
+                                className={classes.RPKRequestChangeDialog__button}
+                            >
+                             
+                            </Grid>
+                        </form>
+                    </DialogContent>
+                    <DialogActions>
+
+                        <Button
+                            id="formButton"
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            className={classes.button}
+                            startIcon={<DeleteForeverIcon />}
+                            onClick={() => this.setState({canDelete: true})}
+                        >
+                            Удалить запись
+                  </Button>
+                  <Button
+                            hidden = {!this.state.canDelete}
+                            id="formButton"
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            className={classes.button}
+                            startIcon={<DeleteForeverIcon />}
+                            onClick={() => this.addButtonClicked()}
+                        >
+                            Удалить?
+                  </Button>
+            
+                        <Button
+                            id="formButton"
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            className={classes.button}
+                            startIcon={<SaveIcon />}
+                            onClick={() => this.addButtonClicked()}
+                        >
+                            Изменить запись
+                  </Button>
+                    </DialogActions>
+                </Dialog>
+
+
+
+
+
+            </div>
+
+
+
+
+        )
+
+    }
+}

@@ -4,11 +4,13 @@ import classes from './RPKRequest.module.scss';
 export default class RPKRequest extends React.Component {
   insertClasses = [classes.RPKRequest];
 
+
   render() {
     // console.log(this.props.operation);
     return (
-      <div className={this.insertClasses.join(' ')} operationid={this.props.operationId} display='true' >
-        <div className={classes.RPKRequest__table}>
+     
+      <div  onClick={this.props.onClick}  className={this.insertClasses.join(' ')} operationid={this.props.operationId} display='true' >
+        <div className={classes.RPKRequest__table} >
           <table>
             <tbody>
               <tr style={{ backgroundColor: this.props.trColor }}>

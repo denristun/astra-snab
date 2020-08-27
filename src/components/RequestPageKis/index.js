@@ -9,6 +9,8 @@ import RPKResultLine from "./RPKResultLine";
 import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
+import RPKRequestChangeDialog from './RPKRequestChangeDialog'
+
 let insertClasses = [classes.RequestPageKis];
 
 function headerShift(elem, param) {
@@ -166,6 +168,10 @@ class RequestPageKis extends React.Component {
     }
   };
 
+  
+
+
+
   changeFilter = (filterName, value) => {
     this.filtersList[filterName] = value;
     console.log(this.filtersList);
@@ -225,6 +231,9 @@ class RequestPageKis extends React.Component {
     this.props.renderData(filterOriginState);
   };
 
+
+ 
+
   render() {
     // console.log(this.originState);
     let incomeAll = 0;
@@ -240,6 +249,7 @@ class RequestPageKis extends React.Component {
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
         />
+         <RPKRequestChangeDialog ref={(requestChangeDialog) => { this._requestChangeDialog = requestChangeDialog }}></RPKRequestChangeDialog>
 
         {this.state.loader ? (
           <div>
@@ -261,6 +271,7 @@ class RequestPageKis extends React.Component {
                       : (outcome = outcome + request[1][i].value);
                     operations.push(
                       <RPKRequest
+                      onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
