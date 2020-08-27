@@ -10,6 +10,7 @@ import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
 import RPKRequestChangeDialog from './RPKRequestChangeDialog'
+import requests from "../../Redux/Reducers/requests";
 
 let insertClasses = [classes.RequestPageKis];
 
@@ -131,24 +132,82 @@ class RequestPageKis extends React.Component {
     this.sendOutcomeOperationToServer(formData, this.props.requests);
   };
 
-  deleteOperation = (operationId) => {
-    this.deleteOperationFromServer(operationId, this.props.requests);
+  deleteOperation =  async(operation) => {
+    await this.deleteOperationFromServer(operation, this.props.requests);
+  }
+
+  changeOperation =  async(operation) => {
+    await this.changeOperationFromServer(operation, this.props.requests);
   }
 
 
-  async deleteOperationFromServer (operationId) {
+  async deleteOperationFromServer (operation, requests) {
 
     try{
       const url = "https://astra-snab-server.herokuapp.com/api/request";
       const response = await fetch(url, {
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({id: operation}),
       });
 
-      const data = await response.json(); 
+      const data = await response.json();
+      console.log("operation", data) 
+      console.log("delete", requests)
+      // Object.keys(requests).forEach((key) => {
+      //   if (
+      //     typeof requests[key][0] !== "undefined" &&
+      //     requests[key][0] === data.request
+      //   ) {
+      //     requests[key][1].push(data);
+      //   }
+      // });
+
+      // this.props.renderData(requests);
+      // this.setState({
+      //   loader: false,
+      //   update: !this.state.update,
+      // });
+    }
+    catch (e) {
+      console.log(e);
+    }
+
+  }
+
+
+
+  async changeOperationFromServer (operation, requests) {
+
+    try{
+      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({operation}),
+      });
+
+      const data = await response.json();
+      console.log("patch", data) 
+      console.log("patch", requests)
+      // Object.keys(requests).forEach((key) => {
+      //   if (
+      //     typeof requests[key][0] !== "undefined" &&
+      //     requests[key][0] === data.request
+      //   ) {
+      //     requests[key][1].push(data);
+      //   }
+      // });
+
+      // this.props.renderData(requests);
+      // this.setState({
+      //   loader: false,
+      //   update: !this.state.update,
+      // });
     }
     catch (e) {
       console.log(e);
@@ -274,7 +333,10 @@ class RequestPageKis extends React.Component {
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
         />
-         <RPKRequestChangeDialog ref={(requestChangeDialog) => { this._requestChangeDialog = requestChangeDialog }}></RPKRequestChangeDialog>
+         <RPKRequestChangeDialog  
+         changeOperation={this.changeOperation} 
+         deleteOperation={this.deleteOperation} 
+         ref={(requestChangeDialog) => { this._requestChangeDialog = requestChangeDialog }}></RPKRequestChangeDialog>
 
         {this.state.loader ? (
           <div>

@@ -7,6 +7,7 @@ import { Grid, Box, TextField } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import classes from "./RPKRequestChangeDialog.module.scss";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 export default class RPKRequestChangeDialog extends React.Component {
     constructor(props, context) {
@@ -14,6 +15,7 @@ export default class RPKRequestChangeDialog extends React.Component {
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.state = {
+            loading: false,
             canDelete : false,
             open: false,
             operation: {},
@@ -35,17 +37,24 @@ export default class RPKRequestChangeDialog extends React.Component {
     }
 
 
-    deleteButtonClicked() {
-
+   async deleteButtonClicked() {
+        this.setState({loading: true})
+        await this.props.deleteOperation(this.state.operation)
+        this.setState({loading: false})
+        this.setState({ open: false })
     }
 
-    changeButtonClicked(){
-        
+    async changeButtonClicked(){
+        this.setState({loading: true})
+        await this.props.changeOperation(this.state.operation)
+        this.setState({loading: false})
+        this.setState({ open: false })
     }
 
     render() {
         return (
             <div className={classes.RPKRequestChangeDialog}>
+               
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
@@ -53,6 +62,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                     maxWidth="md"
                     fullWidth={true}
                 >
+                    
                     <Grid
                         container
                         direction="row"
@@ -73,6 +83,8 @@ export default class RPKRequestChangeDialog extends React.Component {
                         </Box>
                     </Grid>
                     <DialogContent>
+                    {this.state.loading && <LinearProgress />}
+                    
                         <form autoComplete="off">
                             <Grid className={classes.RPKRequestChangeDialog__content}>
                                     <Box key="operationRequest" mb={2}>
@@ -137,7 +149,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                                 </Box>
                                 <Box key="operationComment" mb={2}>
                                     <TextField
-                                    value = {this.state.operation.comment}
+                                    defaultValue = {this.state.operation.comment}
                                    		autoFocus = {false}
                                            name = "comment"
                                            fullWidth = {true}
@@ -178,7 +190,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                   <Button
                             hidden = {!this.state.canDelete}
                             id="formButton"
-                            variant="contained"
+                            variant="outlined"
                             color="secondary"
                             size="large"
                             className={classes.button}
@@ -186,8 +198,9 @@ export default class RPKRequestChangeDialog extends React.Component {
                             onClick={() => this.deleteButtonClicked()}
                         >
                             Удалить?
+                          
                   </Button>
-            
+                 
                         <Button
                             id="formButton"
                             variant="contained"
