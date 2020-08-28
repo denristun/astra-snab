@@ -24,6 +24,8 @@ class RequestPageKis extends React.Component {
   state = {
     loader: true,
     update: true,
+    uniqueValues: []
+    
   };
 
   // originState = {};
@@ -61,6 +63,32 @@ class RequestPageKis extends React.Component {
     }
   }
 
+
+  async getUniqueData(){
+    const urlRequests =
+    "https://astra-snab-server.herokuapp.com/api/unique";
+  try {
+    let responseRequests = await fetch(urlRequests, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    let data = await responseRequests.json();
+    this.setState({uniqueValues: data})
+
+  } catch (e) {
+  }
+
+  }
+
+  getUniqueDataValues(){
+    return this.state.uniqueValues
+  }
+
+
+
+
   async getData(group) {
     const urlRequests =
       "https://astra-snab-server.herokuapp.com/api/requests_by_group";
@@ -74,12 +102,11 @@ class RequestPageKis extends React.Component {
       });
       let data = await responseRequests.json();
       data.group = group;
-      // console.log(data);
       this.props.renderData(data);
 
       localStorage.setItem("originState", JSON.stringify(data));
       // console.log(this.originState);
-
+      await this.getUniqueData()
       this.setState({
         loader: false,
       });
@@ -342,10 +369,7 @@ class RequestPageKis extends React.Component {
       }
     });
 
-    // console.log(filterOriginState);
-
     this.props.renderData(filterOriginState);
-    // console.log(this.props.requests.length);
   };
 
   render() {
@@ -354,6 +378,7 @@ class RequestPageKis extends React.Component {
     let outcomeAll = 0;
 
     const uniqueFilters = this.getUniqueFilters(this.props.requests);
+    const uniqueValues = this.getUniqueDataValues()
     // console.log(uniqueFilters);
 
     return (
@@ -395,9 +420,8 @@ class RequestPageKis extends React.Component {
                     operations.push(
                       <RPKRequest
                         onDoubleClick={() =>
-                          this._requestChangeDialog.handleShow(request[1][i], uniqueFilters)
+                          this._requestChangeDialog.handleShow(request[1][i], uniqueValues)
                         }
-                        //  onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
