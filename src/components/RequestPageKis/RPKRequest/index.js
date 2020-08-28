@@ -9,7 +9,7 @@ export default class RPKRequest extends React.Component {
     // console.log(this.props.operation);
     return (
      
-      <div  onClick={this.props.onClick}  className={this.insertClasses.join(' ')} operationid={this.props.operationId} display='true' >
+      <div onDoubleClick={this.props.onDoubleClick}   className={this.insertClasses.join(' ')} operationid={this.props.operationId} display='true' >
         <div className={classes.RPKRequest__table} >
           <table>
             <tbody>

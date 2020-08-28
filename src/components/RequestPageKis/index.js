@@ -182,9 +182,7 @@ class RequestPageKis extends React.Component {
     catch (e) {
       console.log(e);
     }
-
   }
-
 
 
   async changeOperationFromServer (operation, requests) {
@@ -196,12 +194,11 @@ class RequestPageKis extends React.Component {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({operation}),
+        body: JSON.stringify(operation),
       });
 
       const data = await response.json();
-      console.log("patch", data) 
-      console.log("patch", requests)
+
       // Object.keys(requests).forEach((key) => {
       //   if (
       //     typeof requests[key][0] !== "undefined" &&
@@ -351,7 +348,8 @@ class RequestPageKis extends React.Component {
                       : (outcome = outcome + request[1][i].value);
                     operations.push(
                       <RPKRequest
-                      onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
+                        onDoubleClick={() => this._requestChangeDialog.handleShow(request[1][i])}
+                      //  onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}

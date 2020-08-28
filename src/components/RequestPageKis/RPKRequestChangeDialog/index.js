@@ -31,10 +31,11 @@ export default class RPKRequestChangeDialog extends React.Component {
         this.setState({ open: true })
         this.setState({canDelete: false})
         this.setState({operation: operation})
-        console.log(operation)
     }
     handleClose() {
         this.setState({ open: false })
+        this.setState({canDelete: false})
+        this.setState({operation: {}})
     }
 
 
@@ -47,12 +48,7 @@ export default class RPKRequestChangeDialog extends React.Component {
 
     async changeButtonClicked(){
         this.setState({loading: true})
-        const operation = this.state.operation
-        operation.comment = this.refs.commentInput.value
-        operation.client = this.refs.clientInput.value
-     
-        
-        await this.props.changeOperation(operation)
+        await this.props.changeOperation(this.state.operation)
         this.setState({loading: false})
         this.setState({ open: false })
     }
@@ -121,6 +117,11 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            rowsMax = {1}
                                            variant = "filled"
                                            helperText = ""
+                                           onChange = {(event) => {
+                                            const changedOperation = this.state.operation
+                                            changedOperation.value = event.target.value
+                                            this.setState({operation: changedOperation}
+                                            )}}
                                            
                                     />
                                 </Box>
@@ -137,7 +138,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            rowsMax = {1}
                                            variant = "filled"
                                            helperText = ""
-                                           ref = "clientInput"
+                                          
                                     />
                                 </Box>
                                 <Box key="operationOrganization" mb={2}>
@@ -153,6 +154,11 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            rowsMax = {1}
                                            variant = "filled"
                                            helperText = ""
+                                           onChange = {(event) => {
+                                            const changedOperation = this.state.operation
+                                            changedOperation.organization = event.target.value
+                                            this.setState({operation: changedOperation}
+                                            )}}
                                     />
                                 </Box>
                                 <Box key="operationComment" mb={2}>
@@ -168,7 +174,12 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            rowsMax = {1}
                                            variant = "filled"
                                            helperText = ""
-                                           ref = "commentInput"
+                                           onChange = {(event) => {
+                                               const changedOperation = this.state.operation
+                                               changedOperation.comment = event.target.value
+                                               this.setState({operation: changedOperation}
+                                               )}}
+                                         
                                     />
                                 </Box>
                             </Grid>
