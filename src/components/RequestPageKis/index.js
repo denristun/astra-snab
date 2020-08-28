@@ -167,22 +167,20 @@ class RequestPageKis extends React.Component {
       });
 
       const data = await response.json();
-      console.log("operation", data);
-      console.log("delete", requests);
-      // Object.keys(requests).forEach((key) => {
-      //   if (
-      //     typeof requests[key][0] !== "undefined" &&
-      //     requests[key][0] === data.request
-      //   ) {
-      //     requests[key][1].push(data);
-      //   }
-      // });
+      Object.keys(requests).forEach((key) => {
+        if (
+          typeof requests[key][0] !== "undefined" &&
+          requests[key][0] === operation.request
+        ) {
+        requests[key][1] =  requests[key][1].filter(operationElement => operationElement !== operation)
+        }
+      });
 
-      // this.props.renderData(requests);
-      // this.setState({
-      //   loader: false,
-      //   update: !this.state.update,
-      // });
+      this.props.renderData(requests);
+      this.setState({
+        loader: false,
+        update: !this.state.update,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -201,20 +199,27 @@ class RequestPageKis extends React.Component {
 
       const data = await response.json();
 
-      // Object.keys(requests).forEach((key) => {
-      //   if (
-      //     typeof requests[key][0] !== "undefined" &&
-      //     requests[key][0] === data.request
-      //   ) {
-      //     requests[key][1].push(data);
-      //   }
-      // });
+      Object.keys(requests).forEach((key) => {
+        if (
+          typeof requests[key][0] !== "undefined" &&
+          requests[key][0] === data.request
+        ) {
+        const index =  requests[key][1].find((element, index, array) => {
+            if (element._id === data._id){
+              return index
+            }
+          })
+          if (index !== -1) {
+            requests[key][1][index] = operation
+          }
+        }
+      });
 
-      // this.props.renderData(requests);
-      // this.setState({
-      //   loader: false,
-      //   update: !this.state.update,
-      // });
+      this.props.renderData(requests);
+      this.setState({
+        loader: false,
+        update: !this.state.update,
+      });
     } catch (e) {
       console.log(e);
     }

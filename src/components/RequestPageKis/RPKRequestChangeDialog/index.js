@@ -28,6 +28,7 @@ export default class RPKRequestChangeDialog extends React.Component {
     }
 
     handleShow(operation) {
+        console.log(operation)
         this.setState({ open: true })
         this.setState({canDelete: false})
         this.setState({operation: operation})
@@ -102,6 +103,11 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            rowsMax = {1}
                                            variant = "filled"
                                            helperText = ""
+                                           onChange = {(event) => {
+                                            const changedOperation = this.state.operation
+                                            changedOperation.request =  event.target.value
+                                            this.setState({operation: changedOperation}
+                                            )}}
                                     />
                                 </Box>
                                 <Box key="operationValue" mb={2}>
@@ -119,7 +125,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                                            helperText = ""
                                            onChange = {(event) => {
                                             const changedOperation = this.state.operation
-                                            changedOperation.value = event.target.value
+                                            changedOperation.value =  parseFloat(event.target.value)
                                             this.setState({operation: changedOperation}
                                             )}}
                                            
