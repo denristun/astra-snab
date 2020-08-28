@@ -29,19 +29,19 @@ const UploadFileForm: React.FC = () => {
     let alertsMessages: AlertMessage[] = []
     upload.forEach((row, index) => {
       if (index > 0) {
-        if (checkCommentCell(row[11])) {
+        if (checkCommentCell(row[8])) {
           let bankDocument = new BankDocument(
             row[0],
             row[1],
             row[2],
             row[3],
             row[4],
-            row[10],
-            row[11]
+            row[7],
+            row[8]
           )
           if (bankDocument.error) {
             const message = `Сумма заявок не сходится с платёжным документом в строке 
-            №${index + 1} "${row[11]}" Сумма документа: ${bankDocument.income || bankDocument.outcome} Сумма заявок: ${bankDocument.requestsSum}`
+            №${index + 1} "${row[8]}" Сумма документа: ${bankDocument.income || bankDocument.outcome} Сумма заявок: ${bankDocument.requestsSum}`
             const commentAlert = new AlertMessage('warning', message, 'commentError')
             alertsMessages.push(commentAlert)
           }
@@ -51,7 +51,7 @@ const UploadFileForm: React.FC = () => {
           }
         }
         else {
-          const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[11] ? row[11] : 'Пустая ячейка'}"`
+          const message = `Проверьте корректность поля "Коментарий" в строке №${index + 1} "${row[8] ? row[8] : 'Пустая ячейка'}"`
           const commentAlert = new AlertMessage('warning', message, 'commentError')
           alertsMessages.push(commentAlert)
         }
@@ -143,8 +143,6 @@ const UploadFileForm: React.FC = () => {
       'Списание',
       'Назначение платежа',
       'Контрагент',
-      'Чек ожидает отправки в ФНС',
-      'Номер чека', 'Вид операции',
       'Вх.номер',
       'Вх.дата',
       'Организация',

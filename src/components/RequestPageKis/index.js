@@ -206,7 +206,7 @@ class RequestPageKis extends React.Component {
         requests[key][1] =  requests[key][1].filter(operationElement => operationElement !== operation)
         }
       });
-
+      localStorage.setItem("originState", JSON.stringify(requests));
       this.props.renderData(requests);
       this.setState({
         loader: false,
@@ -245,8 +245,9 @@ class RequestPageKis extends React.Component {
           }
         }
       });
-
+      localStorage.setItem("originState", JSON.stringify(requests));
       this.props.renderData(requests);
+
       this.setState({
         loader: false,
         update: !this.state.update,
