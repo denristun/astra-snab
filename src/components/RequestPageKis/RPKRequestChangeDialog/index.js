@@ -153,9 +153,9 @@ export default class RPKRequestChangeDialog extends React.Component {
                   <Autocomplete
                     id="combo-box-request"
                     options={
-                      this.state.operation.type === "outcome"
-                        ? this.state.filters.uniqueProviderList
-                        : this.state.filters.uniqueClientList
+                     
+                       
+                this.state.filters.uniqueRequestList
                     }
                     freeSolo
                     value={this.state.operation.request || ""}

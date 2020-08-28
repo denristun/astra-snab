@@ -116,6 +116,7 @@ class RequestPageKis extends React.Component {
     let status = [];
     let organizations = [];
     let providers = [];
+    let requestNums = []
 
     Object.keys(requests).forEach((request) => {
       typeof requests[request] === "object" &&
@@ -127,6 +128,7 @@ class RequestPageKis extends React.Component {
           }
           organizations.push(operation.organization);
           status.push(operation.status);
+          requestNums.push(operation.request) 
         });
     });
 
@@ -134,12 +136,14 @@ class RequestPageKis extends React.Component {
     const uniqueClients = new Set(clients);
     const uniqueOrganizations = new Set(organizations);
     const uniqueProviders = new Set(providers);
+    const uniqueRequests = new Set(requestNums)
 
     return {
       uniqueStatusList: [...uniqueStatus],
       uniqueClientList: [...uniqueClients],
       uniqueProviderList: [...uniqueProviders],
       uniqueOrganizationList: [...uniqueOrganizations],
+      uniqueRequestList: [...uniqueRequests]
     };
   };
 
