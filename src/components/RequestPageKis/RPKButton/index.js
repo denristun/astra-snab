@@ -31,7 +31,7 @@ export default class RPKButton extends React.Component {
           <RPKOutcomePage
             request={this.props.request}
             closeModal={this.onToggle}
-            clientList={this.props.clientList}
+            uniqueClientList={this.props.uniqueClientList}
             addOutcomeOperation={this.props.addOutcomeOperation}
           />
         ) : null}

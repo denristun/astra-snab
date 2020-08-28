@@ -407,7 +407,7 @@ class RequestPageKis extends React.Component {
                     <RPKButton
                       key={index.toString() + Math.random()}
                       request={request[0]}
-                      uniqueFilters={uniqueFilters}
+                      uniqueClientList={uniqueFilters.uniqueClientList}
                       operationId={opertionID}
                       addOutcomeOperation={this.addOutcomeOperation}
                     />

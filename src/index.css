@@ -51,10 +51,12 @@ background-color: black;
   position: absolute;
   top: 50%; left: 50%;
   background-color: #ffffff;
-  z-index: 7;
+  z-index: 20;
+  margin-top: 50px;
+  overflow-y: scroll;
 
   min-width: 50%;
-  min-height: 50%;
+  max-height: 80%;
   transform: translate(-50%, -50%);
 
   font-style: normal;
