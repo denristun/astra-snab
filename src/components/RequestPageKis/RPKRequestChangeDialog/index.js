@@ -11,6 +11,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 export default class RPKRequestChangeDialog extends React.Component {
   constructor(props, context) {
@@ -36,9 +37,14 @@ export default class RPKRequestChangeDialog extends React.Component {
     this.setState({ open: true });
     this.setState({ canDelete: false });
     this.setState({ operation: operation });
+    const providers =
+      this.state.operation.type === "outcome"
+        ? this.state.filters.uniqueProviderList
+        : this.state.filters.uniqueClientList;
+    this.setState({});
   }
   handleClose() {
-    this.setState({ filters: [] });
+    // this.setState({ filters: [] });
     this.setState({ open: false });
     this.setState({ canDelete: false });
     this.setState({ operation: {} });
@@ -58,40 +64,39 @@ export default class RPKRequestChangeDialog extends React.Component {
     this.setState({ open: false });
   }
 
-  generateClientOptions() {
-    const providers =
-      this.state.operation.type === "outcome"
-        ? this.state.filters.uniqueProviderList
-        : this.state.filters.uniqueClientList;
-    if (providers) {
-      const options = providers.map((provider) => {
-        return (
-          <MenuItem key={provider} value={provider}>
-            {provider}
-          </MenuItem>
-        );
-      });
-      return options;
-    }
-  }
+  //   generateClientOptions() {
+  //     const providers =
+  //       this.state.operation.type === "outcome"
+  //         ? this.state.filters.uniqueProviderList
+  //         : this.state.filters.uniqueClientList;
+  //     if (providers) {
+  //       const options = providers.map((provider) => {
+  //         return (
+  //           <MenuItem key={provider} value={provider}>
+  //             {provider}
+  //           </MenuItem>
+  //         );
+  //       });
+  //       return options;
+  //     }
+  //   }
 
-  generateOrganizationOptions() {
-    if (this.state.filters.uniqueOrganizationList) {
-      const options = this.state.filters.uniqueOrganizationList.map(
-        (organization) => {
-          return (
-            <MenuItem key={organization} value={organization}>
-              {organization}
-            </MenuItem>
-          );
-        }
-      );
-      return options;
-    }
-  }
+  //   generateOrganizationOptions() {
+  //     if (this.state.filters.uniqueOrganizationList) {
+  //       const options = this.state.filters.uniqueOrganizationList.map(
+  //         (organization) => {
+  //           return (
+  //             <MenuItem key={organization} value={organization}>
+  //               {organization}
+  //             </MenuItem>
+  //           );
+  //         }
+  //       );
+  //       return options;
+  //     }
+  //   }
 
   render() {
-    console.log(this.state.operation);
     return (
       <div className={classes.RPKRequestChangeDialog}>
         <Dialog
@@ -123,7 +128,7 @@ export default class RPKRequestChangeDialog extends React.Component {
 
             <form autoComplete="off">
               <Grid className={classes.RPKRequestChangeDialog__content}>
-                <Box key="operationRequest" mb={2}>
+                {/* <Box key="operationRequest" mb={2}>
                   <TextField
                     defaultValue={this.state.operation.request}
                     autoFocus={false}
@@ -137,12 +142,40 @@ export default class RPKRequestChangeDialog extends React.Component {
                     variant="filled"
                     helperText=""
                     onChange={(event) => {
+                      const changedOperation = this.state.operation
+                      changedOperation.request = event.target.value
+                      this.setState({ operation: changedOperation })
+                    }}
+                  />
+                </Box> */}
+
+                <Box key="requestSelectRequest" mb={2}>
+                  <Autocomplete
+                    id="combo-box-request"
+                    options={
+                      this.state.operation.type === "outcome"
+                        ? this.state.filters.uniqueProviderList
+                        : this.state.filters.uniqueClientList
+                    }
+                    freeSolo
+                    value={this.state.operation.request || ""}
+                    getOptionLabel={(option) => option}
+                    fullWidth={true}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Номер заявки"
+                        variant="filled"
+                      />
+                    )}
+                    onChange={(event, newInputValue) => {
                       const changedOperation = this.state.operation;
-                      changedOperation.request = event.target.value;
+                      changedOperation.request = newInputValue;
                       this.setState({ operation: changedOperation });
                     }}
                   />
                 </Box>
+
                 <Box key="operationValue" mb={2}>
                   <TextField
                     defaultValue={this.state.operation.value}
@@ -176,6 +209,11 @@ export default class RPKRequestChangeDialog extends React.Component {
                     rowsMax={1}
                     variant="filled"
                     helperText=""
+                    onChange={(event) => {
+                      const changedOperation = this.state.operation;
+                      changedOperation.client = event.target.value;
+                      this.setState({ operation: changedOperation });
+                    }}
                   />
                 </Box> */}
                 {/* <Box key="operationOrganization" mb={2}>
@@ -197,9 +235,57 @@ export default class RPKRequestChangeDialog extends React.Component {
                       this.setState({ operation: changedOperation });
                     }}
                   />
-                </Box> */}
-
+                </Box>  */}
                 <Box key="clientSelectRequest" mb={2}>
+                  <Autocomplete
+                    id="combo-box-client"
+                    options={
+                      this.state.operation.type === "outcome"
+                        ? this.state.filters.uniqueProviderList
+                        : this.state.filters.uniqueClientList
+                    }
+                    freeSolo
+                    value={this.state.operation.client || ""}
+                    getOptionLabel={(option) => option}
+                    fullWidth={true}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Контрагент"
+                        variant="filled"
+                      />
+                    )}
+                    onChange={(event, newInputValue) => {
+                      const changedOperation = this.state.operation;
+                      changedOperation.client = newInputValue;
+                      this.setState({ operation: changedOperation });
+                    }}
+                  />
+                </Box>
+                <Box key="organizationSelectRequest" mb={2}>
+                  <Autocomplete
+                    id="combo-box-organization"
+                    options={this.state.filters.uniqueOrganizationList}
+                    freeSolo
+                    variant="filled"
+                    value={this.state.operation.organization || ""}
+                    getOptionLabel={(option) => option}
+                    fullWidth={true}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Организация"
+                        variant="filled"
+                      />
+                    )}
+                    onChange={(event, newInputValue) => {
+                      const changedOperation = this.state.operation;
+                      changedOperation.organization = newInputValue;
+                      this.setState({ operation: changedOperation });
+                    }}
+                  />
+                </Box>
+                {/* <Box key="clientSelectRequest" mb={2}>
                   <InputLabel id="demo-controlled-open-select-label">
                     Контрагент
                   </InputLabel>
@@ -239,7 +325,7 @@ export default class RPKRequestChangeDialog extends React.Component {
                   >
                     {this.generateOrganizationOptions()}
                   </Select>
-                </Box>
+                </Box> */}
 
                 <Box key="operationComment" mb={2}>
                   <TextField
@@ -250,8 +336,8 @@ export default class RPKRequestChangeDialog extends React.Component {
                     id="commentFormInput"
                     label="Комментарий"
                     type="text"
-                    multiline={false}
-                    rowsMax={1}
+                    multiline={true}
+                    rowsMax={5}
                     variant="filled"
                     helperText=""
                     onChange={(event) => {

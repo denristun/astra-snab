@@ -9,7 +9,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Grid, TextField, Box } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { text } from "@fortawesome/fontawesome-svg-core";
 
 let insertClasses = [classes.RPKHeader];
 function headerShift(elem, param) {
