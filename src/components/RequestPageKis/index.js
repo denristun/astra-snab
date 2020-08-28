@@ -9,7 +9,7 @@ import RPKResultLine from "./RPKResultLine";
 import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
-import RPKRequestChangeDialog from './RPKRequestChangeDialog'
+import RPKRequestChangeDialog from "./RPKRequestChangeDialog";
 import requests from "../../Redux/Reducers/requests";
 
 let insertClasses = [classes.RequestPageKis];
@@ -50,7 +50,7 @@ class RequestPageKis extends React.Component {
       let groups = await responseGroups.json();
 
       this.getData(groups[0].group);
-      localStorage.setItem('group', JSON.stringify(groups[0].group));
+      localStorage.setItem("group", JSON.stringify(groups[0].group));
 
       // console.log(this.originState);
     } catch (e) {
@@ -77,7 +77,7 @@ class RequestPageKis extends React.Component {
       // console.log(data);
       this.props.renderData(data);
 
-      localStorage.setItem('originState', JSON.stringify(data));
+      localStorage.setItem("originState", JSON.stringify(data));
       // console.log(this.originState);
 
       this.setState({
@@ -92,13 +92,20 @@ class RequestPageKis extends React.Component {
     }
   }
 
-  selectGroup = (group) => {
-    document.querySelectorAll('[type="clearFilterButton"]').forEach(element => {
-      element.style.display = "none";
-    })
-    localStorage.setItem('group', JSON.stringify(group));
-    this.filtersList = {};
+  clearFilters = () => { //Обнуление фильтров RPKHeader
     this._rpkHeader.updateState();
+    this._rpkHeader.closeFilterLines();
+  };
+
+  selectGroup = (group) => {
+    document
+      .querySelectorAll('[type="clearFilterButton"]')
+      .forEach((element) => {
+        element.style.display = "none";
+      });
+    localStorage.setItem("group", JSON.stringify(group));
+    this.filtersList = {};
+    this.clearFilters();
 
     this.setState({ loader: true });
     this.getData(group);
@@ -140,30 +147,28 @@ class RequestPageKis extends React.Component {
     this.sendOutcomeOperationToServer(formData, this.props.requests);
   };
 
-  deleteOperation =  async(operation) => {
+  deleteOperation = async (operation) => {
     await this.deleteOperationFromServer(operation, this.props.requests);
-  }
+  };
 
-  changeOperation =  async(operation) => {
+  changeOperation = async (operation) => {
     await this.changeOperationFromServer(operation, this.props.requests);
-  }
+  };
 
-
-  async deleteOperationFromServer (operation, requests) {
-
-    try{
+  async deleteOperationFromServer(operation, requests) {
+    try {
       const url = "https://astra-snab-server.herokuapp.com/api/request";
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({id: operation}),
+        body: JSON.stringify({ id: operation }),
       });
 
       const data = await response.json();
-      console.log("operation", data) 
-      console.log("delete", requests)
+      console.log("operation", data);
+      console.log("delete", requests);
       // Object.keys(requests).forEach((key) => {
       //   if (
       //     typeof requests[key][0] !== "undefined" &&
@@ -178,16 +183,13 @@ class RequestPageKis extends React.Component {
       //   loader: false,
       //   update: !this.state.update,
       // });
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
     }
   }
 
-
-  async changeOperationFromServer (operation, requests) {
-
-    try{
+  async changeOperationFromServer(operation, requests) {
+    try {
       const url = "https://astra-snab-server.herokuapp.com/api/request";
       const response = await fetch(url, {
         method: "PATCH",
@@ -213,11 +215,9 @@ class RequestPageKis extends React.Component {
       //   loader: false,
       //   update: !this.state.update,
       // });
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
     }
-
   }
 
   async sendOutcomeOperationToServer(formData, requests) {
@@ -257,55 +257,87 @@ class RequestPageKis extends React.Component {
     }
   };
 
-
   changeFilter = (filterName, value) => {
     this.filtersList[filterName] = value;
     // console.log(this.filtersList);
 
-    let filterOriginState = JSON.parse(localStorage.getItem('originState'));
+    let filterOriginState = JSON.parse(localStorage.getItem("originState"));
     // console.log(filterOriginState);
 
-    Object.keys(this.filtersList).forEach(key => {
-      if (this.filtersList[key] !== null && this.filtersList[key].trim().length > 0) {
+    Object.keys(this.filtersList).forEach((key) => {
+      if (
+        this.filtersList[key] !== null &&
+        this.filtersList[key].trim().length > 0
+      ) {
         filterOriginState = filterOriginState.filter((element) => {
-          element[1] = element[1].filter(operation => {
-            if(key === 'client' || key === 'provider') {
-              if(key === 'client' && operation.type === 'income' && operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+          element[1] = element[1].filter((operation) => {
+            if (key === "client" || key === "provider") {
+              if (
+                key === "client" &&
+                operation.type === "income" &&
+                operation[key]
+                  .toLowerCase()
+                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
+              ) {
                 return operation;
               }
-              if(key === 'provider' && operation.type === 'outcome' && operation.client.toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+              if (
+                key === "provider" &&
+                operation.type === "outcome" &&
+                operation.client
+                  .toLowerCase()
+                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
+              ) {
                 return operation;
               }
               return;
             }
 
-            if(key === 'income' || key === 'outcome') {
-              if(key === 'income' && operation.type === 'income' && operation.value.toString().toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+            if (key === "income" || key === "outcome") {
+              if (
+                key === "income" &&
+                operation.type === "income" &&
+                operation.value
+                  .toString()
+                  .toLowerCase()
+                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
+              ) {
                 return operation;
               }
-              if(key === 'outcome' && operation.type === 'outcome' && operation.value.toString().toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+              if (
+                key === "outcome" &&
+                operation.type === "outcome" &&
+                operation.value
+                  .toString()
+                  .toLowerCase()
+                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
+              ) {
                 return operation;
               }
               return;
             }
 
-            if(operation[key].toLowerCase().indexOf(this.filtersList[key].toLowerCase()) !== -1) {
+            if (
+              operation[key]
+                .toLowerCase()
+                .indexOf(this.filtersList[key].toLowerCase()) !== -1
+            ) {
               return operation;
             }
-          })
+          });
 
-          if (typeof(element[1]) !== 'undefined' && element[1].length>0){
+          if (typeof element[1] !== "undefined" && element[1].length > 0) {
             return element;
-          } 
+          }
         });
       }
     });
 
-    // console.log(filterOriginState); 
+    // console.log(filterOriginState);
 
     this.props.renderData(filterOriginState);
     // console.log(this.props.requests.length);
-  }; 
+  };
 
   render() {
     // console.log(this.props.requests);
@@ -321,12 +353,17 @@ class RequestPageKis extends React.Component {
           sortOperatoions={this.sortOperatoions}
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
-          ref={(func) => {this._rpkHeader = func}}
+          ref={(func) => {
+            this._rpkHeader = func;
+          }}
         />
-         <RPKRequestChangeDialog  
-         changeOperation={this.changeOperation} 
-         deleteOperation={this.deleteOperation} 
-         ref={(requestChangeDialog) => { this._requestChangeDialog = requestChangeDialog }}></RPKRequestChangeDialog>
+        <RPKRequestChangeDialog
+          changeOperation={this.changeOperation}
+          deleteOperation={this.deleteOperation}
+          ref={(requestChangeDialog) => {
+            this._requestChangeDialog = requestChangeDialog;
+          }}
+        ></RPKRequestChangeDialog>
 
         {this.state.loader ? (
           <div>
@@ -334,7 +371,7 @@ class RequestPageKis extends React.Component {
           </div>
         ) : (
           <div>
-            {!this.props.requests.error && this.props.requests.length>0 ? (
+            {!this.props.requests.error && this.props.requests.length > 0 ? (
               <div className={classes.content} id="RPKContent">
                 {this.props.requests.map((request, index) => {
                   let opertionID = request[0];
@@ -348,8 +385,10 @@ class RequestPageKis extends React.Component {
                       : (outcome = outcome + request[1][i].value);
                     operations.push(
                       <RPKRequest
-                        onDoubleClick={() => this._requestChangeDialog.handleShow(request[1][i])}
-                      //  onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
+                        onDoubleClick={() =>
+                          this._requestChangeDialog.handleShow(request[1][i])
+                        }
+                        //  onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
@@ -388,7 +427,14 @@ class RequestPageKis extends React.Component {
                 })}
               </div>
             ) : (
-              <div style={{display:'flex',marginTop:100,justifyContent:'center',alignItems:'center'}}>
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 100,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <h3>Нет данных {this.props.requests.error}</h3>
               </div>
             )}
@@ -407,7 +453,10 @@ class RequestPageKis extends React.Component {
             trColor={"#398DEF"}
           />
           <RPKGroups
-            activeGroup={this.props.requests.group || JSON.parse(localStorage.getItem('group'))}
+            activeGroup={
+              this.props.requests.group ||
+              JSON.parse(localStorage.getItem("group"))
+            }
             selectGroup={this.selectGroup}
           />
         </div>

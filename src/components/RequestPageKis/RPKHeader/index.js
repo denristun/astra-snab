@@ -24,13 +24,16 @@ class RPKHeader extends React.Component {
         type: "autocomplete",
         tfVariant: "filled",
         tfLabel: "Выберите статус",
+        autofocus: false,
         key: Math.random(),
       },
       request: {
         name: "request",
         type: "textfield",
+        defaultValue: "",
         variant: "filled",
         label: "Вводите № заявки",
+        autofocus: false,
         key: Math.random(),
       },
       client: {
@@ -38,6 +41,7 @@ class RPKHeader extends React.Component {
         type: "autocomplete",
         tfVariant: "filled",
         tfLabel: "Выберите клиента",
+        autofocus: false,
         key: Math.random(),
       },
       organization: {
@@ -45,20 +49,25 @@ class RPKHeader extends React.Component {
         type: "autocomplete",
         tfVariant: "filled",
         tfLabel: "Выберите организацию",
+        autofocus: false,
         key: Math.random(),
       },
       income: {
         name: "income",
         type: "textfield",
+        defaultValue: "",
         variant: "filled",
         label: "Вводите сумму",
+        autofocus: false,
         key: Math.random(),
       },
       outcome: {
         name: "outcome",
         type: "textfield",
+        defaultValue: "",
         variant: "filled",
         label: "Вводите сумму",
+        autofocus: false,
         key: Math.random(),
       },
       provider: {
@@ -66,20 +75,25 @@ class RPKHeader extends React.Component {
         type: "autocomplete",
         tfVariant: "filled",
         tfLabel: "Выберите поставщика",
+        autofocus: false,
         key: Math.random(),
       },
       destination: {
         name: "destination",
         type: "textfield",
+        defaultValue: "",
         variant: "filled",
         label: "Назначение платежа",
+        autofocus: false,
         key: Math.random(),
       },
       comment: {
         name: "comment",
         type: "textfield",
+        defaultValue: "",
         variant: "filled",
         label: "Комментарий",
+        autofocus: false,
         key: Math.random(),
       },
     },
@@ -87,13 +101,14 @@ class RPKHeader extends React.Component {
 
   updateState = () => {
     const state = this.state;
-    Object.keys(this.state.textFields).forEach(textField => {
+    Object.keys(this.state.textFields).forEach((textField) => {
       this.state.textFields[textField].key = Math.random();
-    })
-    this.setState({
-      textFields: state.textFields
+      this.state.textFields[textField].defaultValue = '';
     });
-  }
+    this.setState({
+      textFields: state.textFields,
+    });
+  };
 
   componentDidMount() {
     const RPKHeaderContainer = document.querySelector('[id="RPKHeader"]');
@@ -106,6 +121,21 @@ class RPKHeader extends React.Component {
     });
   }
 
+  focusToFilterLine = (filterLineId) => {
+    if (this.state.textFields[filterLineId].type === "textfield") {
+      const state = this.state;
+      state.textFields[filterLineId].autofocus = true;
+      state.textFields[filterLineId].defaultValue = document.querySelector(
+        '[name="' + state.textFields[filterLineId].name + '"]'
+      ).value;
+      state.textFields[filterLineId].key = Math.random();
+      // console.log(state.textFields[filterLineId].defaultValue);
+      this.setState({
+        textFields: state.textFields,
+      });
+    }
+  };
+
   toggleFilterLine = (filterLineId) => {
     this.closeFilterLines(filterLineId);
     const filterLine = document.querySelector(
@@ -114,13 +144,14 @@ class RPKHeader extends React.Component {
     if (filterLine.getAttribute("display") === "false") {
       filterLine.style.display = "block";
       filterLine.setAttribute("display", "true");
+      this.focusToFilterLine(filterLineId);
     } else {
       filterLine.style.display = "none";
       filterLine.setAttribute("display", "false");
     }
   };
 
-  closeFilterLines = (filterLineId) => {
+  closeFilterLines = (filterLineId = '') => {
     document.querySelectorAll("[type=filterLine]").forEach((filterLine) => {
       if (
         filterLine.getAttribute("display") === "true" &&
@@ -162,7 +193,11 @@ class RPKHeader extends React.Component {
       ).style.display = "none";
     }
 
-    if (this.state.textFields[filterName].type === "autocomplete" && value && value.trim().length>0) { 
+    if (
+      this.state.textFields[filterName].type === "autocomplete" &&
+      value &&
+      value.trim().length > 0
+    ) {
       document.querySelector(
         "#" + filterName + "[type=filterLine]"
       ).style.display = "none";
@@ -298,6 +333,10 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.request.name}
                           variant={this.state.textFields.request.variant}
                           label={this.state.textFields.request.label}
+                          autoFocus={this.state.textFields.request.autofocus}
+                          defaultValue={
+                            this.state.textFields.request.defaultValue
+                          }
                           onChange={(event) =>
                             this.changeFilterValue(
                               "request",
@@ -524,6 +563,10 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.income.name}
                           variant={this.state.textFields.income.variant}
                           label={this.state.textFields.income.label}
+                          autoFocus={this.state.textFields.income.autofocus}
+                          defaultValue={
+                            this.state.textFields.income.defaultValue
+                          }
                           type="number"
                           onChange={(event) =>
                             this.changeFilterValue(
@@ -590,6 +633,10 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.outcome.name}
                           variant={this.state.textFields.outcome.variant}
                           label={this.state.textFields.outcome.label}
+                          autoFocus={this.state.textFields.outcome.autofocus}
+                          defaultValue={
+                            this.state.textFields.outcome.defaultValue
+                          }
                           type="number"
                           onChange={(event) =>
                             this.changeFilterValue(
@@ -739,6 +786,12 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.destination.name}
                           variant={this.state.textFields.destination.variant}
                           label={this.state.textFields.destination.label}
+                          autoFocus={
+                            this.state.textFields.destination.autofocus
+                          }
+                          defaultValue={
+                            this.state.textFields.destination.defaultValue
+                          }
                           onChange={(event) =>
                             this.changeFilterValue(
                               this.state.textFields.destination.name,
@@ -805,6 +858,10 @@ class RPKHeader extends React.Component {
                           name={this.state.textFields.comment.name}
                           variant={this.state.textFields.comment.variant}
                           label={this.state.textFields.comment.label}
+                          autoFocus={this.state.textFields.comment.autofocus}
+                          defaultValue={
+                            this.state.textFields.comment.defaultValue
+                          }
                           onChange={(event) =>
                             this.changeFilterValue(
                               this.state.textFields.comment.name,
