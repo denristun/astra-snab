@@ -40,6 +40,7 @@ export default class RPKOutcomePage extends React.Component {
               minLength: 1,
             },
             helperText: "",
+            error: false
           },
           client: {
             key: Math.random(),
@@ -50,6 +51,7 @@ export default class RPKOutcomePage extends React.Component {
             type: "autocomplete",
             multiline: false,
             rowsMax: 1,
+            defaultValue: "",
             variant: "filled",
             touched: false,
             isValid: false,
@@ -59,6 +61,7 @@ export default class RPKOutcomePage extends React.Component {
             },
             helperText: "",
             autoFocus: false,
+            error: false
           },
           destination: {
             key: Math.random(),
@@ -66,7 +69,7 @@ export default class RPKOutcomePage extends React.Component {
             fullWidth: true,
             id: "outcomeFormInput",
             label: "Назначение платежа",
-            type: false,
+            type: 'multiline',
             multiline: true,
             rowsMax: 4,
             defaultValue: "",
@@ -79,6 +82,7 @@ export default class RPKOutcomePage extends React.Component {
             },
             helperText: "",
             autoFocus: false,
+            error: false
           },
           comment: {
             key: Math.random(),
@@ -86,7 +90,7 @@ export default class RPKOutcomePage extends React.Component {
             fullWidth: true,
             id: "outcomeFormInput",
             label: "Комментарий",
-            type: false,
+            type: 'multiline',
             multiline: true,
             rowsMax: 4,
             defaultValue: "",
@@ -99,10 +103,10 @@ export default class RPKOutcomePage extends React.Component {
             },
             helperText: "",
             autoFocus: false,
+            error: false
           },
         },
       },
-      clientValue: ''
     };
   }
 
@@ -146,29 +150,39 @@ export default class RPKOutcomePage extends React.Component {
   };
 
   validateForm = () => {
+    const state = this.state;
     const textFields = this.state.formData.textFields;
-    let value = '';
+    // console.log(this.state.formData.textFields);
+    let isFormValid = true;
     Object.keys(textFields).forEach((key) => {
-      if (textFields[key].type !== 'autocomplete') {
-        value = document.querySelector('[name="' + textFields[key].name + '"]').value;
-      } else {
-        value = textFields[key].defaultValue;
-      }
-      console.log(value);
-      
-    //   console.log(document.querySelector('[name="' + textFields[textField].name + '"]'));
-    //   this.textFieldValidate(
-    //     textFields[textField].name,
-    //     document.querySelector('[name="' + textFields[textField].name + '"]').value,
-    //     true
-    //   );
+      const textField = textFields[key];   
+      const validations = this.textFieldValidation(textField.defaultValue, textField.validation);
+      isFormValid = isFormValid && validations.isValid;
+
+      textField.touched = true;
+      textField.defaultValue = textField.defaultValue;
+      textField.isValid = validations.isValid;
+      textField.isValid === false
+        ? textField.helperText = validations.validationFailedMessage
+        : textField.helperText = "";
+
+      // console.log(textField);
+
+      textField.key = Math.random();
+      state.formData.textFields[key] = { ...textField };  
+      this.setState({
+        formData: state.formData
+      })
     });
-    return this.state.formData.isValid;
+    
+    // console.log(this.state.formData.textFields);
+    return isFormValid;
   };
 
   addButtonClicked = () => {
     this.buttonLoaderActivator("show");
     const formData = this.validateForm();
+    console.log(formData);
     // console.log(formData);
     // if (formData.isValid) {
     //   const stateTextFields = this.state.formData.textFields;
@@ -193,14 +207,14 @@ export default class RPKOutcomePage extends React.Component {
     //   });
     // }
 
-    // this.buttonLoaderActivator("hide");
+    this.buttonLoaderActivator("hide");
   };
 
-  textFieldValidate = (textFieldName, value, formValidate = false) => {
+  textFieldValidate = (textFieldName, value) => {
     const state = this.state;
     const textField = state.formData.textFields[textFieldName];
 
-    if (textField.type !== "autocomplete") {
+    if (textField.type === "number") {
       textField.touched = true;
       textField.defaultValue = value;
       const validations = this.textFieldValidation(value, textField.validation);
@@ -208,10 +222,7 @@ export default class RPKOutcomePage extends React.Component {
       textField.isValid === false
         ? (textField.helperText = validations.validationFailedMessage)
         : (textField.helperText = "");
-      !formValidate
-        ? (textField.autoFocus = true)
-        : (textField.autoFocus = false);
-
+      textField.autoFocus = true;
       // console.log(textField);
 
       textField.key = Math.random();
@@ -223,6 +234,7 @@ export default class RPKOutcomePage extends React.Component {
     this.setState({
       formData: state.formData,
     });
+
     // console.log(this.state.formData.textFields[textFieldName]);
   };
 
@@ -356,10 +368,10 @@ export default class RPKOutcomePage extends React.Component {
                     multiline={
                       this.state.formData.textFields.destination.multiline
                     }
-                    rowsMax={this.state.formData.textFields.destination.rowsMax}
                     defaultValue={
                       this.state.formData.textFields.destination.defaultValue
                     }
+                    rowsMax={this.state.formData.textFields.destination.rowsMax}                    
                     variant={this.state.formData.textFields.destination.variant}
                     touched={this.state.formData.textFields.destination.touched.toString()}
                     error={
@@ -369,6 +381,12 @@ export default class RPKOutcomePage extends React.Component {
                     }
                     helperText={
                       this.state.formData.textFields.destination.helperText
+                    }
+                    onChange={(event) =>
+                      this.textFieldValidate(
+                        this.state.formData.textFields.destination.name,
+                        event.target.value
+                      )
                     }
                   />
                 </Box>
@@ -382,10 +400,10 @@ export default class RPKOutcomePage extends React.Component {
                     label={this.state.formData.textFields.comment.label}
                     type={this.state.formData.textFields.comment.type.toString()}
                     multiline={this.state.formData.textFields.comment.multiline}
-                    rowsMax={this.state.formData.textFields.comment.rowsMax}
                     defaultValue={
                       this.state.formData.textFields.comment.defaultValue
                     }
+                    rowsMax={this.state.formData.textFields.comment.rowsMax}
                     variant={this.state.formData.textFields.comment.variant}
                     touched={this.state.formData.textFields.comment.touched.toString()}
                     error={
@@ -395,6 +413,12 @@ export default class RPKOutcomePage extends React.Component {
                     }
                     helperText={
                       this.state.formData.textFields.comment.helperText
+                    }
+                    onChange={(event) =>
+                      this.textFieldValidate(
+                        this.state.formData.textFields.comment.name,
+                        event.target.value
+                      )
                     }
                   />
                 </Box>
