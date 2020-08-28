@@ -10,7 +10,7 @@ import classes from "./RPKRequestChangeDialog.module.scss";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from '@material-ui/core/InputLabel';
+import InputLabel from "@material-ui/core/InputLabel";
 
 export default class RPKRequestChangeDialog extends React.Component {
   constructor(props, context) {
@@ -59,11 +59,15 @@ export default class RPKRequestChangeDialog extends React.Component {
   }
 
   generateClientOptions() {
-    if (this.state.filters.uniqueClientList) {
-      const options = this.state.filters.uniqueClientList.map((client) => {
+    const providers =
+      this.state.operation.type === "outcome"
+        ? this.state.filters.uniqueProviderList
+        : this.state.filters.uniqueClientList;
+    if (providers) {
+      const options = providers.map((provider) => {
         return (
-          <MenuItem key={client} value={client}>
-            {client}
+          <MenuItem key={provider} value={provider}>
+            {provider}
           </MenuItem>
         );
       });
@@ -73,18 +77,21 @@ export default class RPKRequestChangeDialog extends React.Component {
 
   generateOrganizationOptions() {
     if (this.state.filters.uniqueOrganizationList) {
-      const options = this.state.filters.uniqueOrganizationList.map((organization) => {
-        return (
-          <MenuItem key={organization} value={organization}>
-            {organization}
-          </MenuItem>
-        );
-      });
+      const options = this.state.filters.uniqueOrganizationList.map(
+        (organization) => {
+          return (
+            <MenuItem key={organization} value={organization}>
+              {organization}
+            </MenuItem>
+          );
+        }
+      );
       return options;
     }
   }
 
   render() {
+    console.log(this.state.operation);
     return (
       <div className={classes.RPKRequestChangeDialog}>
         <Dialog
@@ -191,9 +198,52 @@ export default class RPKRequestChangeDialog extends React.Component {
                     }}
                   />
                 </Box> */}
+
+                <Box key="clientSelectRequest" mb={2}>
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Контрагент
+                  </InputLabel>
+                  <Select
+                    labelId="client-select-label"
+                    id="client-select"
+                    fullWidth={true}
+                    variant="filled"
+                    label="Клиент"
+                    value={this.state.operation.client || ""}
+                    onChange={(event) => {
+                      const changedOperation = this.state.operation;
+                      changedOperation.client = event.target.value;
+                      this.setState({ operation: changedOperation });
+                    }}
+                  >
+                    {this.generateClientOptions()}
+                  </Select>
+                </Box>
+
+                <Box key="organizationSelectRequest" mb={2}>
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Организация
+                  </InputLabel>
+                  <Select
+                    label="Организация"
+                    labelId="organization-select-label"
+                    id="organization-select"
+                    fullWidth={true}
+                    variant="filled"
+                    value={this.state.operation.organization || ""}
+                    onChange={(event) => {
+                      const changedOperation = this.state.operation;
+                      changedOperation.organization = event.target.value;
+                      this.setState({ operation: changedOperation });
+                    }}
+                  >
+                    {this.generateOrganizationOptions()}
+                  </Select>
+                </Box>
+
                 <Box key="operationComment" mb={2}>
                   <TextField
-                    defaultValue={this.state.operation.comment} 
+                    defaultValue={this.state.operation.comment}
                     autoFocus={false}
                     name="comment"
                     fullWidth={true}
@@ -211,48 +261,8 @@ export default class RPKRequestChangeDialog extends React.Component {
                     }}
                   />
                 </Box>
-
-                <Box key="clientSelectRequest" mb={2}>
-                <InputLabel id="demo-controlled-open-select-label">Контрагент</InputLabel>
-                  <Select
-                    labelId="client-select-label"
-                    id="client-select"
-                    fullWidth={true}
-                    variant="filled"
-                    label="Клиент"
-                    value={this.state.operation.client || ''}
-                    onChange={(event) => {
-                        const changedOperation = this.state.operation;
-                        changedOperation.client = event.target.value;
-                        this.setState({ operation: changedOperation });
-                      }}
-                  >
-                    {this.generateClientOptions()}
-                  </Select>
-                </Box>
-             
-             
-                <Box key="organizationSelectRequest" mb={2}>
-                <InputLabel id="demo-controlled-open-select-label">Организация</InputLabel>
-                  <Select
-                   label="Организация"
-                    labelId="organization-select-label"
-                    id="organization-select"
-                    fullWidth={true}
-                    value={this.state.operation.organization || ''}
-                    onChange={(event) => {
-                        const changedOperation = this.state.operation;
-                        changedOperation.organization = event.target.value;
-                        this.setState({ operation: changedOperation });
-                      }}
-                  >
-                    {this.generateOrganizationOptions()}
-                  </Select>
-                </Box>
               </Grid>
-              
-           
-             
+
               <Grid
                 container
                 direction="row"
