@@ -27,7 +27,8 @@ export default class RPKRequestChangeDialog extends React.Component {
         };
     }
 
-    handleShow(operation) {
+    handleShow(operation, filters) {
+        console.log(filters)
         console.log(operation)
         this.setState({ open: true })
         this.setState({canDelete: false})

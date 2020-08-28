@@ -391,7 +391,7 @@ class RequestPageKis extends React.Component {
                     operations.push(
                       <RPKRequest
                         onDoubleClick={() =>
-                          this._requestChangeDialog.handleShow(request[1][i])
+                          this._requestChangeDialog.handleShow(request[1][i], uniqueFilters)
                         }
                         //  onClick={() => this._requestChangeDialog.handleShow(request[1][i])}
                         key={index.toString() + Math.random()}
