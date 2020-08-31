@@ -40,7 +40,7 @@ export default class RPKOutcomePage extends React.Component {
               minLength: 1,
             },
             helperText: "",
-            error: false
+            error: false,
           },
           client: {
             key: Math.random(),
@@ -59,9 +59,9 @@ export default class RPKOutcomePage extends React.Component {
               required: true,
               minLength: 3,
             },
-            helperText: "",
+            helperText: "123",
             autoFocus: false,
-            error: false
+            error: false,
           },
           destination: {
             key: Math.random(),
@@ -69,7 +69,7 @@ export default class RPKOutcomePage extends React.Component {
             fullWidth: true,
             id: "outcomeFormInput",
             label: "Назначение платежа",
-            type: 'multiline',
+            type: "multiline",
             multiline: true,
             rowsMax: 4,
             defaultValue: "",
@@ -82,7 +82,7 @@ export default class RPKOutcomePage extends React.Component {
             },
             helperText: "",
             autoFocus: false,
-            error: false
+            error: false,
           },
           comment: {
             key: Math.random(),
@@ -90,7 +90,7 @@ export default class RPKOutcomePage extends React.Component {
             fullWidth: true,
             id: "outcomeFormInput",
             label: "Комментарий",
-            type: 'multiline',
+            type: "multiline",
             multiline: true,
             rowsMax: 4,
             defaultValue: "",
@@ -103,7 +103,7 @@ export default class RPKOutcomePage extends React.Component {
             },
             helperText: "",
             autoFocus: false,
-            error: false
+            error: false,
           },
         },
       },
@@ -151,31 +151,35 @@ export default class RPKOutcomePage extends React.Component {
 
   validateForm = () => {
     const state = this.state;
-    const textFields = this.state.formData.textFields;
+    const textFields = state.formData.textFields;
     // console.log(this.state.formData.textFields);
     let isFormValid = true;
     Object.keys(textFields).forEach((key) => {
-      const textField = textFields[key];   
-      const validations = this.textFieldValidation(textField.defaultValue, textField.validation);
+      const textField = textFields[key];
+      const validations = this.textFieldValidation(
+        textField.defaultValue,
+        textField.validation
+      );
       isFormValid = isFormValid && validations.isValid;
 
       textField.touched = true;
-      textField.defaultValue = textField.defaultValue;
+      textField.defaultValue = textFields[key].defaultValue;
       textField.isValid = validations.isValid;
       textField.isValid === false
-        ? textField.helperText = validations.validationFailedMessage
-        : textField.helperText = "";
+        ? (textField.helperText = validations.validationFailedMessage)
+        : (textField.helperText = "");
 
       // console.log(textField);
 
       textField.key = Math.random();
-      state.formData.textFields[key] = { ...textField };  
-      this.setState({
-        formData: state.formData
-      })
+      state.formData.textFields[key] = { ...textField };
     });
-    
-    // console.log(this.state.formData.textFields);
+
+    this.setState({
+      formData: state.formData,
+    });
+
+    console.log(this.state.formData.textFields);
     return isFormValid;
   };
 
@@ -226,9 +230,12 @@ export default class RPKOutcomePage extends React.Component {
       // console.log(textField);
 
       textField.key = Math.random();
-      state.formData.textFields[textFieldName] = { ...textField };      
+      state.formData.textFields[textFieldName] = { ...textField };
     } else {
       textField.defaultValue = value;
+      if (textField.type === "autocomplete") {
+        textField.key = Math.random();
+      }
     }
 
     this.setState({
@@ -241,6 +248,11 @@ export default class RPKOutcomePage extends React.Component {
   textFieldValidation = (value, validations) => {
     let isValid = true;
     let validationFailedMessage = "";
+
+    if (value === null) {
+      value = "";
+    }
+
     Object.keys(validations).forEach((validation) => {
       if (validation === "required") {
         isValid = value.trim().length >= 0 && isValid;
@@ -294,7 +306,10 @@ export default class RPKOutcomePage extends React.Component {
                     type={this.state.formData.textFields.value.type.toString()}
                     fullWidth={this.state.formData.textFields.value.fullWidth}
                     autoFocus={this.state.formData.textFields.value.autoFocus}
-                    id={this.state.formData.textFields.value.id}
+                    id={
+                      this.state.formData.textFields.value.id +
+                      this.state.formData.textFields.value.key.toString()
+                    }
                     label={this.state.formData.textFields.value.label}
                     rowsMax={this.state.formData.textFields.value.rowsMax}
                     defaultValue={
@@ -323,9 +338,18 @@ export default class RPKOutcomePage extends React.Component {
                     key={this.state.formData.textFields.client.key}
                     name={this.state.formData.textFields.client.name}
                     fullWidth={this.state.formData.textFields.client.fullWidth}
-                    id={this.state.formData.textFields.client.id}
+                    id={
+                      this.state.formData.textFields.client.id +
+                      this.state.formData.textFields.client.key.toString()
+                    }
                     label={this.state.formData.textFields.client.label}
                     variant={this.state.formData.textFields.client.variant}
+                    defaultValue={
+                      this.state.formData.textFields.client.defaultValue
+                    }
+                    helpertext={
+                      this.state.formData.textFields.client.helperText
+                    }
                     options={this.props.uniqueClientList.map(
                       (option) => option
                     )}
@@ -351,6 +375,22 @@ export default class RPKOutcomePage extends React.Component {
                     //   )
                     // }
                   />
+                  {!this.state.formData.textFields.client.isValid &&
+                  this.state.formData.textFields.client.touched ? (
+                    <div
+                      style={{
+                        color: "#f44336",
+                        display: "block",
+                        fontSize: "0.75rem",
+                        marginLeft: 14,
+                        marginRight: 14,
+                      }}
+                    >
+                      Поле не заполнено!
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </Box>
                 <Box mb={2}>
                   <TextField
@@ -362,7 +402,10 @@ export default class RPKOutcomePage extends React.Component {
                     autoFocus={
                       this.state.formData.textFields.destination.autoFocus
                     }
-                    id={this.state.formData.textFields.destination.id}
+                    id={
+                      this.state.formData.textFields.destination.id +
+                      this.state.formData.textFields.destination.key.toString()
+                    }
                     label={this.state.formData.textFields.destination.label}
                     type={this.state.formData.textFields.destination.type.toString()}
                     multiline={
@@ -371,7 +414,7 @@ export default class RPKOutcomePage extends React.Component {
                     defaultValue={
                       this.state.formData.textFields.destination.defaultValue
                     }
-                    rowsMax={this.state.formData.textFields.destination.rowsMax}                    
+                    rowsMax={this.state.formData.textFields.destination.rowsMax}
                     variant={this.state.formData.textFields.destination.variant}
                     touched={this.state.formData.textFields.destination.touched.toString()}
                     error={
@@ -396,7 +439,10 @@ export default class RPKOutcomePage extends React.Component {
                     name={this.state.formData.textFields.comment.name}
                     fullWidth={this.state.formData.textFields.comment.fullWidth}
                     autoFocus={this.state.formData.textFields.comment.autoFocus}
-                    id={this.state.formData.textFields.comment.id}
+                    id={
+                      this.state.formData.textFields.comment.id +
+                      this.state.formData.textFields.comment.key.toString()
+                    }
                     label={this.state.formData.textFields.comment.label}
                     type={this.state.formData.textFields.comment.type.toString()}
                     multiline={this.state.formData.textFields.comment.multiline}

@@ -41,7 +41,7 @@ class RequestPageKis extends React.Component {
       }
     });
 
-    const urlGroups = "https://astra-snab-server.herokuapp.com/api/groups";
+    const urlGroups = "http://sumincrmserver.holod30.ru/api/groups";
     try {
       let responseGroups = await fetch(urlGroups, {
         method: "GET",
@@ -66,7 +66,7 @@ class RequestPageKis extends React.Component {
 
   async getUniqueData(){
     const urlRequests =
-    "https://astra-snab-server.herokuapp.com/api/unique";
+    "http://sumincrmserver.holod30.ru/api/unique";
   try {
     let responseRequests = await fetch(urlRequests, {
       method: "GET",
@@ -91,7 +91,7 @@ class RequestPageKis extends React.Component {
 
   async getData(group) {
     const urlRequests =
-      "https://astra-snab-server.herokuapp.com/api/requests_by_group";
+      "http://sumincrmserver.holod30.ru/api/requests_by_group";
     try {
       let responseRequests = await fetch(urlRequests, {
         method: "POST",
@@ -188,7 +188,7 @@ class RequestPageKis extends React.Component {
 
   async deleteOperationFromServer(operation, requests) {
     try {
-      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const url = "http://sumincrmserver.holod30.ru/api/request";
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
@@ -259,7 +259,7 @@ class RequestPageKis extends React.Component {
 
   async sendOutcomeOperationToServer(formData, requests) {
     try {
-      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const url = "http://sumincrmserver.holod30.ru/api/request";
       const response = await fetch(url, {
         method: "POST",
         headers: {
