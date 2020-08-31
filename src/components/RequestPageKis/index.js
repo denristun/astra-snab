@@ -24,8 +24,7 @@ class RequestPageKis extends React.Component {
   state = {
     loader: true,
     update: true,
-    uniqueValues: []
-    
+    uniqueValues: [],
   };
 
   // originState = {};
@@ -63,31 +62,23 @@ class RequestPageKis extends React.Component {
     }
   }
 
-
-  async getUniqueData(){
-    const urlRequests =
-    "http://sumincrmserver.holod30.ru/api/unique";
-  try {
-    let responseRequests = await fetch(urlRequests, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-    let data = await responseRequests.json();
-    this.setState({uniqueValues: data})
-
-  } catch (e) {
+  async getUniqueData() {
+    const urlRequests = "http://sumincrmserver.holod30.ru/api/unique";
+    try {
+      let responseRequests = await fetch(urlRequests, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let data = await responseRequests.json();
+      this.setState({ uniqueValues: data });
+    } catch (e) {}
   }
 
+  getUniqueDataValues() {
+    return this.state.uniqueValues;
   }
-
-  getUniqueDataValues(){
-    return this.state.uniqueValues
-  }
-
-
-
 
   async getData(group) {
     const urlRequests =
@@ -106,7 +97,7 @@ class RequestPageKis extends React.Component {
 
       localStorage.setItem("originState", JSON.stringify(data));
       // console.log(this.originState);
-      await this.getUniqueData()
+      await this.getUniqueData();
       this.setState({
         loader: false,
       });
@@ -119,7 +110,8 @@ class RequestPageKis extends React.Component {
     }
   }
 
-  clearFilters = () => { //Обнуление фильтров RPKHeader
+  clearFilters = () => {
+    //Обнуление фильтров RPKHeader
     this._rpkHeader.updateState();
     this._rpkHeader.closeFilterLines();
   };
@@ -143,7 +135,7 @@ class RequestPageKis extends React.Component {
     let status = [];
     let organizations = [];
     let providers = [];
-    let requestNums = []
+    let requestNums = [];
 
     Object.keys(requests).forEach((request) => {
       typeof requests[request] === "object" &&
@@ -165,14 +157,14 @@ class RequestPageKis extends React.Component {
     const uniqueClients = new Set(clients);
     const uniqueOrganizations = new Set(organizations);
     const uniqueProviders = new Set(providers);
-    const uniqueRequests = new Set(requestNums)
+    const uniqueRequests = new Set(requestNums);
 
     return {
       uniqueStatusList: [...uniqueStatus],
       uniqueClientList: [...uniqueClients],
       uniqueProviderList: [...uniqueProviders],
       uniqueOrganizationList: [...uniqueOrganizations],
-      uniqueRequestList: [...uniqueRequests]
+      uniqueRequestList: [...uniqueRequests],
     };
   };
 
@@ -205,7 +197,9 @@ class RequestPageKis extends React.Component {
           typeof requests[key][0] !== "undefined" &&
           requests[key][0] === operation.request
         ) {
-        requests[key][1] =  requests[key][1].filter(operationElement => operationElement !== operation)
+          requests[key][1] = requests[key][1].filter(
+            (operationElement) => operationElement !== operation
+          );
         }
       });
       localStorage.setItem("originState", JSON.stringify(requests));
@@ -237,13 +231,13 @@ class RequestPageKis extends React.Component {
           typeof requests[key][0] !== "undefined" &&
           requests[key][0] === data.request
         ) {
-        const index =  requests[key][1].find((element, index, array) => {
-            if (element._id === data._id){
-              return index
+          const index = requests[key][1].find((element, index, array) => {
+            if (element._id === data._id) {
+              return index;
             }
-          })
+          });
           if (index !== -1) {
-            requests[key][1][index] = operation
+            requests[key][1][index] = operation;
           }
         }
       });
@@ -376,6 +370,73 @@ class RequestPageKis extends React.Component {
     this.props.renderData(filterOriginState);
   };
 
+  applyRequestStatus = (requestId, status) => {
+    this.changeRequestStatusBase(requestId, status, this.props.requests);
+  };
+
+  async changeRequestStatusBase(requestId, status, requests) {
+    // console.log(requestId + ' ======== '+status)
+    try {
+      const url = "http://sumincrmserver.holod30.ru/api/request";
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          request: requestId,
+          status,
+        }),
+      });
+
+      const data = await response.json();
+
+      // console.log(requests);
+      // console.log(data);
+
+      const srequests = JSON.parse(localStorage.getItem('originState'));
+
+      if (response.ok) {
+        Object.keys(srequests).forEach((key) => {
+          if (
+            typeof srequests[key][0] !== "undefined" &&
+            srequests[key][0] === data.request.request
+          ) {
+            srequests[key][1] = srequests[key][1].map((operation) => {
+              operation.status = data.request.status;
+              return operation;
+            });
+          }
+        });
+
+        Object.keys(requests).forEach((key) => {
+          if (
+            typeof requests[key][0] !== "undefined" &&
+            requests[key][0] === data.request.request
+          ) {
+            requests[key][1] = requests[key][1].map((operation) => {
+              operation.status = data.request.status;
+              return operation;
+            });
+          }
+        });
+      }
+      
+      localStorage.setItem("originState", JSON.stringify(srequests));
+
+      this.props.renderData(requests);
+      this.clearFilters();
+
+      this.setState({
+        loader: false,
+        update: !this.state.update,
+      });
+
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   render() {
     // console.log(this.props.requests);
     let incomeAll = 0;
@@ -424,13 +485,18 @@ class RequestPageKis extends React.Component {
                     operations.push(
                       <RPKRequest
                         onDoubleClick={() =>
-                          this._requestChangeDialog.handleShow(request[1][i], uniqueValues)
+                          this._requestChangeDialog.handleShow(
+                            request[1][i],
+                            uniqueValues
+                          )
                         }
                         key={index.toString() + Math.random()}
                         firstEl={i === 0 ? true : false}
                         operation={request[1][i]}
                         operationId={opertionID}
+                        uniqueStatusList={uniqueFilters.uniqueStatusList}
                         trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
+                        applyRequestStatus={this.applyRequestStatus}
                       />
                     );
                   }
