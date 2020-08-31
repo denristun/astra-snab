@@ -10,7 +10,7 @@ import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
 import RPKRequestChangeDialog from "./RPKRequestChangeDialog";
-import requests from "../../Redux/Reducers/requests";
+// import requests from "../../Redux/Reducers/requests";
 
 let insertClasses = [classes.RequestPageKis];
 
@@ -155,7 +155,9 @@ class RequestPageKis extends React.Component {
           }
           organizations.push(operation.organization);
           status.push(operation.status);
-          requestNums.push(operation.request) 
+          requestNums.push(operation.request);
+
+          return operation;
         });
     });
 
@@ -269,6 +271,7 @@ class RequestPageKis extends React.Component {
       });
 
       const data = await response.json();
+      // console.log(data);
 
       Object.keys(requests).forEach((key) => {
         if (
@@ -379,7 +382,7 @@ class RequestPageKis extends React.Component {
     let outcomeAll = 0;
 
     const uniqueFilters = this.getUniqueFilters(this.props.requests);
-    const uniqueValues = this.getUniqueDataValues()
+    const uniqueValues = this.getUniqueDataValues();
     // console.log(uniqueFilters);
 
     return (
@@ -436,7 +439,7 @@ class RequestPageKis extends React.Component {
                     <RPKButton
                       key={index.toString() + Math.random()}
                       request={request[0]}
-                      uniqueClientList={uniqueFilters.uniqueClientList}
+                      uniqueValues={uniqueValues}
                       operationId={opertionID}
                       addOutcomeOperation={this.addOutcomeOperation}
                     />

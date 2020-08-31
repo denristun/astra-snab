@@ -42,6 +42,27 @@ export default class RPKOutcomePage extends React.Component {
             helperText: "",
             error: false,
           },
+          organization: {
+            key: Math.random(),
+            name: "organization",
+            fullWidth: true,
+            id: "outcomeFormInput",
+            label: "Организация",
+            type: "autocomplete",
+            multiline: false,
+            rowsMax: 1,
+            defaultValue: "",
+            variant: "filled",
+            touched: false,
+            isValid: false,
+            validation: {
+              required: true,
+              minLength: 3,
+            },
+            helperText: "",
+            autoFocus: false,
+            error: false,
+          },
           client: {
             key: Math.random(),
             name: "client",
@@ -59,7 +80,7 @@ export default class RPKOutcomePage extends React.Component {
               required: true,
               minLength: 3,
             },
-            helperText: "123",
+            helperText: "",
             autoFocus: false,
             error: false,
           },
@@ -179,37 +200,30 @@ export default class RPKOutcomePage extends React.Component {
       formData: state.formData,
     });
 
-    console.log(this.state.formData.textFields);
+    // console.log(this.state.formData.textFields);
     return isFormValid;
   };
 
   addButtonClicked = () => {
     this.buttonLoaderActivator("show");
-    const formData = this.validateForm();
-    console.log(formData);
+    const formDataValid = this.validateForm();
     // console.log(formData);
-    // if (formData.isValid) {
-    //   const stateTextFields = this.state.formData.textFields;
-    //   let formTextFields = {};
-    //   stateTextFields.forEach((textField) => {
-    //     formTextFields[textField.name] = document.querySelector(
-    //       "[name=" + textField.name + "]"
-    //     ).value;
-    //   });
-    //   formTextFields.value = +(+formTextFields.value).toFixed(2);
-    //   formTextFields.request = this.props.request;
-    //   formTextFields.date = this.getFormatDate(new Date());
-    //   formTextFields.status = false;
-    //   formTextFields.type = "outcome";
+    if (formDataValid) {
+      const stateTextFields = this.state.formData.textFields;
+      let formTextFields = {};
+      Object.keys(stateTextFields).forEach((key) => {
+        formTextFields[key] = stateTextFields[key].defaultValue;
+      });
+      formTextFields.value = +(+formTextFields.value).toFixed(2);
+      formTextFields.request = this.props.request;
+      formTextFields.date = this.getFormatDate(new Date());
+      formTextFields.status = false;
+      formTextFields.type = "outcome";
 
-    //   // console.log(formTextFields);
+      // console.log(formTextFields);
 
-    //   this.props.addOutcomeOperation(formTextFields);
-    // } else {
-    //   this.setState({
-    //     formData,
-    //   });
-    // }
+      this.props.addOutcomeOperation(formTextFields);
+    }
 
     this.buttonLoaderActivator("hide");
   };
@@ -219,8 +233,13 @@ export default class RPKOutcomePage extends React.Component {
     const textField = state.formData.textFields[textFieldName];
 
     if (textField.type === "number") {
+
+      if (value === '') { //При наличии . в инпуте
+        return;
+      }
+
       textField.touched = true;
-      textField.defaultValue = value;
+      textField.defaultValue = value.toString();
       const validations = this.textFieldValidation(value, textField.validation);
       textField.isValid = validations.isValid;
       textField.isValid === false
@@ -273,7 +292,7 @@ export default class RPKOutcomePage extends React.Component {
   };
 
   render() {
-    // console.log(this.state.formData);
+    // console.log(this.props.uniqueValues);
     return ReactDOM.createPortal(
       <div className={insertClasses.join(" ")}>
         <div className="backdrop">
@@ -335,6 +354,64 @@ export default class RPKOutcomePage extends React.Component {
                   <Autocomplete
                     // freeSolo
                     // disableClearable
+                    key={this.state.formData.textFields.organization.key}
+                    name={this.state.formData.textFields.organization.name}
+                    fullWidth={this.state.formData.textFields.organization.fullWidth}
+                    id={
+                      this.state.formData.textFields.organization.id +
+                      this.state.formData.textFields.organization.key.toString()
+                    }
+                    label={this.state.formData.textFields.organization.label}
+                    variant={this.state.formData.textFields.organization.variant}
+                    defaultValue={
+                      this.state.formData.textFields.organization.defaultValue
+                    }
+                    options={this.props.uniqueValues.uniqueOrganizations.map(
+                      (option) => option
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={this.state.formData.textFields.organization.label}
+                        margin="normal"
+                        variant={this.state.formData.textFields.organization.variant}
+                        InputProps={{ ...params.InputProps }}
+                      />
+                    )}
+                    onChange={(event, newInputValue) =>
+                      this.textFieldValidate(
+                        this.state.formData.textFields.organization.name,
+                        newInputValue
+                      )
+                    }
+                    // onInputChange={(event, value) =>
+                    //   this.textFieldValidate(
+                    //     this.state.formData.textFields.client.name,
+                    //     value
+                    //   )
+                    // }
+                  />
+                  {!this.state.formData.textFields.organization.isValid &&
+                  this.state.formData.textFields.organization.touched ? (
+                    <div
+                      style={{
+                        color: "#f44336",
+                        display: "block",
+                        fontSize: "0.75rem",
+                        marginLeft: 14,
+                        marginRight: 14,
+                      }}
+                    >
+                      Поле "{this.state.formData.textFields.organization.label}" не заполнено!
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </Box>
+                <Box mb={2}>
+                  <Autocomplete
+                    // freeSolo
+                    // disableClearable
                     key={this.state.formData.textFields.client.key}
                     name={this.state.formData.textFields.client.name}
                     fullWidth={this.state.formData.textFields.client.fullWidth}
@@ -350,7 +427,7 @@ export default class RPKOutcomePage extends React.Component {
                     helpertext={
                       this.state.formData.textFields.client.helperText
                     }
-                    options={this.props.uniqueClientList.map(
+                    options={this.props.uniqueValues.uniqueClients.map(
                       (option) => option
                     )}
                     renderInput={(params) => (
@@ -386,7 +463,7 @@ export default class RPKOutcomePage extends React.Component {
                         marginRight: 14,
                       }}
                     >
-                      Поле не заполнено!
+                      Поле "{this.state.formData.textFields.client.label}" не заполнено!
                     </div>
                   ) : (
                     ""
@@ -474,7 +551,7 @@ export default class RPKOutcomePage extends React.Component {
                 direction="row"
                 justify="flex-end"
                 alignItems="center"
-                className={classes.RPKOutcomePage__button}
+                // className={classes.RPKOutcomePage__button}
               >
                 <Box m={3}>
                   <Button
