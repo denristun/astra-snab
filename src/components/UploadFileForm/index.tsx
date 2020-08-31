@@ -79,7 +79,7 @@ const UploadFileForm: React.FC = () => {
   }
 
   const fetchDocuments = (documents) => {
-    fetch('https://astra-snab-server.herokuapp.com/api/bank', {
+    fetch('http://sumincrmserver.holod30.ru/api/bank', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
