@@ -32,6 +32,7 @@ export default class RPKRequest extends React.Component {
   applyStatus = (operationId) => {
     const operation = this.props.operation;
     operation.status = this.newStatus;
+
     // console.log(operation);
     this.props.applyRequestStatus(operation);
   }
@@ -42,14 +43,19 @@ export default class RPKRequest extends React.Component {
   }
 
   updateLine = (operation) => {
-    this.toggleStatusLine(operation._id);
-    if (operation.status === '') {
-      document.querySelector('[status="'+operation._id+'"]').textContent = 'Без статуса';
-      document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = 'rgb(253, 191, 191)';
-    } else {
-      document.querySelector('[status="'+operation._id+'"]').textContent = operation.status;
-      document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = '#ffffff';
-    }
+    
+    this.setState({
+      operation
+    })
+
+    // this.toggleStatusLine(operation._id);
+    // if (operation.status === '') {
+    //   document.querySelector('[status="'+operation._id+'"]').textContent = 'Без статуса';
+    //   document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = 'rgb(253, 191, 191)';
+    // } else {
+    //   document.querySelector('[status="'+operation._id+'"]').textContent = operation.status;
+    //   document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = '#ffffff';
+    // }
   }
 
   render() {

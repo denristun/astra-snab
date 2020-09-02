@@ -380,7 +380,7 @@ class RequestPageKis extends React.Component {
   };
 
   applyRequestStatus = (operation, request = false) => {
-    // console.log(operation);
+    console.log(operation);
 
     if (!request) {
       this.changeOperationStatusBase(operation, this.props.requests);
