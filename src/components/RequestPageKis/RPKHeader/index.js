@@ -118,6 +118,16 @@ class RPKHeader extends React.Component {
     });
   };
 
+  updateStatusList = (oldStatus, newStatus) => {
+    this.props.uniqueFilters.uniqueStatusList.push(newStatus);
+    this.props.uniqueFilters.uniqueStatusList = this.props.uniqueFilters.uniqueStatusList.filter(el => el !== oldStatus);
+    const textFields = this.state.textFields;
+    textFields.status.key = Math.random();
+    this.setState({
+      textFields
+    })
+  }
+
   componentDidMount() {
     const RPKHeaderContainer = document.querySelector('[id="RPKHeader"]');
     window.addEventListener("scroll", function () {

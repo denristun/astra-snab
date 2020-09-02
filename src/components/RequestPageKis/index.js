@@ -50,7 +50,9 @@ class RequestPageKis extends React.Component {
       });
       let groups = await responseGroups.json();
 
-      this.getData(groups[0].group);
+      // this.getData(groups[0].group);
+      this.getData('БРР');
+
       localStorage.setItem("group", JSON.stringify(groups[0].group));
 
       // console.log(this.originState);
@@ -93,11 +95,17 @@ class RequestPageKis extends React.Component {
       });
       let data = await responseRequests.json();
       data.group = group;
+      // console.log('Get data from server');
+
       this.props.renderData(data);
+      // console.log('Render data to REDUX');
 
       localStorage.setItem("originState", JSON.stringify(data));
       // console.log(this.originState);
-      await this.getUniqueData();
+      this.getUniqueData();
+      
+      // console.log('Get UniqueData');
+
       this.setState({
         loader: false,
       });
@@ -304,28 +312,7 @@ class RequestPageKis extends React.Component {
       ) {
         filterOriginState = filterOriginState.filter((element) => {
           element[1] = element[1].filter((operation) => {
-            // if (key === "client" || key === "provider") {
-            //   if (
-            //     key === "client" &&
-            //     operation.type === "income" &&
-            //     operation[key]
-            //       .toLowerCase()
-            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
-            //   ) {
-            //     return operation;
-            //   }
-            //   if (
-            //     key === "provider" &&
-            //     operation.type === "outcome" &&
-            //     operation.client
-            //       .toLowerCase()
-            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
-            //   ) {
-            //     return operation;
-            //   }
-            //   return;
-            // }
-
+            
             if (key === "income" || key === "outcome" || key === "invoice") {
               if (
                 key === "income" &&
@@ -379,12 +366,9 @@ class RequestPageKis extends React.Component {
     this.props.renderData(filterOriginState);
   };
 
-  applyRequestStatus = (operation, request = false) => {
-    console.log(operation);
-
-    if (!request) {
-      this.changeOperationStatusBase(operation, this.props.requests);
-    }
+  applyRequestStatus = (operation, oldStatus, newStatus) => {  
+    this._rpkHeader.updateStatusList(oldStatus, newStatus);
+    this.changeOperationStatusBase(operation, this.props.requests);
   };
 
   async changeOperationStatusBase(operation, requests) {
@@ -440,7 +424,7 @@ class RequestPageKis extends React.Component {
 
       this.props.renderData(requests);
 
-      this._RPKRequestRef.updateLine(data.request);
+      // this._RPKRequestRef.updateLine(data.request);
 
       // this.clearFilters();
       // this.setState({
@@ -522,9 +506,7 @@ class RequestPageKis extends React.Component {
                         uniqueStatusList={uniqueFilters.uniqueStatusList}
                         trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
                         applyRequestStatus={this.applyRequestStatus}
-                        ref={(func2) => {
-                          this._RPKRequestRef = func2;
-                        }}
+                        
                       />
                     );
                   }

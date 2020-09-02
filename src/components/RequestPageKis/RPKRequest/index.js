@@ -9,9 +9,9 @@ export default class RPKRequest extends React.Component {
   insertClasses = [classes.RPKRequest];
   constructor(props) {
     super(props);
-
     this.state = {
       operation: this.props.operation,
+      key: Math.random(),
     }
     // console.log(this.state);
     
@@ -29,12 +29,18 @@ export default class RPKRequest extends React.Component {
     }
   }
 
-  applyStatus = (operationId) => {
-    const operation = this.props.operation;
+  applyStatus = () => {
+    const operation = this.state.operation;
     operation.status = this.newStatus;
 
-    // console.log(operation);
-    this.props.applyRequestStatus(operation);
+    const oldStatus = document.querySelector('[status="'+this.state.operation._id+'"]').textContent;
+
+    const key = Math.random();
+    this.setState({
+      operation, key
+    });
+
+    this.props.applyRequestStatus(operation, oldStatus, this.newStatus);
   }
 
   changeStatusHandler = (operationId, value) => {
@@ -70,6 +76,7 @@ export default class RPKRequest extends React.Component {
 
     return (
       <div
+        key={this.state.key}
         onDoubleClick={this.props.onDoubleClick}
         className={this.insertClasses.join(" ")}
         operationid={this.state.operation._id}
@@ -120,6 +127,7 @@ export default class RPKRequest extends React.Component {
                         <Box>
                           <Autocomplete
                             freeSolo
+                            key = {this.state.key}
                             name={this.state.operation._id}
                             options={
                               this.props.uniqueStatusList
