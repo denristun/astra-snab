@@ -14,8 +14,9 @@ export class BankDocument{
     id:string
     error?: boolean
     requestsSum?: number
+    type?: BankRequestType
 
-    constructor(date: string, income: number , outcome: number, destination: string, client: string, organization: string, comment: string){
+    constructor(date: string, income: number , outcome: number, destination: string, client: string, organization: string, comment: string, type?:BankRequestType){
         this.date = date
         this.income = income ? income : 0
         this.outcome = outcome ? outcome : 0
@@ -25,8 +26,9 @@ export class BankDocument{
         this.requests = []
         // this.id = hash({destination:this.destination, date: this.date, value: this.income || this.outcome, organization: this.organization, client:this.client})
         this.id = hash(this)
+        this.type = type
         this.setRequests = comment
-       
+      
     }
 //Обработка ячейки комментарий
   set setRequests(comment: string){
@@ -41,11 +43,13 @@ export class BankDocument{
                 let valueFloat = value ? Number.parseFloat(value.replace(/,/g,'.')) : this.income || this.outcome
                 let valueInt = value && !Number.isNaN(+valueFloat) ? valueFloat : this.income || this.outcome
                 client = client ? client: this.client
-                let type: BankRequestType = this.income ? 'income' : 'outcome'
+                // let type: BankRequestType = this.income ? 'income' : 'outcome'
+
+                let requestType: BankRequestType = this.type ? this.type : (this.income ? 'income' : 'outcome')
                 // console.log('requestNumber',requestNumber)
                 const correctRequestNumber = requestNumber.match(/[а-я,А-Я]{3}-[0-9]{1,2}($|\/[0-9]{1,6})/g)[0]
                 this.requestsSum += valueInt
-                const bankRequest = new BankRequest(correctRequestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, "", this.organization)
+                const bankRequest = new BankRequest(correctRequestNumber, valueInt, requestType, this.id, client, this.destination, this.date, this.client, "", this.organization)
                 // console.log("bankRequests", bankRequest)
                 this.requests.push(bankRequest)
             }

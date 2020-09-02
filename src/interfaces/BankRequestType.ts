@@ -1,1 +1,1 @@
-export type BankRequestType = 'income' | 'outcome'
+export type BankRequestType = 'income' | 'outcome' | 'invoice'
