@@ -41,26 +41,33 @@
         width:5%;
       }
 
-      &:nth-child(3), &:nth-child(4), &:nth-child(7), &:nth-child(9) {
+      &:nth-child(3), &:nth-child(7), &:nth-child(9) {
         width:12%;
       }
 
-      &:nth-child(5){
+      &:nth-child(4){
         background-color: #c1d9fb;
         width:10%;
         padding: 0;
         margin: 0;
       }
 
-      &:nth-child(6){
+      &:nth-child(5){
         background-color: #fdf0ef;
         width:10%;
         padding: 0;
         margin: 0;
       }
 
+      &:nth-child(6){
+        background-color: #eddafc;
+        width:10%;
+        padding: 0;
+        margin: 0;
+      }
+
       &:nth-child(8) {
-        width:22%;
+        width:24%;
       }
 
       &:nth-child(9) {

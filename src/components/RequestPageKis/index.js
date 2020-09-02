@@ -134,17 +134,13 @@ class RequestPageKis extends React.Component {
     let clients = [];
     let status = [];
     let organizations = [];
-    let providers = [];
+    // let providers = [];
     let requestNums = [];
 
     Object.keys(requests).forEach((request) => {
       typeof requests[request] === "object" &&
         requests[request][1].map((operation) => {
-          if (operation.type === "income") {
-            clients.push(operation.client);
-          } else {
-            providers.push(operation.client);
-          }
+          clients.push(operation.client);          
           organizations.push(operation.organization);
           status.push(operation.status);
           requestNums.push(operation.request);
@@ -156,13 +152,13 @@ class RequestPageKis extends React.Component {
     const uniqueStatus = new Set(status);
     const uniqueClients = new Set(clients);
     const uniqueOrganizations = new Set(organizations);
-    const uniqueProviders = new Set(providers);
+    // const uniqueProviders = new Set(providers);
     const uniqueRequests = new Set(requestNums);
 
     return {
       uniqueStatusList: [...uniqueStatus],
       uniqueClientList: [...uniqueClients],
-      uniqueProviderList: [...uniqueProviders],
+      // uniqueProviderList: [...uniqueProviders],
       uniqueOrganizationList: [...uniqueOrganizations],
       uniqueRequestList: [...uniqueRequests],
     };
@@ -305,29 +301,29 @@ class RequestPageKis extends React.Component {
       ) {
         filterOriginState = filterOriginState.filter((element) => {
           element[1] = element[1].filter((operation) => {
-            if (key === "client" || key === "provider") {
-              if (
-                key === "client" &&
-                operation.type === "income" &&
-                operation[key]
-                  .toLowerCase()
-                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
-              ) {
-                return operation;
-              }
-              if (
-                key === "provider" &&
-                operation.type === "outcome" &&
-                operation.client
-                  .toLowerCase()
-                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
-              ) {
-                return operation;
-              }
-              return;
-            }
+            // if (key === "client" || key === "provider") {
+            //   if (
+            //     key === "client" &&
+            //     operation.type === "income" &&
+            //     operation[key]
+            //       .toLowerCase()
+            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
+            //   ) {
+            //     return operation;
+            //   }
+            //   if (
+            //     key === "provider" &&
+            //     operation.type === "outcome" &&
+            //     operation.client
+            //       .toLowerCase()
+            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
+            //   ) {
+            //     return operation;
+            //   }
+            //   return;
+            // }
 
-            if (key === "income" || key === "outcome") {
+            if (key === "income" || key === "outcome" || key === "invoice") {
               if (
                 key === "income" &&
                 operation.type === "income" &&
@@ -341,6 +337,16 @@ class RequestPageKis extends React.Component {
               if (
                 key === "outcome" &&
                 operation.type === "outcome" &&
+                operation.value
+                  .toString()
+                  .toLowerCase()
+                  .indexOf(this.filtersList[key].toLowerCase()) !== -1
+              ) {
+                return operation;
+              }
+              if (
+                key === "invoice" &&
+                operation.type === "invoice" &&
                 operation.value
                   .toString()
                   .toLowerCase()
@@ -441,6 +447,7 @@ class RequestPageKis extends React.Component {
     // console.log(this.props.requests);
     let incomeAll = 0;
     let outcomeAll = 0;
+    let invoiceAll = 0;
 
     const uniqueFilters = this.getUniqueFilters(this.props.requests);
     const uniqueValues = this.getUniqueDataValues();
@@ -477,11 +484,19 @@ class RequestPageKis extends React.Component {
                   let operations = [];
                   let income = 0;
                   let outcome = 0;
+                  let invoice = 0;
 
                   for (let i = 0; i < request[1].length; i++) {
-                    request[1][i].type === "income" && +request[1][i].value > 0
-                      ? (income = income + request[1][i].value)
-                      : (outcome = outcome + request[1][i].value);
+                    if (request[1][i].type === "income" && +request[1][i].value > 0) {
+                      income = income + request[1][i].value;
+                    }
+                    if (request[1][i].type === "outcome" && +request[1][i].value > 0) {
+                      outcome = outcome + request[1][i].value;
+                    }
+                    if (request[1][i].type === "invoice" && +request[1][i].value > 0) {
+                      invoice = invoice + request[1][i].value;
+                    }
+
                     operations.push(
                       <RPKRequest
                         onDoubleClick={() =>
@@ -518,6 +533,7 @@ class RequestPageKis extends React.Component {
                         title: "Итог",
                         income,
                         outcome,
+                        invoice,
                       }}
                       operationId={opertionID}
                       trColor={"#53A54C"}
@@ -551,6 +567,7 @@ class RequestPageKis extends React.Component {
               title: "СУММЫ",
               income: incomeAll,
               outcome: outcomeAll,
+              invoice: invoiceAll,
             }}
             operationId="totalResult"
             trColor={"#398DEF"}

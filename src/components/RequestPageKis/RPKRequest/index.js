@@ -24,7 +24,7 @@ export default class RPKRequest extends React.Component {
   }
 
   applyStatus = (requestId) => {
-    this.props.applyRequestStatus(requestId, this.newStatus);
+    // this.props.applyRequestStatus(requestId, this.newStatus);
   }
 
   changeStatusHandler = (requestId, value) => {
@@ -95,7 +95,7 @@ export default class RPKRequest extends React.Component {
                                 this.props.uniqueStatusList[0] !==
                                   ""
                                   ? this.props.uniqueStatusList
-                                  : new Array()
+                                  : []
                               }
                               defaultValue={
                                 this.props.operation.status !== ''
@@ -153,11 +153,11 @@ export default class RPKRequest extends React.Component {
                 <td>
                   {this.props.firstEl ? this.props.operation.request : ""}
                 </td>
-                <td>
+                {/* <td>
                   {this.props.operation.type === "income"
                     ? this.props.operation.client
                     : ""}
-                </td>
+                </td> */}
                 <td>{this.props.operation.organization}</td>
                 <td>
                   <div
@@ -226,9 +226,41 @@ export default class RPKRequest extends React.Component {
                   ) : null}
                 </td>
                 <td>
-                  {this.props.operation.type === "outcome"
-                    ? this.props.operation.client
-                    : ""}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexGrow: 1,
+                      height:
+                        this.props.operation.type === "invoice"
+                          ? "65%"
+                          : "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {this.props.operation.type === "invoice"
+                      ? parseFloat(+this.props.operation.value).toFixed(2) +
+                        " руб."
+                      : ""}
+                  </div>
+
+                  {this.props.operation.type === "invoice" ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexGrow: 1,
+                        height: "35%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#FFF5C2",
+                      }}
+                    >
+                      {this.props.operation.date}
+                    </div>
+                  ) : null}
+                </td>
+                <td>
+                  {this.props.operation.client}
                 </td>
                 <td>{this.props.operation.destination}</td>
                 <td>{this.props.operation.comment}</td>
