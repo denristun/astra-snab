@@ -26,31 +26,35 @@ const UploadFileForm: React.FC = () => {
         setLoading(true)
         let documents: BankDocument[] = []
         let alertsMessages: AlertMessage[] = []
+        console.log(upload)
         upload.forEach((row, index) => {
             if (index > 0) {
                 const [
+                  ,
                     date,
                     income,
                     outcome,
                     destination,
                     client,
                     ,
-                    ,
                     organization,
-                    comment,
+                    commentRaw,
                 ] = row
 
-                let bankDocument = new BankDocument(
-                    date,
-                    income,
-                    outcome,
-                    destination,
-                    client,
-                    organization,
-                    comment
-                )
-                if (!isInternal(bankDocument)) {
+                const comment = commentRaw ? commentRaw.trim().replace(/;\s*$/, "") : commentRaw
+
+              
+                if (!isInternal(client, organization)) {
                     if (checkCommentCell(comment)) {
+                      let bankDocument = new BankDocument(
+                        date,
+                        income,
+                        outcome,
+                        destination,
+                        client,
+                        organization,
+                        comment.trim()
+                    )
                         if (bankDocument.error) {
                             const message = `Сумма заявок не сходится с платёжным документом в строке 
                 №${index + 1} "${comment}" Сумма документа: ${
@@ -70,7 +74,7 @@ const UploadFileForm: React.FC = () => {
                     } else {
                         const message = `Проверьте корректность поля "Коментарий" в строке №${
                             index + 1
-                        } "${comment ? comment : 'Пустая ячейка'}"`
+                        } "${comment ? comment : 'Пустая ячейка'}" Контрагент: ${client} | Организация: ${organization}`
                         const commentAlert = new AlertMessage(
                             'warning',
                             message,
@@ -83,15 +87,55 @@ const UploadFileForm: React.FC = () => {
         })
         setAlerts(alertsMessages)
         setUploadData([])
+       
+        // console.log('documnets length', documents.length)
+        // const uniqueIdDocuments = [...new Set(documents.map(a => a.id))]
+        // const allIdDocuments = [...documents.map(a => a.id)]
+        const duplicates = documents.reduce((a, e) => {
+          a[e.id] = ++a[e.id] || 0;
+          return a;
+        }, {});
+
+        documents = documents.filter(e => !duplicates[e.id])
         setUploadDocuments(documents)
-        console.log(documents)
+        
         setLoading(false)
     }
 
-    const isInternal = (document: BankDocument) => {
-        const internalOrganizations = ['АСТРАХАНЬ СНАБЖЕНИЕ', 'ИП Сумин']
-        return [document.client, document.organization].every((el) =>
-            internalOrganizations.includes(el)
+    
+
+    const isInternal = (client, organization) => {
+        const internalOrganizations = [
+          'Сумина Г. А. ИП', 
+          'Юсупов А. А. ИП', 
+          'АСТРАХАНЬ- СНАБЖЕНИЕ ООО', 
+          'Савенков Е. М. ИП', 
+          'Муратова Е. В. ИП', 
+          'Сумина Г. А. ИП',
+          'АСТРАХАНЬ- СНАБ',
+          'Сумин В.С. ИП',
+          'Интер ООО',
+          'Хасанжанов Р. Р. ИП',
+          'Юсупов Андрей Андреевич ИП',
+          'Юсупов Андрей Андреевич',
+          'Савенков Евгений Михайлович',
+          'Сумина Гульнара Амиржановна',
+          'Муратова Екатерина Викторовна ИП',
+          'Муратова Екатерина Викторовна',
+          'АСТРАХАНЬ-СНАБЖЕНИЕ ООО ГК',
+          'Сумин Владислав Сергеевич',
+          'ХАСАНЖАНОВ РАМИЛЬ РАФИКОВИЧ ИП',
+          'Хасанжанов Рамиль Рафикович',
+          'Сумин Владислав Сергеевич (Учредитель)',
+          'Хасанжанов Р.Р.(Учредитель)'
+
+        ].map (org => org.toLocaleLowerCase())
+        return [client, organization].every((el) =>{
+          const isInternal = el ? internalOrganizations.includes(el.toLowerCase()): true
+          return isInternal
+        }
+            
+           
         )
     }
 
@@ -110,10 +154,10 @@ const UploadFileForm: React.FC = () => {
         if (commentCell) {
             const semicolonCount = (commentCell.match(/;/g) || []).length + 1
             return (
-                (commentCell.match(requestRegExp) || []).length ===
+                (commentCell.trim().match(requestRegExp) || []).length ===
                     semicolonCount ||
-                (commentCell.match(requestRegExp2) || []).length ||
-                (commentCell.match(requestRegExp3) || []).length
+                (commentCell.trim().match(requestRegExp2) || []).length ||
+                (commentCell.trim().match(requestRegExp3) || []).length
             )
         }
     }
@@ -143,6 +187,7 @@ const UploadFileForm: React.FC = () => {
     }
 
     const onChangeFile = useCallback(
+     
         async (event) => {
             setAlerts([])
             setUploadDocuments(BankDocument[0])
@@ -177,13 +222,13 @@ const UploadFileForm: React.FC = () => {
 
     const checkExcelFile = async (rowHeader: []) => {
         const tableHeader = [
+          'месяц',
             'Дата',
             'Поступление',
             'Списание',
             'Назначение платежа',
             'Контрагент',
-            'Вх.номер',
-            'Вх.дата',
+            'Вид операции',
             'Организация',
             'Комментарий',
         ]
@@ -257,7 +302,7 @@ const UploadFileForm: React.FC = () => {
             <div>
                 {dbResponse.map((response: any, index) => (
                     <div
-                        key={response.bankDocument.id}
+                        key={index}
                         className={classes.alert}
                     >
                         <AlertBox response={response} index={index + 2} />
@@ -300,6 +345,13 @@ function AlertBox(props) {
             message = `Запись под №${props.index} уже имеется в базе данных`
             title = 'Ошибка добавления в базу данных'
             type = 'error'
+        }
+        else{
+          console.log(props.response)
+          message = `${props.response.error.message}`
+          title = 'Ошибка добавления в базу данных'
+          type = 'error'
+
         }
     }
 

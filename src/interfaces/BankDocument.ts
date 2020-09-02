@@ -23,8 +23,10 @@ export class BankDocument{
         this.client = client
         this.organization = organization
         this.requests = []
-        this.id = hash({destination:this.destination, date: this.date, value: this.income || this.outcome, organization: this.organization, client:this.client})
+        // this.id = hash({destination:this.destination, date: this.date, value: this.income || this.outcome, organization: this.organization, client:this.client})
+        this.id = hash(this)
         this.setRequests = comment
+       
     }
 //Обработка ячейки комментарий
   set setRequests(comment: string){
@@ -40,16 +42,16 @@ export class BankDocument{
                 let valueInt = value && !Number.isNaN(+valueFloat) ? valueFloat : this.income || this.outcome
                 client = client ? client: this.client
                 let type: BankRequestType = this.income ? 'income' : 'outcome'
-                const correctRequestNumber = requestNumber.match(/[а-я,А-Я]{3}-[0-9]{1,2}\/[0-9]{1,6}/g)[0]
+                // console.log('requestNumber',requestNumber)
+                const correctRequestNumber = requestNumber.match(/[а-я,А-Я]{3}-[0-9]{1,2}($|\/[0-9]{1,6})/g)[0]
                 this.requestsSum += valueInt
                 const bankRequest = new BankRequest(correctRequestNumber, valueInt, type, this.id, client, this.destination, this.date, this.client, "", this.organization)
-                console.log("bankRequests", bankRequest)
+                // console.log("bankRequests", bankRequest)
                 this.requests.push(bankRequest)
             }
         })
     
         if (this.requests.length > 1){
-            console.log(this.requests)
             this.error = Math.round((this.requestsSum + Number.EPSILON) * 100) / 100 === (this.income || this.outcome)? false : true
             
         }
