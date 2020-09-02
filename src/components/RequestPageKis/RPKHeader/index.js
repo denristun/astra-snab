@@ -264,9 +264,7 @@ class RPKHeader extends React.Component {
                           key={this.state.textFields.status.key}
                           name={this.state.textFields.status.name}
                           options={
-                            this.props.uniqueFilters.uniqueStatusList.length >
-                              0 &&
-                            this.props.uniqueFilters.uniqueStatusList[0] !== ""
+                            this.props.uniqueFilters.uniqueStatusList.length > 0
                               ? this.props.uniqueFilters.uniqueStatusList
                               : new Array()
                           }

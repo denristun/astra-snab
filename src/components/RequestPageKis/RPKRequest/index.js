@@ -60,7 +60,7 @@ export default class RPKRequest extends React.Component {
     if (status === "" ) {
       status = 'Без статуса';
     }
-    // console.log(this.props.uniqueStatus);
+    // console.log(this.props.uniqueStatusList);
 
     return (
       <div
@@ -117,9 +117,7 @@ export default class RPKRequest extends React.Component {
                             name={this.state.operation._id}
                             options={
                               this.props.uniqueStatusList
-                                .length > 0 &&
-                              this.props.uniqueStatusList[0] !==
-                                ""
+                                .length > 0
                                 ? this.props.uniqueStatusList
                                 : []
                             }

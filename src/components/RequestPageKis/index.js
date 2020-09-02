@@ -439,6 +439,7 @@ class RequestPageKis extends React.Component {
       localStorage.setItem("originState", JSON.stringify(srequests));
 
       this.props.renderData(requests);
+
       this._RPKRequestRef.updateLine(data.request);
 
       // this.clearFilters();
