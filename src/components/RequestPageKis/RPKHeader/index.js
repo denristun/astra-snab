@@ -35,14 +35,14 @@ class RPKHeader extends React.Component {
         autofocus: false,
         key: Math.random(),
       },
-      client: {
-        name: "client",
-        type: "autocomplete",
-        tfVariant: "filled",
-        tfLabel: "Выберите клиента",
-        autofocus: false,
-        key: Math.random(),
-      },
+      // client: {
+      //   name: "client",
+      //   type: "autocomplete",
+      //   tfVariant: "filled",
+      //   tfLabel: "Выберите клиента",
+      //   autofocus: false,
+      //   key: Math.random(),
+      // },
       organization: {
         name: "organization",
         type: "autocomplete",
@@ -69,8 +69,17 @@ class RPKHeader extends React.Component {
         autofocus: false,
         key: Math.random(),
       },
-      provider: {
-        name: "provider",
+      invoice: {
+        name: "invoice",
+        type: "textfield",
+        defaultValue: "",
+        variant: "filled",
+        label: "Вводите сумму",
+        autofocus: false,
+        key: Math.random(),
+      },
+      client: {
+        name: "client",
         type: "autocomplete",
         tfVariant: "filled",
         tfLabel: "Выберите поставщика",
@@ -356,7 +365,7 @@ class RPKHeader extends React.Component {
                     </Grid>
                   </div>
                 </th>
-                <th>
+                {/* <th>
                   Клиент
                   <br />
                   <div
@@ -435,7 +444,7 @@ class RPKHeader extends React.Component {
                       </Box>
                     </Grid>
                   </div>
-                </th>
+                </th> */}
                 <th>
                   Организация
                   <br />
@@ -522,7 +531,7 @@ class RPKHeader extends React.Component {
                   </div>
                 </th>
                 <th>
-                  Реализация
+                  Поступление
                   <br />
                   <div
                     className={classes.filter}
@@ -592,7 +601,7 @@ class RPKHeader extends React.Component {
                   </div>
                 </th>
                 <th>
-                  Расход
+                  Списание
                   <br />
                   <div
                     className={classes.filter}
@@ -662,30 +671,100 @@ class RPKHeader extends React.Component {
                   </div>
                 </th>
                 <th>
-                  Поставщик
+                  Накладная
                   <br />
                   <div
                     className={classes.filter}
                     onClick={() =>
-                      this.toggleFilterLine(this.state.textFields.provider.name)
+                      this.toggleFilterLine(this.state.textFields.invoice.name)
                     }
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                   </div>
                   <div
-                    id={this.state.textFields.provider.name}
+                    id={this.state.textFields.invoice.name}
                     type="clearFilterButton"
                     className={classes.filter + " " + classes.clearFilter}
                     style={{ backgroundColor: "#C67B7B" }}
                     onClick={() =>
-                      this.clearFilter(this.state.textFields.provider.name)
+                      this.clearFilter(this.state.textFields.invoice.name)
                     }
                   >
                     <FontAwesomeIcon icon={faFilter} size="1x" />
                     <FontAwesomeIcon icon={faTimes} />
                   </div>
                   <div
-                    id={this.state.textFields.provider.name}
+                    id={this.state.textFields.invoice.name}
+                    type="filterLine"
+                    className={classes.filterLine}
+                    display="false"
+                  >
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <TextField
+                          key={this.state.textFields.invoice.key}
+                          name={this.state.textFields.invoice.name}
+                          variant={this.state.textFields.invoice.variant}
+                          label={this.state.textFields.invoice.label}
+                          autoFocus={this.state.textFields.invoice.autofocus}
+                          defaultValue={
+                            this.state.textFields.invoice.defaultValue
+                          }
+                          type="number"
+                          onChange={(event) =>
+                            this.changeFilterValue(
+                              this.state.textFields.invoice.name,
+                              event.target.value
+                            )
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          size="2x"
+                          color="#398def"
+                          style={{ cursor: "pointer", padding: "10px" }}
+                          onClick={() =>
+                            this.toggleFilterLine(
+                              this.state.textFields.invoice.name
+                            )
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  </div>
+                </th>
+                <th>
+                  Контрагент
+                  <br />
+                  <div
+                    className={classes.filter}
+                    onClick={() =>
+                      this.toggleFilterLine(this.state.textFields.client.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                  </div>
+                  <div
+                    id={this.state.textFields.client.name}
+                    type="clearFilterButton"
+                    className={classes.filter + " " + classes.clearFilter}
+                    style={{ backgroundColor: "#C67B7B" }}
+                    onClick={() =>
+                      this.clearFilter(this.state.textFields.client.name)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="1x" />
+                    <FontAwesomeIcon icon={faTimes} />
+                  </div>
+                  <div
+                    id={this.state.textFields.client.name}
                     type="filterLine"
                     className={classes.filterLine}
                     display="false"
@@ -698,14 +777,14 @@ class RPKHeader extends React.Component {
                     >
                       <Box>
                         <Autocomplete
-                          key={this.state.textFields.provider.key}
-                          name={this.state.textFields.provider.name}
+                          key={this.state.textFields.client.key}
+                          name={this.state.textFields.client.name}
                           options={
-                            this.props.uniqueFilters.uniqueProviderList.length >
+                            this.props.uniqueFilters.uniqueClientList.length >
                               0 &&
-                            this.props.uniqueFilters.uniqueProviderList[0] !==
+                            this.props.uniqueFilters.uniqueClientList[0] !==
                               ""
-                              ? this.props.uniqueFilters.uniqueProviderList
+                              ? this.props.uniqueFilters.uniqueClientList
                               : new Array()
                           }
                           getOptionLabel={(option) => option}
@@ -713,14 +792,14 @@ class RPKHeader extends React.Component {
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              label={this.state.textFields.provider.tfLabel}
-                              variant={this.state.textFields.provider.tfVariant}
+                              label={this.state.textFields.client.tfLabel}
+                              variant={this.state.textFields.client.tfVariant}
                             />
                           )}
                           // value={this.state.textFields.status.value}
                           onChange={(event, newInputValue) =>
                             this.changeFilterValue(
-                              this.state.textFields.provider.name,
+                              this.state.textFields.client.name,
                               newInputValue
                             )
                           }
@@ -734,7 +813,7 @@ class RPKHeader extends React.Component {
                           style={{ cursor: "pointer", padding: "10px" }}
                           onClick={() =>
                             this.toggleFilterLine(
-                              this.state.textFields.provider.name
+                              this.state.textFields.client.name
                             )
                           }
                         />
