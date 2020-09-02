@@ -521,8 +521,8 @@ class RequestPageKis extends React.Component {
                         uniqueStatusList={uniqueFilters.uniqueStatusList}
                         trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
                         applyRequestStatus={this.applyRequestStatus}
-                        ref={(func2) => {
-                          this._RPKRequestRef = func2;
+                        ref={(func) => {
+                          this._RPKRequestRef = func;
                         }}
                       />
                     );

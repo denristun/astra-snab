@@ -68,7 +68,7 @@ export default class RPKOutcomePage extends React.Component {
             name: "client",
             fullWidth: true,
             id: "outcomeFormInput",
-            label: "Поставщик",
+            label: "Контрагент",
             type: "autocomplete",
             multiline: false,
             rowsMax: 1,
@@ -157,7 +157,7 @@ export default class RPKOutcomePage extends React.Component {
 
   getFormatDate = (date) => {
     let day = date.getDate().toString();
-    let month = date.getMonth().toString();
+    let month = (date.getMonth()+1).toString();
     let year = date.getFullYear().toString();
 
     if (day.length < 2) {

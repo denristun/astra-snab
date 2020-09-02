@@ -11,7 +11,7 @@ export default class RPKRequest extends React.Component {
     super(props);
 
     this.state = {
-      operation: this.props.operation,
+      operation: this.props.operation
     }
     // console.log(this.state);
     
@@ -43,13 +43,8 @@ export default class RPKRequest extends React.Component {
 
   updateLine = (operation) => {
     this.toggleStatusLine(operation._id);
-    if (operation.status === '') {
-      document.querySelector('[status="'+operation._id+'"]').textContent = 'Без статуса';
-      document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = 'rgb(253, 191, 191)';
-    } else {
-      document.querySelector('[status="'+operation._id+'"]').textContent = operation.status;
-      document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = '#ffffff';
-    }
+    // console.log(document.querySelector('[status="'+operation._id+'"]'));
+    document.querySelector('[status="'+operation._id+'"]').textContent = operation.status;
   }
 
   render() {
@@ -123,11 +118,11 @@ export default class RPKRequest extends React.Component {
                                 ? this.props.uniqueStatusList
                                 : []
                             }
-                            defaultValue={
-                              this.state.operation.status !== ''
-                                ? this.state.operation.status
-                                : ''
-                            }
+                            // defaultValue={
+                            //   this.state.operation.status !== ''
+                            //     ? this.state.operation.status
+                            //     : ''
+                            // }
                             getOptionLabel={(option) => option}
                             style={{ width: 300 }}
                             renderInput={(params) => (
