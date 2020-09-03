@@ -220,13 +220,22 @@ export default class RPKOutcomePage extends React.Component {
       formTextFields.status = false;
       formTextFields.type = "outcome";
 
-      // console.log(formTextFields);
-
       this.props.addOutcomeOperation(formTextFields);
     }
 
+    this.props.closeModal();
+    this.resetTextfields();
     this.buttonLoaderActivator("hide");
   };
+
+  resetTextfields = () => {
+    const formData = this.state.formData;
+    Object.keys(formData.textFields).forEach(key => {
+      formData.textFields[key].defaultValue = '';
+    });
+
+    this.setState({formData});
+  }
 
   textFieldValidate = (textFieldName, value) => {
     const state = this.state;

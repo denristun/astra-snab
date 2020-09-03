@@ -40,7 +40,7 @@ export default class RPKRequest extends React.Component {
     state.autocomplete.push(this.newStatus);
     state.autocomplete = state.autocomplete.filter(el => el !== oldStatus);
 
-    console.log(state.autocomplete);
+    // console.log(state.autocomplete);
 
     state.key = Math.random();
     this.setState({
