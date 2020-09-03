@@ -3,7 +3,6 @@ import React from "react";
 import classes from "./RequestPageKis.module.scss";
 import RPKHeader from "./RPKHeader";
 import RPKRequest from "./RPKRequest";
-import { connect } from "react-redux";
 import RPKButton from "./RPKButton";
 import RPKResultLine from "./RPKResultLine";
 import Loader from "../Loader";
@@ -25,6 +24,8 @@ class RequestPageKis extends React.Component {
     loader: true,
     update: true,
     uniqueValues: [],
+    requests: [],
+    error: '',
   };
 
   // originState = {};
@@ -49,16 +50,19 @@ class RequestPageKis extends React.Component {
         },
       });
       let groups = await responseGroups.json();
+      
+      await this.getUniqueData();
 
-      this.getData(groups[0].group);
-      localStorage.setItem("group", JSON.stringify(groups[0].group));
+      // const activeGroup = groups[0].group;
+      const activeGroup = 'БРР';
 
-      // console.log(this.originState);
+      this.getData(activeGroup);
+
+      localStorage.setItem("group", JSON.stringify(activeGroup));
+
+      console.log('componentDidMount');
     } catch (e) {
-      console.log(e);
-      this.setState({
-        loader: false,
-      });
+      this.setState({ error: e, loader: false });
     }
   }
 
@@ -72,13 +76,28 @@ class RequestPageKis extends React.Component {
         },
       });
       let data = await responseRequests.json();
+      console.log('getUniqueData');
       this.setState({ uniqueValues: data });
-    } catch (e) {}
+    } catch (e) {
+      this.setState({ error: e, loader: false });
+    }
   }
 
   getUniqueDataValues() {
     return this.state.uniqueValues;
   }
+
+  // dataAddPropDisplay = (data) => {
+  //   Object.keys(data).forEach(key => {      
+  //     if (typeof(data[key]) !== "string") {
+  //       data[key][1] = data[key][1].map(el => {
+  //         el.display = true;
+  //         return el;
+  //       })
+  //     }
+  //   })
+  //   return data;
+  // }
 
   async getData(group) {
     const urlRequests =
@@ -93,20 +112,21 @@ class RequestPageKis extends React.Component {
       });
       let data = await responseRequests.json();
       data.group = group;
-      this.props.renderData(data);
+
+      // data = this.dataAddPropDisplay(data);
+      // console.log(data);
+
+      this.setState({
+        requests: data
+      })
 
       localStorage.setItem("originState", JSON.stringify(data));
-      // console.log(this.originState);
-      await this.getUniqueData();
-      this.setState({
-        loader: false,
-      });
-    } catch (e) {
-      this.props.renderData({ error: e });
 
-      this.setState({
-        loader: false,
-      });
+      console.log('getData');
+
+      this.setState({loader: false});
+    } catch (e) {
+      this.setState({ error: e, loader: false });
     }
   }
 
@@ -165,15 +185,15 @@ class RequestPageKis extends React.Component {
   };
 
   addOutcomeOperation = (formData) => {
-    this.sendOutcomeOperationToServer(formData, this.props.requests);
+    this.sendOutcomeOperationToServer(formData, this.state.requests);
   };
 
   deleteOperation = async (operation) => {
-    await this.deleteOperationFromServer(operation, this.props.requests);
+    await this.deleteOperationFromServer(operation, this.state.requests);
   };
 
   changeOperation = async (operation) => {
-    await this.changeOperationFromServer(operation, this.props.requests);
+    await this.changeOperationFromServer(operation, this.state.requests);
   };
 
   async deleteOperationFromServer(operation, requests) {
@@ -198,14 +218,11 @@ class RequestPageKis extends React.Component {
           );
         }
       });
-      localStorage.setItem("originState", JSON.stringify(requests));
-      this.props.renderData(requests);
-      this.setState({
-        loader: false,
-        update: !this.state.update,
-      });
+      localStorage.setItem("originState", JSON.stringify(requests)); 
+           
+      this.setState({ requests, loader: false });
     } catch (e) {
-      console.log(e);
+      this.setState({ error: e, loader: false });
     }
   }
 
@@ -238,14 +255,10 @@ class RequestPageKis extends React.Component {
         }
       });
       localStorage.setItem("originState", JSON.stringify(requests));
-      this.props.renderData(requests);
-
-      this.setState({
-        loader: false,
-        update: !this.state.update,
-      });
+      
+      this.setState({ requests, loader: false });
     } catch (e) {
-      console.log(e);
+      this.setState({ error: e, loader: false });
     }
   }
 
@@ -272,16 +285,12 @@ class RequestPageKis extends React.Component {
             requests[key][1].push(data);
           }
         });
-  
-        this.props.renderData(requests);
-        this.setState({
-          loader: false,
-          update: !this.state.update,
-        });
       }
       
+      this.setState({ requests, loader: false });
+      
     } catch (e) {
-      console.log(e);
+      this.setState({ error: e, loader: false });
     }
   }
 
@@ -304,28 +313,7 @@ class RequestPageKis extends React.Component {
       ) {
         filterOriginState = filterOriginState.filter((element) => {
           element[1] = element[1].filter((operation) => {
-            // if (key === "client" || key === "provider") {
-            //   if (
-            //     key === "client" &&
-            //     operation.type === "income" &&
-            //     operation[key]
-            //       .toLowerCase()
-            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
-            //   ) {
-            //     return operation;
-            //   }
-            //   if (
-            //     key === "provider" &&
-            //     operation.type === "outcome" &&
-            //     operation.client
-            //       .toLowerCase()
-            //       .indexOf(this.filtersList[key].toLowerCase()) !== -1
-            //   ) {
-            //     return operation;
-            //   }
-            //   return;
-            // }
-
+            
             if (key === "income" || key === "outcome" || key === "invoice") {
               if (
                 key === "income" &&
@@ -376,15 +364,12 @@ class RequestPageKis extends React.Component {
       }
     });
 
-    this.props.renderData(filterOriginState);
+    this.setState({requests:filterOriginState});
   };
 
-  applyRequestStatus = (operation, request = false) => {
-    // console.log(operation);
-
-    if (!request) {
-      this.changeOperationStatusBase(operation, this.props.requests);
-    }
+  applyRequestStatus = (operation, oldStatus, newStatus) => {  
+    this._rpkHeader.updateStatusList(oldStatus, newStatus);
+    this.changeOperationStatusBase(operation, this.state.requests);
   };
 
   async changeOperationStatusBase(operation, requests) {
@@ -404,29 +389,15 @@ class RequestPageKis extends React.Component {
       // console.log(response);
       // console.log(data);
 
-      const srequests = JSON.parse(localStorage.getItem('originState'));
+      const tmpRequests = JSON.parse(localStorage.getItem('originState'));
 
       if (response.ok) {
-        Object.keys(srequests).forEach((key) => {
+        Object.keys(tmpRequests).forEach((key) => {
           if (
-            typeof srequests[key][0] !== "undefined" &&
-            srequests[key][0] === data.request.request
+            typeof tmpRequests[key][0] !== "undefined" &&
+            tmpRequests[key][0] === data.request.request
           ) {
-            srequests[key][1] = srequests[key][1].map((operation) => {
-              if (operation._id === data.request._id) {
-                operation.status = data.request.status;
-              }
-              return operation;
-            });
-          }
-        });
-
-        Object.keys(requests).forEach((key) => {
-          if (
-            typeof requests[key][0] !== "undefined" &&
-            requests[key][1] === data.request.request
-          ) {
-            requests[key][1] = requests[key][1].map((operation) => {
+            tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
               if (operation._id === data.request._id) {
                 operation.status = data.request.status;
               }
@@ -436,29 +407,22 @@ class RequestPageKis extends React.Component {
         });
       }
       
-      localStorage.setItem("originState", JSON.stringify(srequests));
+      localStorage.setItem("originState", JSON.stringify(tmpRequests));
+      // console.log('Change origin state');
 
-      this.props.renderData(requests);
-      this._RPKRequestRef.updateLine(data.request);
-
-      // this.clearFilters();
-      // this.setState({
-      //   loader: false,
-      //   update: !this.state.update,
-      // });
+      // this.setState({requests});
 
     } catch (e) {
-      console.log(e);
+      this.setState({ error: e, loader: false });
     }
   }
 
   render() {
-    // console.log(this.props.requests);
     let incomeAll = 0;
     let outcomeAll = 0;
     let invoiceAll = 0;
 
-    const uniqueFilters = this.getUniqueFilters(this.props.requests);
+    const uniqueFilters = this.getUniqueFilters(this.state.requests);
     const uniqueValues = this.getUniqueDataValues();
     // console.log(uniqueFilters);
 
@@ -486,9 +450,9 @@ class RequestPageKis extends React.Component {
           </div>
         ) : (
           <div>
-            {!this.props.requests.error && this.props.requests.length > 0 ? (
+            {this.state.error === '' && this.state.requests.length > 0 ? (
               <div className={classes.content} id="RPKContent">
-                {this.props.requests.map((request, index) => {
+                {this.state.requests.map((request, index) => {
                   let opertionID = request[0];
                   let operations = [];
                   let income = 0;
@@ -507,24 +471,25 @@ class RequestPageKis extends React.Component {
                     }
 
                     operations.push(
-                      <RPKRequest
-                        onDoubleClick={() =>
-                          this._requestChangeDialog.handleShow(
-                            request[1][i],
-                            uniqueValues
-                          )
-                        }
-                        key={index.toString() + Math.random()}
-                        firstEl={i === 0 ? true : false}
-                        operation={request[1][i]}
-                        operationId={opertionID}
-                        uniqueStatusList={uniqueFilters.uniqueStatusList}
-                        trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
-                        applyRequestStatus={this.applyRequestStatus}
-                        ref={(func) => {
-                          this._RPKRequestRef = func;
-                        }}
-                      />
+                      <div
+                        key={request[1][i]._id}
+                      >
+                        <RPKRequest
+                          onDoubleClick={() =>
+                            this._requestChangeDialog.handleShow(
+                              request[1][i],
+                              uniqueValues
+                            )
+                          }
+                          firstEl={i === 0 ? true : false}
+                          operation={request[1][i]}
+                          operationId={opertionID}
+                          uniqueStatusList={uniqueFilters.uniqueStatusList}
+                          trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
+                          applyRequestStatus={this.applyRequestStatus}
+                          
+                        />
+                      </div>                      
                     );
                   }
 
@@ -566,7 +531,7 @@ class RequestPageKis extends React.Component {
                   alignItems: "center",
                 }}
               >
-                <h3>Нет данных {this.props.requests.error}</h3>
+                <h3>Нет данных {this.state.error}</h3>
               </div>
             )}
           </div>
@@ -584,10 +549,14 @@ class RequestPageKis extends React.Component {
             operationId="totalResult"
             trColor={"#398DEF"}
           />
+
+            {/* {console.log(this.state.requests.group) || console.log(JSON.parse(localStorage.getItem("group")))} */}
+
           <RPKGroups
-            activeGroup={
-              this.props.requests.group ||
+            activeGroup={ 
+              this.state.requests.group ||
               JSON.parse(localStorage.getItem("group"))
+              
             }
             selectGroup={this.selectGroup}
           />
@@ -599,16 +568,4 @@ class RequestPageKis extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    ...state.requests,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    renderData: (data) => dispatch({ type: "RENDER_DATA", data }),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RequestPageKis);
+export default RequestPageKis;

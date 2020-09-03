@@ -1,6 +1,5 @@
 import React from 'react';
 import classes from './RPKGroups.module.scss';
-import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,6 +16,11 @@ SwiperCore.use([Navigation]);
 let insertClasses = [classes.RPKGroups];
 
 class RPKGroups extends React.Component {
+  state = {
+    groups: [],
+    error: '',
+  }
+
   componentDidMount() {
     this.getData();
   }
@@ -33,10 +37,9 @@ class RPKGroups extends React.Component {
       });
       let data = await response.json();
       // console.log(data);
-      this.props.renderData(data);
+      this.setState({groups: data});
     } catch (e) {
-      // console.log(e);
-      this.props.renderData({ error: e });
+      this.setState({error: e});
     }
   };
 
@@ -49,7 +52,7 @@ class RPKGroups extends React.Component {
         </div>
 
         <div className={classes.swiperContent}>
-          {this.props.groups.error ? (
+          {this.state.error !== '' ? (
             <div>Не удается получить список Групп!</div>
           ) : (
             <Swiper
@@ -61,7 +64,7 @@ class RPKGroups extends React.Component {
               // onSlideChange={() => console.log('slide change')}
               // onSwiper={(swiper) => console.log(swiper)}
             >
-              {this.props.groups.map((element, index) => {
+              {this.state.groups.map((element, index) => {
                 let slideClasses = ['slideKis'];
                 if (
                   this.props.activeGroup &&
@@ -98,16 +101,4 @@ class RPKGroups extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    ...state.groups,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    renderData: (data) => dispatch({ type: 'RENDER_GROUPS', data }),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RPKGroups);
+export default RPKGroups;
