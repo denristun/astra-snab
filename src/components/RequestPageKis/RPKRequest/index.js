@@ -84,7 +84,7 @@ export default class RPKRequest extends React.Component {
                   <div name='status' id={this.state.operation._id} status={this.state.operation._id}>                    
                     {status}
                   </div>          
-                  <div>
+                  {/* <div>
                     <Grid
                       container
                       direction="row"
@@ -173,7 +173,7 @@ export default class RPKRequest extends React.Component {
                         </Box>
                       </Grid>
                     </div>
-                  </div>
+                  </div> */}
                   
                 </td>
                 <td name='request' id={this.state.operation._id} >
