@@ -223,9 +223,9 @@ export default class RPKOutcomePage extends React.Component {
       this.props.addOutcomeOperation(formTextFields);
     }
 
-    this.props.closeModal();
-    this.resetTextfields();
-    this.buttonLoaderActivator("hide");
+    // this.props.closeModal();
+    // this.resetTextfields();
+    // this.buttonLoaderActivator("hide");
   };
 
   resetTextfields = () => {

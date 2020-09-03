@@ -9,6 +9,7 @@ import Loader from "../Loader";
 import RPKGroups from "./RPKGroups";
 
 import RPKRequestChangeDialog from "./RPKRequestChangeDialog";
+import RPKRequestChangeStatus from "./RPKRequestChangeStatus";
 // import requests from "../../Redux/Reducers/requests";
 
 let insertClasses = [classes.RequestPageKis];
@@ -53,14 +54,14 @@ class RequestPageKis extends React.Component {
       
       await this.getUniqueData();
 
-      // const activeGroup = groups[0].group;
-      const activeGroup = 'БРР';
+      const activeGroup = groups[0].group;
+      // const activeGroup = 'БРР';
 
       this.getData(activeGroup);
 
       localStorage.setItem("group", JSON.stringify(activeGroup));
 
-      console.log('componentDidMount');
+      // console.log('componentDidMount');
     } catch (e) {
       this.setState({ error: e, loader: false });
     }
@@ -76,7 +77,7 @@ class RequestPageKis extends React.Component {
         },
       });
       let data = await responseRequests.json();
-      console.log('getUniqueData');
+      // console.log('getUniqueData');
       this.setState({ uniqueValues: data });
     } catch (e) {
       this.setState({ error: e, loader: false });
@@ -86,6 +87,18 @@ class RequestPageKis extends React.Component {
   getUniqueDataValues() {
     return this.state.uniqueValues;
   }
+
+  // dataAddPropDisplay = (data) => {
+  //   Object.keys(data).forEach(key => {      
+  //     if (typeof(data[key]) !== "string") {
+  //       data[key][1] = data[key][1].map(el => {
+  //         el.display = true;
+  //         return el;
+  //       })
+  //     }
+  //   })
+  //   return data;
+  // }
 
   async getData(group) {
     if (group === 'ВСЕ') {
@@ -100,6 +113,9 @@ class RequestPageKis extends React.Component {
         });
         let data = await responseRequests.json();
         data.group = group;
+  
+        // data = this.dataAddPropDisplay(data);
+        // console.log(data);
   
         localStorage.setItem("originState", JSON.stringify(data));
   
@@ -238,7 +254,7 @@ class RequestPageKis extends React.Component {
 
   async changeOperationFromServer(operation, requests) {
     try {
-      const url = "https://astra-snab-server.herokuapp.com/api/request";
+      const url = "http://sumincrmserver.holod30.ru/api/request";
       const response = await fetch(url, {
         method: "PATCH",
         headers: {
@@ -248,36 +264,47 @@ class RequestPageKis extends React.Component {
       });
 
       const data = await response.json();
+      const tmpRequests = JSON.parse(localStorage.getItem('originState'));
       // console.log(data);
 
-      const tmpRequests = JSON.parse(localStorage.getItem('originState'));
-
-      if (response.ok) {
+      if(response.ok) {
         Object.keys(tmpRequests).forEach((key) => {
           if (
             typeof tmpRequests[key][0] !== "undefined" &&
-            tmpRequests[key][0] === data.request
+            tmpRequests[key][0] === data.request.request
           ) {
-            tmpRequests[key][1].push(data);
+            tmpRequests[key][1] = tmpRequests[key][1].map(operation => {
+              if (operation._id === data.request._id) {
+                return data.request;
+              } else {
+                return operation;
+              }
+            })
           }
         });
-      }
-      
-      localStorage.setItem("originState", JSON.stringify(tmpRequests));
-      this.apdateNativeBlock(operation);
 
+        Object.keys(requests).forEach((key) => {
+          if (
+            typeof requests[key][0] !== "undefined" &&
+            requests[key][0] === data.request.request
+          ) {
+            requests[key][1] = requests[key][1].map(operation => {
+              if (operation._id === data.request._id) {
+                return data.request;
+              } else {
+                return operation;
+              }
+            })
+          }
+        });
+      }      
+
+      localStorage.setItem("originState", JSON.stringify(requests));
+      
+      this.setState({ requests, loader: false });
     } catch (e) {
       this.setState({ error: e, loader: false });
     }
-  }
-
-  apdateNativeBlock = (operation) => {
-    // console.log(operation);
-    document.querySelector('[id="'+operation._id+'"][name="request"]').textContent = operation.request;
-    document.querySelector('[id="'+operation._id+'"][name="outcome"]').textContent = parseFloat(+this.operation.value).toFixed(2)+" руб.";
-    document.querySelector('[id="'+operation._id+'"][name="client"]').textContent = operation.client;
-    document.querySelector('[id="'+operation._id+'"][name="organization"]').textContent = operation.organization;
-    document.querySelector('[id="'+operation._id+'"][name="comment"]').textContent = operation.comment;
   }
 
   async sendOutcomeOperationToServer(formData) {
@@ -294,6 +321,7 @@ class RequestPageKis extends React.Component {
       const data = await response.json();
       // console.log(response);
       const tmpRequests = JSON.parse(localStorage.getItem('originState'));
+      const state = this.state;
 
       if (response.ok) {
         Object.keys(tmpRequests).forEach((key) => {
@@ -304,11 +332,22 @@ class RequestPageKis extends React.Component {
             tmpRequests[key][1].push(data);
           }
         });
+
+        Object.keys(state.requests).forEach((key) => {
+          if (
+            typeof state.requests[key][0] !== "undefined" &&
+            state.requests[key][0] === data.request
+          ) {
+            state.requests[key][1].push(data);
+          }
+        });
       }
       
       localStorage.setItem("originState", JSON.stringify(tmpRequests));
-      this.addNativeBlock(formData);
       
+      this.setState({
+        requests: state.requests
+      })      
     } catch (e) {
       this.setState({ error: e, loader: false });
     }
@@ -392,55 +431,59 @@ class RequestPageKis extends React.Component {
     this.setState({requests:filterOriginState});
   };
 
-  applyRequestStatus = (operation, oldStatus, newStatus) => {  
-    this._rpkHeader.updateStatusList(oldStatus, newStatus);
-    this.changeOperationStatusBase(operation, this.state.requests);
-  };
-
-  async changeOperationStatusBase(operation, requests) {
-    // console.log(requestId + ' ======== '+status)
-    try {
-      const url = "http://sumincrmserver.holod30.ru/api/request";
-      const response = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(operation),
-      });
-
-      const data = await response.json();
-
-      // console.log(response);
-      // console.log(data);
-
-      const tmpRequests = JSON.parse(localStorage.getItem('originState'));
-
-      if (response.ok) {
-        Object.keys(tmpRequests).forEach((key) => {
-          if (
-            typeof tmpRequests[key][0] !== "undefined" &&
-            tmpRequests[key][0] === data.request.request
-          ) {
-            tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
-              if (operation._id === data.request._id) {
-                operation.status = data.request.status;
-              }
-              return operation;
-            });
-          }
-        });
-      }
-      
-      localStorage.setItem("originState", JSON.stringify(tmpRequests));
-      // console.log('Change origin state');
-
-      // this.setState({requests});
-
-    } catch (e) {
-      this.setState({ error: e, loader: false });
-    }
+  changeStatus = () => {
+    console.log('changeStatus');
   }
+
+  // applyRequestStatus = (operation, oldStatus, newStatus) => {  
+  //   this._rpkHeader.updateStatusList(oldStatus, newStatus);
+  //   this.changeOperationStatusBase(operation, this.state.requests);
+  // };
+
+  // async changeOperationStatusBase(operation, requests) {
+  //   // console.log(requestId + ' ======== '+status)
+  //   try {
+  //     const url = "http://sumincrmserver.holod30.ru/api/request";
+  //     const response = await fetch(url, {
+  //       method: "PATCH",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(operation),
+  //     });
+
+  //     const data = await response.json();
+
+  //     // console.log(response);
+  //     // console.log(data);
+
+  //     const tmpRequests = JSON.parse(localStorage.getItem('originState'));
+
+  //     if (response.ok) {
+  //       Object.keys(tmpRequests).forEach((key) => {
+  //         if (
+  //           typeof tmpRequests[key][0] !== "undefined" &&
+  //           tmpRequests[key][0] === data.request.request
+  //         ) {
+  //           tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
+  //             if (operation._id === data.request._id) {
+  //               operation.status = data.request.status;
+  //             }
+  //             return operation;
+  //           });
+  //         }
+  //       });
+  //     }
+      
+  //     localStorage.setItem("originState", JSON.stringify(tmpRequests));
+  //     // console.log('Change origin state');
+
+  //     // this.setState({requests});
+
+  //   } catch (e) {
+  //     this.setState({ error: e, loader: false });
+  //   }
+  // }
 
   render() {
     let incomeAll = 0;
@@ -468,6 +511,10 @@ class RequestPageKis extends React.Component {
             this._requestChangeDialog = requestChangeDialog;
           }}
         ></RPKRequestChangeDialog>
+
+        <RPKRequestChangeStatus
+          changeStatus={this.changeStatus}
+        />
 
         {this.state.loader ? (
           <div>
