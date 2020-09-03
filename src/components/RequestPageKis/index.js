@@ -87,46 +87,56 @@ class RequestPageKis extends React.Component {
     return this.state.uniqueValues;
   }
 
-  // dataAddPropDisplay = (data) => {
-  //   Object.keys(data).forEach(key => {      
-  //     if (typeof(data[key]) !== "string") {
-  //       data[key][1] = data[key][1].map(el => {
-  //         el.display = true;
-  //         return el;
-  //       })
-  //     }
-  //   })
-  //   return data;
-  // }
-
   async getData(group) {
-    const urlRequests =
-      "http://sumincrmserver.holod30.ru/api/requests_by_group";
-    try {
-      let responseRequests = await fetch(urlRequests, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ group }),
-      });
-      let data = await responseRequests.json();
-      data.group = group;
-
-      // data = this.dataAddPropDisplay(data);
-      // console.log(data);
-
-      this.setState({
-        requests: data
-      })
-
-      localStorage.setItem("originState", JSON.stringify(data));
-
-      console.log('getData');
-
-      this.setState({loader: false});
-    } catch (e) {
-      this.setState({ error: e, loader: false });
+    if (group === 'ВСЕ') {
+      const urlRequests =
+        "http://sumincrmserver.holod30.ru/api/bank";
+      try {
+        let responseRequests = await fetch(urlRequests, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        let data = await responseRequests.json();
+        data.group = group;
+  
+        localStorage.setItem("originState", JSON.stringify(data));
+  
+        // console.log('getData');
+  
+        this.setState({
+          requests: data,
+          loader: false,
+        })
+      } catch (e) {
+        this.setState({ error: e, loader: false });
+      }
+    } else {
+      const urlRequests =
+        "http://sumincrmserver.holod30.ru/api/requests_by_group";
+      try {
+        let responseRequests = await fetch(urlRequests, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ group }),
+        });
+        let data = await responseRequests.json();
+        data.group = group;  
+  
+        localStorage.setItem("originState", JSON.stringify(data));
+  
+        // console.log('getData');
+  
+        this.setState({
+          requests: data,
+          loader: false,
+        })
+      } catch (e) {
+        this.setState({ error: e, loader: false });
+      }
     }
   }
 
@@ -238,28 +248,36 @@ class RequestPageKis extends React.Component {
       });
 
       const data = await response.json();
+      // console.log(data);
 
-      Object.keys(requests).forEach((key) => {
-        if (
-          typeof requests[key][0] !== "undefined" &&
-          requests[key][0] === data.request
-        ) {
-          const index = requests[key][1].find((element, index, array) => {
-            if (element._id === data._id) {
-              return index;
-            }
-          });
-          if (index !== -1) {
-            requests[key][1][index] = operation;
+      const tmpRequests = JSON.parse(localStorage.getItem('originState'));
+
+      if (response.ok) {
+        Object.keys(tmpRequests).forEach((key) => {
+          if (
+            typeof tmpRequests[key][0] !== "undefined" &&
+            tmpRequests[key][0] === data.request
+          ) {
+            tmpRequests[key][1].push(data);
           }
-        }
-      });
-      localStorage.setItem("originState", JSON.stringify(requests));
+        });
+      }
       
-      this.setState({ requests, loader: false });
+      localStorage.setItem("originState", JSON.stringify(tmpRequests));
+      this.apdateNativeBlock(operation);
+
     } catch (e) {
       this.setState({ error: e, loader: false });
     }
+  }
+
+  apdateNativeBlock = (operation) => {
+    // console.log(operation);
+    document.querySelector('[id="'+operation._id+'"][name="request"]').textContent = operation.request;
+    document.querySelector('[id="'+operation._id+'"][name="outcome"]').textContent = parseFloat(+this.operation.value).toFixed(2)+" руб.";
+    document.querySelector('[id="'+operation._id+'"][name="client"]').textContent = operation.client;
+    document.querySelector('[id="'+operation._id+'"][name="organization"]').textContent = operation.organization;
+    document.querySelector('[id="'+operation._id+'"][name="comment"]').textContent = operation.comment;
   }
 
   async sendOutcomeOperationToServer(formData) {
@@ -290,7 +308,6 @@ class RequestPageKis extends React.Component {
       
       localStorage.setItem("originState", JSON.stringify(tmpRequests));
       this.addNativeBlock(formData);
-
       
     } catch (e) {
       this.setState({ error: e, loader: false });

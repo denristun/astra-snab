@@ -17,7 +17,7 @@ let insertClasses = [classes.RPKGroups];
 
 class RPKGroups extends React.Component {
   state = {
-    groups: [],
+    groups: [{active: false, group: 'ВСЕ', __v:0, _id: 'ВСЕ'}],
     error: '',
   }
 
@@ -35,9 +35,12 @@ class RPKGroups extends React.Component {
           'Content-Type': 'application/json',
         },
       });
-      let data = await response.json();
-      // console.log(data);
-      this.setState({groups: data});
+      let data = await response.json();  
+      let state = this.state;
+      state.groups.push(...data);
+      // console.log(state);
+            
+      this.setState({groups: state.groups});
     } catch (e) {
       this.setState({error: e});
     }

@@ -81,7 +81,7 @@ export default class RPKRequest extends React.Component {
                     ? '#FDBFBF'
                     : '' 
                 }}>
-                  <div status={this.state.operation._id}>                    
+                  <div name='status' id={this.state.operation._id} status={this.state.operation._id}>                    
                     {status}
                   </div>          
                   <div>
@@ -176,7 +176,7 @@ export default class RPKRequest extends React.Component {
                   </div>
                   
                 </td>
-                <td>
+                <td name='request' id={this.state.operation._id} >
                   {this.props.firstEl ? this.state.operation.request : ""}
                 </td>
                 {/* <td>
@@ -184,8 +184,8 @@ export default class RPKRequest extends React.Component {
                     ? this.props.operation.client
                     : ""}
                 </td> */}
-                <td>{this.state.operation.organization}</td>
-                <td>
+                <td name='organization' id={this.state.operation._id} >{this.state.operation.organization}</td>
+                <td name='income' id={this.state.operation._id} >
                   <div
                     style={{
                       display: "flex",
@@ -218,7 +218,7 @@ export default class RPKRequest extends React.Component {
                   ) : null}
                 </td>
                 <td>
-                  <div
+                  <div name='outcome' id={this.state.operation._id}
                     style={{
                       display: "flex",
                       flexGrow: 1,
@@ -251,7 +251,7 @@ export default class RPKRequest extends React.Component {
                     </div>
                   ) : null}
                 </td>
-                <td>
+                <td name='invoice' id={this.state.operation._id} >
                   <div
                     style={{
                       display: "flex",
@@ -285,11 +285,11 @@ export default class RPKRequest extends React.Component {
                     </div>
                   ) : null}
                 </td>
-                <td>
+                <td name='client' id={this.state.operation._id} >
                   {this.state.operation.client}
                 </td>
-                <td>{this.state.operation.destination}</td>
-                <td>{this.state.operation.comment}</td>
+                <td name='description' id={this.state.operation._id} >{this.state.operation.destination}</td>
+                <td name='client' id={this.state.operation._id} >{this.state.operation.comment}</td>
               </tr>
             </tbody>
           </table>
