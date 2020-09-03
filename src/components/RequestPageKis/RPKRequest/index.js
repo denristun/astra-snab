@@ -12,8 +12,8 @@ export default class RPKRequest extends React.Component {
     this.state = {
       operation: this.props.operation,
       key: Math.random(),
+      autocomplete: this.props.uniqueStatusList
     }
-    // console.log(this.state);
     
     this.newStatus = '';
   }
@@ -30,38 +30,28 @@ export default class RPKRequest extends React.Component {
   }
 
   applyStatus = () => {
-    const operation = this.state.operation;
-    operation.status = this.newStatus;
+    const state = this.state;
+    state.operation.status = this.newStatus;
 
     const oldStatus = document.querySelector('[status="'+this.state.operation._id+'"]').textContent;
+    
+    this.props.applyRequestStatus(state.operation, oldStatus, this.newStatus);
 
-    const key = Math.random();
+    state.autocomplete.push(this.newStatus);
+    state.autocomplete = state.autocomplete.filter(el => el !== oldStatus);
+
+    console.log(state.autocomplete);
+
+    state.key = Math.random();
     this.setState({
-      operation, key
+      ...state
     });
 
-    this.props.applyRequestStatus(operation, oldStatus, this.newStatus);
   }
 
   changeStatusHandler = (operationId, value) => {
     this.newStatus = value;
     // console.log(this.newStatus);
-  }
-
-  updateLine = (operation) => {
-    
-    this.setState({
-      operation
-    })
-
-    // this.toggleStatusLine(operation._id);
-    // if (operation.status === '') {
-    //   document.querySelector('[status="'+operation._id+'"]').textContent = 'Без статуса';
-    //   document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = 'rgb(253, 191, 191)';
-    // } else {
-    //   document.querySelector('[status="'+operation._id+'"]').textContent = operation.status;
-    //   document.querySelector('[status="'+operation._id+'"]').closest('td').style.backgroundColor = '#ffffff';
-    // }
   }
 
   render() {
@@ -130,9 +120,9 @@ export default class RPKRequest extends React.Component {
                             key = {this.state.key}
                             name={this.state.operation._id}
                             options={
-                              this.props.uniqueStatusList
+                              this.state.autocomplete
                                 .length > 0
-                                ? this.props.uniqueStatusList
+                                ? this.state.autocomplete
                                 : []
                             }
                             defaultValue={

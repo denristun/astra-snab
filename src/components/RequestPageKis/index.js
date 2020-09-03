@@ -50,8 +50,8 @@ class RequestPageKis extends React.Component {
       });
       let groups = await responseGroups.json();
 
-      // this.getData(groups[0].group);
-      this.getData('БРР');
+      this.getData(groups[0].group);
+      // this.getData('БРР');
 
       localStorage.setItem("group", JSON.stringify(groups[0].group));
 
@@ -421,8 +421,10 @@ class RequestPageKis extends React.Component {
       }
       
       localStorage.setItem("originState", JSON.stringify(srequests));
+      // console.log('Change origin state');
 
       this.props.renderData(requests);
+      // console.log('Change requests');
 
       // this._RPKRequestRef.updateLine(data.request);
 
