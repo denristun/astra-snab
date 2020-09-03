@@ -11,8 +11,11 @@ import useStyles from './styles'
 import Loader from '../Loader'
 import { AlertMessage } from '../../interfaces/AlertMessage'
 import { BankRequest } from '../../interfaces/BankRequest'
+import { useAuth } from '../../context/auth'
+
 
 const UploadFileForm: React.FC = () => {
+    const { authToken, setAuthToken } = useAuth()
     const [loading, setLoading] = useState(false)
     const [dbResponse, setDbResponse] = useState([])
     const [checkFileError, setCheckFileError] = useState(false)
@@ -20,7 +23,6 @@ const UploadFileForm: React.FC = () => {
     const [uploadData, setUploadData] = useState([])
     const [uploadDocuments, setUploadDocuments] = useState(BankDocument[0])
     const [alerts, setAlerts] = useState(AlertMessage[0])
-
     const prepareRequests = (upload, fileType) => {
         let organization,
             client,
@@ -219,7 +221,7 @@ const UploadFileForm: React.FC = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(documents),
+            body: JSON.stringify({documents, authToken}),
         })
             .then((response) => response.json())
             .then((json) => {
