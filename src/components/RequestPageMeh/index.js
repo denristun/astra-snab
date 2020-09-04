@@ -490,11 +490,12 @@ class RequestPageMeh extends React.Component {
     let incomeAll = 0;
     let outcomeAll = 0;
     let invoiceAll = 0;
+    let income = 0;
+    let outcome = 0;
+    let invoice = 0;
 
     const uniqueFilters = this.getUniqueFilters(this.state.requests);
     const uniqueValues = this.getUniqueDataValues();
-    // console.log(uniqueFilters);
-    console.log('root component', this.state.requests)
     return (
       <div className={insertClasses.join(" ")}>
         <RPKHeader
@@ -523,36 +524,12 @@ class RequestPageMeh extends React.Component {
           </div>
         ) : (
           <div>
-                   <RPKRequest
-                          // onDoubleClick={() =>
-                          //   this._requestChangeDialog.handleShow(
-                          //     request[1][i],
-                          //     uniqueValues
-                          //   )
-                          // }
-                          uniqueValues = {uniqueValues}
-                          changeDialog = {this._requestChangeDialog}
-                          requests = {this.state.requests}
-
-
-                          // firstEl={i === 0 ? true : false}
-                          // operation={request[1][i]}
-                          // operationId={opertionID}
-                          // uniqueStatusList={uniqueFilters.uniqueStatusList}
-                          // trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
-                          // applyRequestStatus={this.applyRequestStatus}
-                          
-                        />
-
-            {this.state.error === '' && this.state.requests.length > 0 ? (
+                   {this.state.error === '' && this.state.requests.length > 0 ? (
               <div className={classes.content} id="RPKContent">
                 {this.state.requests.map((request, index) => {
-                  let opertionID = request[0];
-                  let operations = [];
-                  let income = 0;
-                  let outcome = 0;
-                  let invoice = 0;
-
+                  income = 0
+                  outcome = 0
+                  invoice = 0
                   for (let i = 0; i < request[1].length; i++) {
                     if (request[1][i].type === "income" && +request[1][i].value > 0) {
                       income = income + request[1][i].value;
@@ -564,65 +541,10 @@ class RequestPageMeh extends React.Component {
                       invoice = invoice + request[1][i].value;
                     }
 
-                    operations.push(
-                      // <div
-                      //   key={request[1][i]._id}
-                      // >
-                      //   <RPKRequest
-                      //     onDoubleClick={() =>
-                      //       this._requestChangeDialog.handleShow(
-                      //         request[1][i],
-                      //         uniqueValues
-                      //       )
-                      //     }
-                      //     firstEl={i === 0 ? true : false}
-                      //     operation={request[1][i]}
-                      //     operationId={opertionID}
-                      //     uniqueStatusList={uniqueFilters.uniqueStatusList}
-                      //     trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
-                      //     applyRequestStatus={this.applyRequestStatus}
-                          
-                      //   />
-                      // </div>                      
-                    );
                   }
-
-                  // operations.push(
-                  //   <div                    
-                  //     type="additional" 
-                  //     id={request[0]}
-                  //     key={index.toString() + Math.random()}
-                  //   >
-                  //   </div>
-                  // )
-
-                  // operations.push(
-                  //   <RPKButton
-                  //     key={index.toString() + Math.random()}
-                  //     request={request[0]}
-                  //     uniqueValues={uniqueValues}
-                  //     operationId={opertionID}
-                  //     addOutcomeOperation={this.addOutcomeOperation}
-                  //   />
-                  // );
-
-                  // operations.push(
-                  //   <RPKResultLine
-                  //     key={index.toString() + Math.random()}
-                  //     operation={{
-                  //       title: "Итог",
-                  //       income,
-                  //       outcome,
-                  //       invoice,
-                  //     }}
-                  //     operationId={opertionID}
-                  //     trColor={"#53A54C"}
-                  //   />
-                  // );
                   incomeAll += income;
                   outcomeAll += outcome;
-
-                  return operations;
+                  invoiceAll += invoice
                 })}
               </div>
             ) : (
@@ -637,8 +559,28 @@ class RequestPageMeh extends React.Component {
                 <h3>Нет данных {this.state.error}</h3>
               </div>
             )}
+
+
+
+<RPKRequest
+                          uniqueValues = {uniqueValues}
+                          changeDialog = {this._requestChangeDialog}
+                          requests = {this.state.requests}
+                          addOutcomeOperation={this.addOutcomeOperation}
+                          // firstEl={i === 0 ? true : false}
+                    
+                          // uniqueStatusList={uniqueFilters.uniqueStatusList}
+                          // trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
+                          // applyRequestStatus={this.applyRequestStatus}
+                          
+                        />
+
           </div>
-        )}
+
+          
+        )
+        
+        }   
 
         <div className={classes.RequestPageKis__footer}>
           <RPKResultLine
@@ -652,8 +594,6 @@ class RequestPageMeh extends React.Component {
             operationId="totalResult"
             trColor={"#398DEF"}
           />
-
-            {/* {console.log(this.state.requests.group) || console.log(JSON.parse(localStorage.getItem("group")))} */}
 
           <RPKGroups
             activeGroup={ 

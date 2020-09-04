@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import classes from './RPKRequestRow.module.scss'
 import { request } from 'http'
+import RPKResultLine from "../RPKResultLine"
+import requests from '../../../Redux/Reducers/requests'
 
 export default class RPKRequestRow extends React.Component {
   insertClasses = [classes.RPKRequest]
@@ -10,10 +12,24 @@ export default class RPKRequestRow extends React.Component {
   }
 
   render(){
+    let income = 0
+    let outcome = 0
+    let invoice = 0
+
     return (
         <React.Fragment>
 {
     this.props.requestList.map((request) => {
+      if (request.type === "income" && +request.value > 0) {
+        income = income + request.value;
+      }
+      if (request.type === "outcome" && +request.value > 0) {
+        outcome = outcome + request.value;
+      }
+      if (request.type === "invoice" && +request.value > 0) {
+        invoice = invoice + request.value;
+      }
+
         let status = request.status
         if (status === '') {
           status = 'Без статуса'
@@ -167,6 +183,17 @@ export default class RPKRequestRow extends React.Component {
     })
     
 }
+<RPKResultLine
+                      key={ Math.random()}
+                      operation={{
+                        title: "Итог",
+                        income: income,
+                        outcome: outcome,
+                        invoice: invoice,
+                      }}
+                      // operationId={opertionID}
+                      trColor={"#53A54C"}
+                    />
 </React.Fragment>
 
     )

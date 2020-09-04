@@ -1,7 +1,5 @@
 import React from 'react';
 import classes from './RPKButton.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import RPKOutcomePage from '../RPKOutcomePage';
 
 let insertClasses = [classes.RPKButton];
@@ -24,7 +22,7 @@ export default class RPKButton extends React.Component {
     return (
       <div id='RPKButton' className={insertClasses.join(' ')}  operationid={this.props.operationId} display='true' >
         <div className={classes.RPKButton__add} onClick={() => this.onToggle()}>
-          Добавить расход <FontAwesomeIcon icon={faPlusCircle} size='2x' />
+          Добавить расход 
         </div>
 
         {this.state.showModal ? (
