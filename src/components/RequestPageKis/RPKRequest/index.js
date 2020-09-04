@@ -18,42 +18,6 @@ export default class RPKRequest extends React.Component {
     this.newStatus = '';
   }
 
-  toggleStatusLine = (requestId) => {
-    const element = document.querySelector('[id="'+requestId+'"][type="statusLine"]');
-    if (element.getAttribute('display') === 'false') {
-      element.setAttribute('display', 'true');
-      element.style.display = 'block';
-    } else {
-      element.setAttribute('display', 'false');
-      element.style.display = null;
-    }
-  }
-
-  applyStatus = () => {
-    const state = this.state;
-    state.operation.status = this.newStatus;
-
-    const oldStatus = document.querySelector('[status="'+this.state.operation._id+'"]').textContent;
-    
-    this.props.applyRequestStatus(state.operation, oldStatus, this.newStatus);
-
-    state.autocomplete.push(this.newStatus);
-    state.autocomplete = state.autocomplete.filter(el => el !== oldStatus);
-
-    // console.log(state.autocomplete);
-
-    state.key = Math.random();
-    this.setState({
-      ...state
-    });
-
-  }
-
-  changeStatusHandler = (operationId, value) => {
-    this.newStatus = value;
-    // console.log(this.newStatus);
-  }
-
   render() {
     // if(this.props.operation.bankId === 'manual') {
     //   console.log(this.props.operation);
@@ -84,7 +48,7 @@ export default class RPKRequest extends React.Component {
                   <div name='status' id={this.state.operation._id} status={this.state.operation._id}>                    
                     {status}
                   </div>          
-                  {/* <div>
+                  <div>
                     <Grid
                       container
                       direction="row"
@@ -95,95 +59,18 @@ export default class RPKRequest extends React.Component {
                       <div
                         className={classes.filter}
                         onClick={() =>
-                          this.toggleStatusLine(this.state.operation._id)
+                          this.props.changeStatusForm(this.state.operation)
                         }
                       >
                         <FontAwesomeIcon icon={faPenSquare} size="2x" />
                       </div>
                     </Grid>
-
-                    <div
-                      id={this.state.operation._id}
-                      type="statusLine"
-                      className={classes.filterLine}
-                      display="false"
-                    >
-                      <Grid
-                        container
-                        direction="row"
-                        justify="space-between"
-                        alignItems="center"
-                      >
-                        <Box>
-                          <Autocomplete
-                            freeSolo
-                            key = {this.state.key}
-                            name={this.state.operation._id}
-                            options={
-                              this.state.autocomplete
-                                .length > 0
-                                ? this.state.autocomplete
-                                : []
-                            }
-                            defaultValue={
-                              this.state.operation.status !== ''
-                                ? this.state.operation.status
-                                : ''
-                            }
-                            getOptionLabel={(option) => option}
-                            style={{ width: 300 }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Введите статус"
-                                variant="filled"
-                              />
-                            )}
-                            onInputChange={(event, value) =>
-                              this.changeStatusHandler(
-                                this.state.operation._id,
-                                value
-                              )
-                            }
-                          />
-                        </Box>
-                        <Box>                            
-                          <FontAwesomeIcon
-                            icon={faCheck}
-                            size="2x"
-                            color="#398def"
-                            style={{ cursor: "pointer", padding: "10px", color: '#53a54c'}}
-                            onClick={() =>
-                              this.applyStatus(
-                                this.state.operation._id
-                              )
-                            }
-                          />
-                          <FontAwesomeIcon
-                            icon={faTimes}
-                            size="2x"
-                            color="#398def"
-                            style={{ cursor: "pointer", padding: "10px" }}
-                            onClick={() =>
-                              this.toggleStatusLine(
-                                this.state.operation._id
-                              )
-                            }
-                          /> 
-                        </Box>
-                      </Grid>
-                    </div>
-                  </div> */}
+                  </div>
                   
                 </td>
                 <td name='request' id={this.state.operation._id} >
                   {this.props.firstEl ? this.state.operation.request : ""}
                 </td>
-                {/* <td>
-                  {this.props.operation.type === "income"
-                    ? this.props.operation.client
-                    : ""}
-                </td> */}
                 <td name='organization' id={this.state.operation._id} >{this.state.operation.organization}</td>
                 <td name='income' id={this.state.operation._id} >
                   <div

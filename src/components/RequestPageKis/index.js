@@ -54,8 +54,8 @@ class RequestPageKis extends React.Component {
       
       await this.getUniqueData();
 
-      const activeGroup = groups[0].group;
-      // const activeGroup = 'БРР';
+      // const activeGroup = groups[0].group;
+      const activeGroup = 'БРР';
 
       this.getData(activeGroup);
 
@@ -435,6 +435,10 @@ class RequestPageKis extends React.Component {
     console.log('changeStatus');
   }
 
+  changeStatusForm = (operation) => {
+    this._requestChangeStatus.openChangeStatusForm(operation);
+  }
+
   // applyRequestStatus = (operation, oldStatus, newStatus) => {  
   //   this._rpkHeader.updateStatusList(oldStatus, newStatus);
   //   this.changeOperationStatusBase(operation, this.state.requests);
@@ -514,6 +518,10 @@ class RequestPageKis extends React.Component {
 
         <RPKRequestChangeStatus
           changeStatus={this.changeStatus}
+          ref={(func) => {
+            this._requestChangeStatus = func;
+          }}
+          uniqueStatusList={uniqueFilters.uniqueStatusList}
         />
 
         {this.state.loader ? (
@@ -558,7 +566,7 @@ class RequestPageKis extends React.Component {
                           operationId={opertionID}
                           uniqueStatusList={uniqueFilters.uniqueStatusList}
                           trColor={i % 2 ? "#EBEBEB" : "#FFFFFF"}
-                          applyRequestStatus={this.applyRequestStatus}
+                          changeStatusForm={this.changeStatusForm}
                           
                         />
                       </div>                      

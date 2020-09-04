@@ -1,35 +1,48 @@
-import React from 'react';
-import classes from './RPKRequestChangeStatus.module.scss';
+import React from 'react'
+import classes from './RPKRequestChangeStatus.module.scss'
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import { Grid, Box, TextField } from "@material-ui/core";
-import SaveIcon from "@material-ui/icons/Save";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import { Grid, Box, TextField, Checkbox } from '@material-ui/core'
+import SaveIcon from '@material-ui/icons/Save'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
 export default class RPKRequestChangeStatus extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      filters: [],
-      uniqueValues: [],
       loading: false,
       open: false,
       operation: {},
-      formData: {
-        isValid: false,
-        type: "outcome",
-        status: false,
-      },
     };
+
+    this.newStatusValue = '';
+    this.checkbox = false;
+  }
+
+  openChangeStatusForm = (operation) => {
+    // console.log(operation);
+    this.setState({
+      operation,
+      open: !this.state.open
+    });
+  }
+
+  handleClose = () => {
+    this.setState({
+      open: !this.state.open,
+    })
+  }
+
+  changeStatusHandler = (operationId, value) => {}
+
+  changeButtonClicked = () => {}
+
+  checkBoxHandler = (value) => {
+    console.log(value);
   }
 
   render() {
@@ -37,9 +50,9 @@ export default class RPKRequestChangeStatus extends React.Component {
       <div className={classes.RPKRequestChangeStatus}>
         <Dialog
           open={this.state.open}
-          onClose={this.handleClose}
+          // onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
-          maxWidth="md"
+          maxWidth="sm"
           fullWidth={true}
         >
           <Grid
@@ -49,170 +62,58 @@ export default class RPKRequestChangeStatus extends React.Component {
             alignItems="center"
             className={classes.RPKRequestChangeStatus__title}
           >
-            <Box ml={1}>
-              <h3>Изменить операцию</h3>
+            <Box m={2}>
+              <h3>
+                Изменить статус операции: <span>{this.props.request}</span>
+              </h3>
             </Box>
-            <Box mr={0.5}>
+            <Box mr={2}>
               <i
                 className="fa fa-times fa-2x"
+                style={{ cursor: 'pointer' }}
                 onClick={() => this.handleClose()}
               ></i>
             </Box>
           </Grid>
-          <DialogContent>
-            {this.state.loading && <LinearProgress />}
-            <form autoComplete="off">
-              <Grid className={classes.RPKRequestChangeDialog__content}>
-
-                <Box key="requestSelectRequest" mb={2}>
-                  <Autocomplete
-                    id="combo-box-request"
-                    options={
-                this.state.uniqueValues.uniqueRequests
-                    }
-                    freeSolo
-                    value={this.state.operation.request || ""}
-                    getOptionLabel={(option) => option}
-                    fullWidth={true}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Номер заявки"
-                        variant="filled"
-                      />
-                    )}
-                    onChange={(event, newInputValue) => {
-                      const changedOperation = this.state.operation;
-                      changedOperation.request = newInputValue;
-                      this.setState({ operation: changedOperation });
-                    }}
-                  />
-                </Box>
-
-                <Box key="operationValue" mb={2}>
+          {this.state.loading && <LinearProgress />}
+          <Grid className={classes.RPKRequestChangeStatus__content}>
+            <Box>
+              <Autocomplete
+                freeSolo
+                key={this.state.operation._id}
+                name={this.state.operation._id}
+                options={
+                  this.props.uniqueStatusList.length > 0
+                    ? this.props.uniqueStatusList
+                    : []
+                }
+                defaultValue={
+                  this.state.operation.status !== ''
+                    ? this.state.operation.status
+                    : ''
+                }
+                fullWidth={true}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
                   <TextField
-                    defaultValue={this.state.operation.value}
-                    autoFocus={false}
-                    name="value"
-                    fullWidth={true}
-                    id="valueFormInput"
-                    label="Количество"
-                    type="number"
-                    multiline={false}
-                    rowsMax={1}
+                    {...params}
+                    label="Введите статус"
                     variant="filled"
-                    helperText=""
-                    onChange={(event) => {
-                      const changedOperation = this.state.operation;
-                      changedOperation.value = parseFloat(event.target.value);
-                      this.setState({ operation: changedOperation });
-                    }}
                   />
-                </Box>
-          
-                <Box key="clientSelectRequest" mb={2}>
-                  <Autocomplete
-                    id="combo-box-client"
-                    options={
-                        this.state.uniqueValues.uniqueClients
-                    }
-                    freeSolo
-                    value={this.state.operation.client || ""}
-                    getOptionLabel={(option) => option}
-                    fullWidth={true}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Контрагент"
-                        variant="filled"
-                      />
-                    )}
-                    onChange={(event, newInputValue) => {
-                      const changedOperation = this.state.operation;
-                      changedOperation.client = newInputValue;
-                      this.setState({ operation: changedOperation });
-                    }}
-                  />
-                </Box>
-                <Box key="organizationSelectRequest" mb={2}>
-                  <Autocomplete
-                    id="combo-box-organization"
-                    options={this.state.uniqueValues.uniqueOrganizations}
-                    freeSolo
-                    variant="filled"
-                    value={this.state.operation.organization || ""}
-                    getOptionLabel={(option) => option}
-                    fullWidth={true}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Организация"
-                        variant="filled"
-                      />
-                    )}
-                    onChange={(event, newInputValue) => {
-                      const changedOperation = this.state.operation;
-                      changedOperation.organization = newInputValue;
-                      this.setState({ operation: changedOperation });
-                    }}
-                  />
-                </Box>
-                <Box key="operationComment" mb={2}>
-                  <TextField
-                    defaultValue={this.state.operation.comment}
-                    autoFocus={false}
-                    name="comment"
-                    fullWidth={true}
-                    id="commentFormInput"
-                    label="Комментарий"
-                    type="text"
-                    multiline={true}
-                    rowsMax={5}
-                    variant="filled"
-                    helperText=""
-                    onChange={(event) => {
-                      const changedOperation = this.state.operation;
-                      changedOperation.comment = event.target.value;
-                      this.setState({ operation: changedOperation });
-                    }}
-                  />
-                </Box>
-              </Grid>
-
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="center"
-                className={classes.RPKRequestChangeDialog__button}
-              ></Grid>
-            </form>
-          </DialogContent>
+                )}
+                onInputChange={(event, value) =>
+                  this.changeStatusHandler(this.state.operation._id, value)
+                }
+              />
+            </Box>
+            <Box>
+              <Checkbox
+                color="primary"
+                onChange={event => this.checkBoxHandler(event.target.checked)}
+              />
+            </Box>
+          </Grid>
           <DialogActions>
-            <Button
-              id="formButton"
-              variant="contained"
-              color="secondary"
-              size="large"
-              className={classes.button}
-              startIcon={<DeleteForeverIcon />}
-              onClick={() => this.setState({ canDelete: true })}
-            >
-              Удалить запись
-            </Button>
-            <Button
-              hidden={!this.state.canDelete}
-              id="formButton"
-              variant="outlined"
-              color="secondary"
-              size="large"
-              className={classes.button}
-              startIcon={<DeleteForeverIcon />}
-              onClick={() => this.deleteButtonClicked()}
-            >
-              Удалить?
-            </Button>
-
             <Button
               id="formButton"
               variant="contained"
@@ -222,7 +123,7 @@ export default class RPKRequestChangeStatus extends React.Component {
               startIcon={<SaveIcon />}
               onClick={() => this.changeButtonClicked()}
             >
-              Изменить запись
+              Изменить статус
             </Button>
           </DialogActions>
         </Dialog>
