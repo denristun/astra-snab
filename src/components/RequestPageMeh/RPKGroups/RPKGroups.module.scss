@@ -1,0 +1,33 @@
+.RPKGroups {
+  width: 100%;
+  display: flex;
+  background-color: #ffffff;
+
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 14px;
+
+  .Arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #53a54c;
+    color: #ffffff;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    width:3%;
+    cursor: pointer;
+  }
+
+  .swiperContent {
+    display: inline-block;
+    width: 94%;
+  }
+}
+
+.nextArrow{}
+
+.prewArrow{}

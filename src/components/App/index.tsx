@@ -15,6 +15,8 @@ import ToTopArrow from "../ToTopArrow";
 import { AuthContext } from "../../context/auth";
 import LoginPage from "../LoginPage";
 
+import RequestPageMeh from "../RequestPageMeh";
+
 
 
 
@@ -54,6 +56,9 @@ const App: React.FC = () => {
             <Button color="inherit" component={Link} to="/requests">
               Запросы
             </Button>
+            <Button color="inherit" component={Link} to="/requests-new">
+              Запросы новые
+            </Button>
           </Toolbar>
         </AppBar>
       </div>
@@ -62,6 +67,7 @@ const App: React.FC = () => {
           <PrivateRoute exact path="/upload" component={UploadFilePage} />
           {/* <Route exact path='/requests' component={RequestsPage} /> */}
           <PrivateRoute exact path="/requests" component={RequestPageKis} />
+          <PrivateRoute exact path="/requests-new" component={RequestPageMeh} />
           <Route exact path="/login" component={LoginPage} />
           <Redirect to="/login" />
       </div>

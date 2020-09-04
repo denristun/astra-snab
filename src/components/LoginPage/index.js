@@ -42,15 +42,13 @@ function Login() {
   const [isLoggedIn, setLoggedIn] = useState(false)
 
   const classes = useStyles()
-  console.log('loginpage', authToken)
 
   async function fetchLogin(event) {
-
     event.preventDefault()
     const username = event.target.username.value
     const password = event.target.password.value
 
-    const loginUrl = 'http://suminserver.holod30.ru/api/login'
+    const loginUrl = 'http://sumincrmserver.holod30.ru/api/login'
     try {
       const responseToken = await fetch(loginUrl, {
         method: "POST",
@@ -60,12 +58,10 @@ function Login() {
         body: JSON.stringify({ username, password }),
       });
       const response = await responseToken.json();
-
       if (response.error){
         localStorage.removeItem('token')
         setError(response.error)
       }
-
       if (response.token){
         setAuthToken(response.token)
         setLoggedIn(true)

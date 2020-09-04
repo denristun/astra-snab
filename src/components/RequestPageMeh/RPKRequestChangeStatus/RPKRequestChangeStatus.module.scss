@@ -1,0 +1,35 @@
+.RPKRequestChangeStatus {
+  
+}
+
+.RPKRequestChangeStatus {
+  
+}
+
+.RPKRequestChangeStatus__title {
+  background-color: #EBEBEB;
+  padding: 15px;
+
+  h3 {
+    color: #333333;
+  }
+
+  span {
+    color: #53A54C;
+  }
+}
+
+.RPKRequestChangeStatus__content {
+  padding: 20px;
+}
+
+.RPKRequestChangeStatus__button {
+  button {
+    color: #ffffff;
+    background-color: #398DEF;
+
+    &:hover {
+      background-color: #1878E7;
+    }
+  }
+}

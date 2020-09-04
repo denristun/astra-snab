@@ -1,0 +1,31 @@
+.RPKButton {
+  background-color: #398def;
+  color: #ffffff;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 14px;
+  height: 40px;
+
+  /* identical to box height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-transform: uppercase;  
+
+  svg {
+    margin-left: 20px;
+    // font-size: 20px;
+  }
+
+}
+
+.RPKButton__add {
+  /* identical to box height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
