@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import classes from "./RPKOutcomePage.module.scss";
 import "font-awesome/css/font-awesome.min.css";
 
+
+
 // import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Box, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -217,7 +219,7 @@ export default class RPKOutcomePage extends React.Component {
       formTextFields.value = +(+formTextFields.value).toFixed(2);
       formTextFields.request = this.props.request;
       formTextFields.date = this.getFormatDate(new Date());
-      formTextFields.status = false;
+      formTextFields.status = '';
       formTextFields.type = "outcome";
 
       this.props.addOutcomeOperation(formTextFields);
