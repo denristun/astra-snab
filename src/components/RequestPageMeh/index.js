@@ -1,9 +1,7 @@
 import React from 'react'
-import { FixedSizeList as List } from 'react-window'
 import classes from './RequestPageKis.module.scss'
 import RPKHeader from './RPKHeader'
 import RPKRequest from './RPKRequest'
-import RPKButton from './RPKButton'
 import RPKResultLine from './RPKResultLine'
 import Loader from '../Loader'
 import RPKGroups from './RPKGroups'
@@ -54,8 +52,8 @@ class RequestPageMeh extends React.Component {
 
       await this.getUniqueData()
 
-      const activeGroup = groups[0].group
-      // const activeGroup = 'БРР';
+      // const activeGroup = groups[0].group
+      const activeGroup = 'БРР';
 
       this.getData(activeGroup)
 
@@ -430,8 +428,64 @@ class RequestPageMeh extends React.Component {
     this.setState({ requests: filterOriginState })
   }
 
-  changeStatus = () => {
-    console.log('changeStatus')
+  changeStatusForm = (operation) => {
+    // console.log(operation);
+    this._requestChangeStatus.openChangeStatusForm(operation);
+  }
+
+  changeStatus = (newStatusValue, requestId, operation, toAll = false) => {
+    // console.log(newStatusValue+' === '+requestId+' === '+operationId+' === '+toAll);
+
+    let requests = this.state.requests;
+    let changeOperations = [];
+    let changeRequest = [];
+
+    if (toAll) {
+      requests = requests.map(request => {
+        if (request[0] === requestId) {
+          request[1] = request[1].map(operation1 => {
+            if (operation1._id === operation._id || operation1.status === '') {
+              operation1.status = newStatusValue;              
+              changeOperations.push(operation1);
+            }
+
+            return operation1;
+          });
+
+          changeRequest = request[1];
+        }
+
+        return request;
+      });
+    } else {
+      operation.status = newStatusValue;
+      changeOperations.push(operation);
+    }
+
+    let filterOriginState = JSON.parse(localStorage.getItem('originState'));
+    filterOriginState = filterOriginState.map(request => {
+      if (request[0] === requestId) {
+        if (toAll) {
+          request[1] = changeRequest;
+        } else {
+          request[1] = request[1].map(oper => {
+            if (oper._id === operation._id) {
+              oper.status = newStatusValue
+            }
+            return oper;
+          })
+        }        
+      }
+      return request;
+    });
+    localStorage.setItem('originState', JSON.stringify(filterOriginState));
+
+
+    // console.log(changeOperations);
+    // console.log(requests);
+
+    this.setState({requests});
+    // this._rpkRequest.stateUpdate(requests);
   }
 
   // applyRequestStatus = (operation, oldStatus, newStatus) => {
@@ -512,7 +566,13 @@ class RequestPageMeh extends React.Component {
           }}
         ></RPKRequestChangeDialog>
 
-        <RPKRequestChangeStatus changeStatus={this.changeStatus} />
+        <RPKRequestChangeStatus 
+          changeStatus={this.changeStatus}
+          ref={(func) => {
+            this._requestChangeStatus = func;
+          }}
+          uniqueStatusList={uniqueFilters.uniqueStatusList}
+        />
 
         {this.state.loader ? (
           <div>
@@ -569,6 +629,11 @@ class RequestPageMeh extends React.Component {
               changeDialog={this._requestChangeDialog}
               requests={this.state.requests}
               addOutcomeOperation={this.addOutcomeOperation}
+
+              changeStatusForm={this.changeStatusForm}
+              ref={(func) => {
+                this._rpkRequest = func;
+              }}
               // firstEl={i === 0 ? true : false}
 
               // uniqueStatusList={uniqueFilters.uniqueStatusList}

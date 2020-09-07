@@ -19,6 +19,10 @@ export default class RPKRequest extends React.Component {
     // console.log(this.state.requests)
   }
 
+  stateUpdate = (requests) => {
+    this.setState({requests});
+  }
+
   toggleStatusLine = (requestId) => {
     const element = document.querySelector(
       '[id="' + requestId + '"][type="statusLine"]'
@@ -60,7 +64,7 @@ export default class RPKRequest extends React.Component {
 
 
   render() {
-console.log(classes)
+// console.log(classes)
     return (
       <React.Fragment>
         {this.props.requests.map((request, index) => {
@@ -71,6 +75,7 @@ console.log(classes)
             requestList={request[1]} 
             changeDialog={this.props.changeDialog}
             uniqueValues={this.props.uniqueValues} 
+            changeStatusForm={this.props.changeStatusForm}
             
             />
 
