@@ -25,12 +25,17 @@ class RequestPageMeh extends React.Component {
     uniqueValues: [],
     requests: [],
     error: '',
+    token: '',
   }
 
   // originState = {};
   filtersList = {}
 
   async componentDidMount() {
+    const token = await JSON.parse(localStorage.getItem('token'))
+    this.setState({
+      token: token,
+    })
     const RPKContant = document.querySelector('[id="RPKContent"]')
     window.addEventListener('scroll', function () {
       if (window.pageYOffset > 10) {
@@ -41,19 +46,20 @@ class RequestPageMeh extends React.Component {
     })
 
     const urlGroups = 'http://sumincrmserver.holod30.ru/api/groups'
+
     try {
       let responseGroups = await fetch(urlGroups, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ token: this.state.token }),
       })
       let groups = await responseGroups.json()
-
       await this.getUniqueData()
 
       // const activeGroup = groups[0].group
-      const activeGroup = 'БРР';
+      const activeGroup = 'БРР'
 
       this.getData(activeGroup)
 
@@ -69,10 +75,11 @@ class RequestPageMeh extends React.Component {
     const urlRequests = 'http://sumincrmserver.holod30.ru/api/unique'
     try {
       let responseRequests = await fetch(urlRequests, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ token: this.state.token }),
       })
       let data = await responseRequests.json()
       // console.log('getUniqueData');
@@ -103,10 +110,11 @@ class RequestPageMeh extends React.Component {
       const urlRequests = 'http://sumincrmserver.holod30.ru/api/bank'
       try {
         let responseRequests = await fetch(urlRequests, {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ token: this.state.token }),
         })
         let data = await responseRequests.json()
         data.group = group
@@ -134,7 +142,7 @@ class RequestPageMeh extends React.Component {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ group }),
+          body: JSON.stringify({ group, token: this.state.token }),
         })
         let data = await responseRequests.json()
         data.group = group
@@ -227,7 +235,7 @@ class RequestPageMeh extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: operation }),
+        body: JSON.stringify({ id: operation, token: this.state.token }),
       })
 
       const data = await response.json()
@@ -257,7 +265,7 @@ class RequestPageMeh extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(operation),
+        body: JSON.stringify({ operation, token: this.state.token }),
       })
 
       const data = await response.json()
@@ -312,7 +320,7 @@ class RequestPageMeh extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ formData, token: this.state.token }),
       })
 
       const data = await response.json()
@@ -430,61 +438,60 @@ class RequestPageMeh extends React.Component {
 
   changeStatusForm = (operation) => {
     // console.log(operation);
-    this._requestChangeStatus.openChangeStatusForm(operation);
+    this._requestChangeStatus.openChangeStatusForm(operation)
   }
 
   changeStatus = (newStatusValue, requestId, operation, toAll = false) => {
     // console.log(newStatusValue+' === '+requestId+' === '+operationId+' === '+toAll);
 
-    let requests = this.state.requests;
-    let changeOperations = [];
-    let changeRequest = [];
+    let requests = this.state.requests
+    let changeOperations = []
+    let changeRequest = []
 
     if (toAll) {
-      requests = requests.map(request => {
+      requests = requests.map((request) => {
         if (request[0] === requestId) {
-          request[1] = request[1].map(operation1 => {
+          request[1] = request[1].map((operation1) => {
             if (operation1._id === operation._id || operation1.status === '') {
-              operation1.status = newStatusValue;              
-              changeOperations.push(operation1);
+              operation1.status = newStatusValue
+              changeOperations.push(operation1)
             }
 
-            return operation1;
-          });
+            return operation1
+          })
 
-          changeRequest = request[1];
+          changeRequest = request[1]
         }
 
-        return request;
-      });
+        return request
+      })
     } else {
-      operation.status = newStatusValue;
-      changeOperations.push(operation);
+      operation.status = newStatusValue
+      changeOperations.push(operation)
     }
 
-    let filterOriginState = JSON.parse(localStorage.getItem('originState'));
-    filterOriginState = filterOriginState.map(request => {
+    let filterOriginState = JSON.parse(localStorage.getItem('originState'))
+    filterOriginState = filterOriginState.map((request) => {
       if (request[0] === requestId) {
         if (toAll) {
-          request[1] = changeRequest;
+          request[1] = changeRequest
         } else {
-          request[1] = request[1].map(oper => {
+          request[1] = request[1].map((oper) => {
             if (oper._id === operation._id) {
               oper.status = newStatusValue
             }
-            return oper;
+            return oper
           })
-        }        
+        }
       }
-      return request;
-    });
-    localStorage.setItem('originState', JSON.stringify(filterOriginState));
-
+      return request
+    })
+    localStorage.setItem('originState', JSON.stringify(filterOriginState))
 
     // console.log(changeOperations);
     // console.log(requests);
 
-    this.setState({requests});
+    this.setState({ requests })
     // this._rpkRequest.stateUpdate(requests);
   }
 
@@ -566,10 +573,10 @@ class RequestPageMeh extends React.Component {
           }}
         ></RPKRequestChangeDialog>
 
-        <RPKRequestChangeStatus 
+        <RPKRequestChangeStatus
           changeStatus={this.changeStatus}
           ref={(func) => {
-            this._requestChangeStatus = func;
+            this._requestChangeStatus = func
           }}
           uniqueStatusList={uniqueFilters.uniqueStatusList}
         />
@@ -629,10 +636,9 @@ class RequestPageMeh extends React.Component {
               changeDialog={this._requestChangeDialog}
               requests={this.state.requests}
               addOutcomeOperation={this.addOutcomeOperation}
-
               changeStatusForm={this.changeStatusForm}
               ref={(func) => {
-                this._rpkRequest = func;
+                this._rpkRequest = func
               }}
               // firstEl={i === 0 ? true : false}
 
