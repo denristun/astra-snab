@@ -10,10 +10,10 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import { Link, Redirect } from 'react-router-dom'
 import { useAuth } from '../../context/auth'
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@material-ui/lab/Alert'
 
 function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Login() {
-    const [error, setError   ]  = useState(null)
+  const [error, setError] = useState(null)
   const { authToken, setAuthToken } = useAuth()
   const [isLoggedIn, setLoggedIn] = useState(false)
 
@@ -48,31 +48,32 @@ function Login() {
     const username = event.target.username.value
     const password = event.target.password.value
 
-    const loginUrl = 'http://sumincrmserver.holod30.ru/api/login'
+    const loginUrl = 'http://localhost:8000/api/login'
     try {
       const responseToken = await fetch(loginUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-      });
-      const response = await responseToken.json();
-      if (response.error){
+      })
+      const response = await responseToken.json()
+      if (response.error) {
         localStorage.removeItem('token')
+        console.log(response)
         setError(response.error)
       }
-      if (response.token){
+      if (response.token) {
         setAuthToken(response.token)
         setLoggedIn(true)
       }
     } catch (e) {
-    console.log(e)
+      console.log(e)
     }
   }
 
   if (isLoggedIn || authToken) {
-    return <Redirect to="/" />;
+    return <Redirect to="/" />
   }
 
   return (
@@ -85,11 +86,7 @@ function Login() {
         <Typography component="h1" variant="h5">
           Войти
         </Typography>
-        {
-error &&
-<Alert severity="error">{error}</Alert>
-
-        }
+        {error && <Alert severity="error">{error}</Alert>}
         <form
           className={classes.form}
           noValidate

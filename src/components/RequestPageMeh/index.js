@@ -31,6 +31,8 @@ class RequestPageMeh extends React.Component {
   // originState = {};
   filtersList = {}
 
+  abortController = new AbortController()
+
   async componentDidMount() {
     const token = await JSON.parse(localStorage.getItem('token'))
     this.setState({
@@ -49,6 +51,7 @@ class RequestPageMeh extends React.Component {
 
     try {
       let responseGroups = await fetch(urlGroups, {
+        signal: this.abortController.signal,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,6 +72,10 @@ class RequestPageMeh extends React.Component {
     } catch (e) {
       this.setState({ error: e, loader: false })
     }
+  }
+
+  componentWillUnmount() {
+    this.abortController.abort()
   }
 
   async getUniqueData() {
