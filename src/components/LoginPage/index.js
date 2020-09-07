@@ -48,7 +48,7 @@ function Login() {
     const username = event.target.username.value
     const password = event.target.password.value
 
-    const loginUrl = 'http://localhost:8000/api/login'
+    const loginUrl = 'http://sumincrmserver.holod30.ru/api/login'
     try {
       const responseToken = await fetch(loginUrl, {
         method: 'POST',
