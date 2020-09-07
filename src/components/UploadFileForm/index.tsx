@@ -14,7 +14,6 @@ import { BankRequest } from '../../interfaces/BankRequest'
 import { useAuth } from '../../context/auth'
 
 const UploadFileForm: React.FC = () => {
-  const { authToken, setAuthToken } = useAuth()
   const [loading, setLoading] = useState(false)
   const [dbResponse, setDbResponse] = useState([])
   const [checkFileError, setCheckFileError] = useState(false)
@@ -210,12 +209,13 @@ const UploadFileForm: React.FC = () => {
   }
 
   const fetchDocuments = (documents) => {
-    fetch('http://sumincrmserver.holod30.ru/api/bank', {
+    const token = localStorage.getItem('token')
+    fetch('http://localhost:8000/api/upload_bank', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ documents, authToken }),
+      body: JSON.stringify({ documents, token }),
     })
       .then((response) => response.json())
       .then((json) => {
