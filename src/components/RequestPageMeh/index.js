@@ -535,7 +535,7 @@ class RequestPageMeh extends React.Component {
   // };
 
   async changeOperationStatusBase(changeOperations) {
-    console.log(changeOperations)
+    // console.log(changeOperations)
     try {
       const url = 'http://sumincrmserver.holod30.ru/api/request_status'
       const response = await fetch(url, {
@@ -551,8 +551,8 @@ class RequestPageMeh extends React.Component {
 
       const data = await response.json()
 
-      console.log(response)
-      console.log(data)
+      // console.log(response)
+      // console.log(data)
     } catch (e) {
       this.setState({ error: e, loader: false })
     }
