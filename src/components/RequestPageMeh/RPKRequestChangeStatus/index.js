@@ -38,7 +38,11 @@ export default class RPKRequestChangeStatus extends React.Component {
   }
 
   changeStatusHandler = (operationId, value) => {
-    this.newStatusValue = value;
+    if (value === 'Без статуса') {
+      this.newStatusValue = '';
+    } else {
+      this.newStatusValue = value;
+    }
   }
 
   changeButtonClicked = () => {

@@ -207,7 +207,11 @@ class RequestPageMeh extends React.Component {
         })
     })
 
-    const uniqueStatus = new Set(status)
+    // const uniqueStatus = new Set(status);
+    let uniqueStatus = [...(new Set(status))];
+    uniqueStatus = uniqueStatus.filter(s => s.status !== '');
+    uniqueStatus.unshift('Без статуса');
+
     const uniqueClients = new Set(clients)
     const uniqueOrganizations = new Set(organizations)
     // const uniqueProviders = new Set(providers);
@@ -391,7 +395,7 @@ class RequestPageMeh extends React.Component {
       ) {
         filterOriginState = filterOriginState.filter((element) => {
           element[1] = element[1].filter((operation) => {
-            if (key === 'income' || key === 'outcome' || key === 'invoice') {
+            if (key === 'income' || key === 'outcome' || key === 'invoice' || key === 'status') {
               if (
                 key === 'income' &&
                 operation.type === 'income' &&
@@ -422,6 +426,19 @@ class RequestPageMeh extends React.Component {
               ) {
                 return operation
               }
+              if (key === 'status') {
+                if (this.filtersList[key] === 'Без статуса' && operation[key] === '') {
+                  return operation;
+                } else {
+                  if (
+                    operation[key]
+                      .toLowerCase()
+                      .indexOf(this.filtersList[key].toLowerCase()) !== -1
+                  ) {
+                    return operation
+                  }
+                }
+              }
               return
             }
 
@@ -439,6 +456,7 @@ class RequestPageMeh extends React.Component {
           }
         })
       }
+
     })
     this.setState({ requests: filterOriginState })
   }
@@ -494,10 +512,10 @@ class RequestPageMeh extends React.Component {
       return request
     })
 
-    this.changeOperationStatusBase(changeOperations)
+    this.changeOperationStatusBase(changeOperations);
 
-    localStorage.setItem('originState', JSON.stringify(filterOriginState))
-    this.setState({ requests })
+    localStorage.setItem('originState', JSON.stringify(filterOriginState));
+    this.setState({ requests });
     // this._rpkRequest.stateUpdate(requests);
 
     // console.log(changeOperations);
@@ -512,7 +530,7 @@ class RequestPageMeh extends React.Component {
   async changeOperationStatusBase(changeOperations) {
     console.log(changeOperations)
     try {
-      const url = 'http://localhost:8000/api/request_status'
+      const url = 'http://sumincrmserver.holod30.ru/api/request_status'
       const response = await fetch(url, {
         method: 'PATCH',
         headers: {
@@ -522,14 +540,14 @@ class RequestPageMeh extends React.Component {
           requests: changeOperations,
           token: this.state.token,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       console.log(response)
       console.log(data)
     } catch (e) {
-      this.setState({ error: e, loader: false })
+      this.setState({ error: e, loader: false });
     }
   }
 
