@@ -365,17 +365,17 @@ class RequestPageMeh extends React.Component {
     }
   }
 
-  addNativeBlock = (formData) => {
-    const additionalBlock = document.querySelector(
-      '[id="' + formData.request + '"][type="additional"]'
-    )
-    // console.log(additionalBlock);
-    const additionalDiv = (
-      <div>
-        <div></div>
-      </div>
-    )
-  }
+  // addNativeBlock = (formData) => {
+  //   const additionalBlock = document.querySelector(
+  //     '[id="' + formData.request + '"][type="additional"]'
+  //   )
+  //   // console.log(additionalBlock);
+  //   const additionalDiv = (
+  //     <div>
+  //       <div></div>
+  //     </div>
+  //   )
+  // }
 
   changeFilter = (filterName, value) => {
     this.filtersList[filterName] = value
@@ -487,19 +487,22 @@ class RequestPageMeh extends React.Component {
             if (oper._id === operation._id) {
               oper.status = newStatusValue
             }
-            return oper
+            return oper;
           })
         }
       }
-      return request
-    })
-    localStorage.setItem('originState', JSON.stringify(filterOriginState))
+      return request;
+    });
+
+    this.changeOperationStatusBase(changeOperations);
+
+    localStorage.setItem('originState', JSON.stringify(filterOriginState));
+    this.setState({ requests })
+    // this._rpkRequest.stateUpdate(requests);
 
     // console.log(changeOperations);
     // console.log(requests);
 
-    this.setState({ requests })
-    // this._rpkRequest.stateUpdate(requests);
   }
 
   // applyRequestStatus = (operation, oldStatus, newStatus) => {
@@ -507,50 +510,27 @@ class RequestPageMeh extends React.Component {
   //   this.changeOperationStatusBase(operation, this.state.requests);
   // };
 
-  // async changeOperationStatusBase(operation, requests) {
-  //   // console.log(requestId + ' ======== '+status)
-  //   try {
-  //     const url = "http://sumincrmserver.holod30.ru/api/request";
-  //     const response = await fetch(url, {
-  //       method: "PATCH",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(operation),
-  //     });
+  async changeOperationStatusBase(changeOperations) {
+    console.log(changeOperations);
+    try {
+      const url = "http://sumincrmserver.holod30.ru/api/request_status";
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({changeOperations, token: this.state.token}),
+      });
 
-  //     const data = await response.json();
+      const data = await response.json();
 
-  //     // console.log(response);
-  //     // console.log(data);
+      console.log(response);
+      console.log(data);      
 
-  //     const tmpRequests = JSON.parse(localStorage.getItem('originState'));
-
-  //     if (response.ok) {
-  //       Object.keys(tmpRequests).forEach((key) => {
-  //         if (
-  //           typeof tmpRequests[key][0] !== "undefined" &&
-  //           tmpRequests[key][0] === data.request.request
-  //         ) {
-  //           tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
-  //             if (operation._id === data.request._id) {
-  //               operation.status = data.request.status;
-  //             }
-  //             return operation;
-  //           });
-  //         }
-  //       });
-  //     }
-
-  //     localStorage.setItem("originState", JSON.stringify(tmpRequests));
-  //     // console.log('Change origin state');
-
-  //     // this.setState({requests});
-
-  //   } catch (e) {
-  //     this.setState({ error: e, loader: false });
-  //   }
-  // }
+    } catch (e) {
+      this.setState({ error: e, loader: false });
+    }
+  }
 
   render() {
     let incomeAll = 0

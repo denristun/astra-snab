@@ -14,10 +14,12 @@ export default class RPKRequestRow extends React.Component {
     let income = 0
     let outcome = 0
     let invoice = 0
+    let counter = 0;
 
     return (
       <React.Fragment>
         {this.props.requestList.map((request) => {
+          counter++;
           if (request.type === 'income' && +request.value > 0) {
             income = income + request.value
           }
@@ -48,7 +50,10 @@ export default class RPKRequestRow extends React.Component {
               <div className={classes.RPKRequest__table}>
                 <table>
                   <tbody>
-                    <tr style={{ backgroundColor: this.props.trColor }}>
+                    <tr style={{ 
+                      backgroundColor: 
+                        counter % 2 ? "#EBEBEB" : "#FFFFFF"
+                    }}>
                       <td
                         style={{
                           backgroundColor:

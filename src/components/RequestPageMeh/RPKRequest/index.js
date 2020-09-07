@@ -64,6 +64,7 @@ export default class RPKRequest extends React.Component {
 
 
   render() {
+    let counter = 0;
 // console.log(classes)
     return (
       <React.Fragment>
@@ -76,15 +77,15 @@ export default class RPKRequest extends React.Component {
             changeDialog={this.props.changeDialog}
             uniqueValues={this.props.uniqueValues} 
             changeStatusForm={this.props.changeStatusForm}
-            
             />
 
+
             <React.Fragment key={index.toString() + Math.random()}>
-              <div
+              {/* <div
                 type="additional"
                 id={request[0]}
                 key={index.toString() + Math.random()}
-              ></div>
+              ></div> */}
               <RPKButton
                 key={index.toString() + Math.random()}
                 request={request[0]}

@@ -7,7 +7,7 @@ import {
   faFilter,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { Grid, TextField, Box } from "@material-ui/core";
+import { Grid, TextField, Box, LinearProgress } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 let insertClasses = [classes.RPKHeader];
@@ -17,6 +17,7 @@ function headerShift(elem, param) {
 
 class RPKHeader extends React.Component {
   state = {
+    loading:false,
     textFields: {
       status: {
         name: "status",
@@ -182,49 +183,62 @@ class RPKHeader extends React.Component {
   };
 
   clearFilter = (filterName) => {
-    document.querySelector(
-      "#" + filterName + '[type="clearFilterButton"]'
-    ).style.display = "none";
+    this.setState({loading: !this.state.loading});
 
-    const state = this.state;
-    state.textFields[filterName].key = Math.random();
-    this.setState({
-      textFields: state.textFields,
-    });
+    setTimeout(() => {
+      document.querySelector(
+        "#" + filterName + '[type="clearFilterButton"]'
+      ).style.display = "none";
+  
+      const state = this.state;
+      state.textFields[filterName].key = Math.random();
+      this.setState({
+        textFields: state.textFields,
+      });
+  
+      this.props.changeFilter(filterName, "");
+  
+      document.querySelectorAll("[type=filterLine]").forEach((filterLine) => {
+        filterLine.style.display = "none";
+        filterLine.setAttribute("display", "false");
+      });
+      this.setState({loading: !this.state.loading});
+    }, 300);
 
-    this.props.changeFilter(filterName, "");
-
-    document.querySelectorAll("[type=filterLine]").forEach((filterLine) => {
-      filterLine.style.display = "none";
-      filterLine.setAttribute("display", "false");
-    });
+    
   };
 
   changeFilterValue = (filterName, value) => {
-    if (value && value.trim().length > 0) {
-      document.querySelector(
-        "#" + filterName + '[type="clearFilterButton"]'
-      ).style.display = "inline-block";
-    } else {
-      document.querySelector(
-        "#" + filterName + '[type="clearFilterButton"]'
-      ).style.display = "none";
-    }
+    this.setState({loading: !this.state.loading});
 
-    if (
-      this.state.textFields[filterName].type === "autocomplete" &&
-      value &&
-      value.trim().length > 0
-    ) {
-      document.querySelector(
-        "#" + filterName + "[type=filterLine]"
-      ).style.display = "none";
-      document
-        .querySelector("#" + filterName + "[type=filterLine]")
-        .setAttribute("display", "false");
-    }
+    setTimeout(() => {
+      if (value && value.trim().length > 0) {
+        document.querySelector(
+          "#" + filterName + '[type="clearFilterButton"]'
+        ).style.display = "inline-block";
+      } else {
+        document.querySelector(
+          "#" + filterName + '[type="clearFilterButton"]'
+        ).style.display = "none";
+      }
+  
+      if (
+        this.state.textFields[filterName].type === "autocomplete" &&
+        value &&
+        value.trim().length > 0
+      ) {
+        document.querySelector(
+          "#" + filterName + "[type=filterLine]"
+        ).style.display = "none";
+        document
+          .querySelector("#" + filterName + "[type=filterLine]")
+          .setAttribute("display", "false");
+      }
+  
+      this.props.changeFilter(filterName, value);
 
-    this.props.changeFilter(filterName, value);
+      this.setState({loading: !this.state.loading});
+    }, 300);
   };
 
   render() {
@@ -976,6 +990,7 @@ class RPKHeader extends React.Component {
             </tbody>
           </table>
         </div>
+        {this.state.loading && <LinearProgress />}
       </div>
     );
   }
