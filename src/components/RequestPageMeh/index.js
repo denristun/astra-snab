@@ -487,22 +487,21 @@ class RequestPageMeh extends React.Component {
             if (oper._id === operation._id) {
               oper.status = newStatusValue
             }
-            return oper;
+            return oper
           })
         }
       }
-      return request;
-    });
+      return request
+    })
 
-    this.changeOperationStatusBase(changeOperations);
+    this.changeOperationStatusBase(changeOperations)
 
-    localStorage.setItem('originState', JSON.stringify(filterOriginState));
+    localStorage.setItem('originState', JSON.stringify(filterOriginState))
     this.setState({ requests })
     // this._rpkRequest.stateUpdate(requests);
 
     // console.log(changeOperations);
     // console.log(requests);
-
   }
 
   // applyRequestStatus = (operation, oldStatus, newStatus) => {
@@ -511,24 +510,26 @@ class RequestPageMeh extends React.Component {
   // };
 
   async changeOperationStatusBase(changeOperations) {
-    console.log(changeOperations);
+    console.log(changeOperations)
     try {
-      const url = "http://sumincrmserver.holod30.ru/api/request_status";
+      const url = 'http://localhost:8000/api/request_status'
       const response = await fetch(url, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({changeOperations, token: this.state.token}),
-      });
+        body: JSON.stringify({
+          requests: changeOperations,
+          token: this.state.token,
+        }),
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
-      console.log(response);
-      console.log(data);      
-
+      console.log(response)
+      console.log(data)
     } catch (e) {
-      this.setState({ error: e, loader: false });
+      this.setState({ error: e, loader: false })
     }
   }
 
