@@ -52,11 +52,18 @@ export default class RPKRequestRow extends React.Component {
                   <tbody>
                     <tr style={{ backgroundColor: this.props.trColor }}>
                       <td style={{
-                        backgroundColor: request.status === ''
-                          ? '#FDBFBF'
-                          : ''
-                      }}>
-                        <div name='status' id={request._id} status={request._id}>
+                            backgroundColor: request.status === ''
+                              ? '#FDBFBF'
+                              : '',
+                            cursor: 'pointer'
+                          }}
+                          onClick = {() => this.props.changeStatusForm(request)}
+                      >
+                        <div 
+                          name='status' 
+                          id={request._id} 
+                          status={request._id}                          
+                        >
                           {status}
                         </div>
                       </td>
