@@ -170,6 +170,7 @@ class RequestPageMeh extends React.Component {
 
   clearFilters = () => {
     //Обнуление фильтров RPKHeader
+
     this._rpkHeader.updateState()
     this._rpkHeader.closeFilterLines()
   }
@@ -574,9 +575,9 @@ class RequestPageMeh extends React.Component {
           sortOperatoions={this.sortOperatoions}
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
-          ref={(func) => {
-            this._rpkHeader = func
-          }}
+          // ref={(func) => {
+          //   this._rpkHeader = func
+          // }}
         />
         <RPKRequestChangeDialog
           changeOperation={this.changeOperation}

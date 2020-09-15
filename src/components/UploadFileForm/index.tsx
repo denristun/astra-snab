@@ -210,7 +210,7 @@ const UploadFileForm: React.FC = () => {
 
   const fetchDocuments = (documents) => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/api/upload_bank', {
+    fetch('http://sumincrmserver.holod30.ru/api/upload_bank', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
