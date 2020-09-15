@@ -228,6 +228,7 @@ class RequestPageMeh extends React.Component {
   }
 
   addOutcomeOperation = (formData) => {
+    // console.log(formData)
     this.sendOutcomeOperationToServer(formData, this.state.requests)
   }
 
@@ -236,6 +237,7 @@ class RequestPageMeh extends React.Component {
   }
 
   changeOperation = async (operation) => {
+    // console.log(operation);
     await this.changeOperationFromServer(operation, this.state.requests)
   }
 
@@ -281,39 +283,29 @@ class RequestPageMeh extends React.Component {
       })
 
       const data = await response.json()
-      const tmpRequests = JSON.parse(localStorage.getItem('originState'))
+
       // console.log(data);
+      // console.log(requests);
+
+      // const tmpRequests = JSON.parse(localStorage.getItem('originState'))
 
       if (response.ok) {
-        Object.keys(tmpRequests).forEach((key) => {
-          if (
-            typeof tmpRequests[key][0] !== 'undefined' &&
-            tmpRequests[key][0] === data.request.request
-          ) {
-            tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
-              if (operation._id === data.request._id) {
-                return data.request
-              } else {
-                return operation
-              }
-            })
-          }
-        })
+        // Object.keys(tmpRequests).forEach((key) => {
+        //   if (
+        //     typeof tmpRequests[key][0] !== 'undefined' &&
+        //     tmpRequests[key][0] === data.request.request
+        //   ) {
+        //     tmpRequests[key][1] = tmpRequests[key][1].map((operation) => {
+        //       if (operation._id === data.request._id) {
+        //         return data.request
+        //       } else {
+        //         return operation
+        //       }
+        //     })
+        //   }
+        // })
 
-        Object.keys(requests).forEach((key) => {
-          if (
-            typeof requests[key][0] !== 'undefined' &&
-            requests[key][0] === data.request.request
-          ) {
-            requests[key][1] = requests[key][1].map((operation) => {
-              if (operation._id === data.request._id) {
-                return data.request
-              } else {
-                return operation
-              }
-            })
-          }
-        })
+        this.updateRequests(requests, operation);
       }
 
       localStorage.setItem('originState', JSON.stringify(requests))
@@ -324,6 +316,18 @@ class RequestPageMeh extends React.Component {
     }
   }
 
+  updateRequests = (requests, operation) => {
+    Object.keys(requests).map(key => {
+      if (typeof requests[key][0] !== 'undefined' && typeof requests[key][1] !== 'string') {
+        // console.log(typeof requests[key][1]);
+        requests[key][1] = requests[key][1].filter(oper => oper._id !== operation._id)
+        requests[key][0] === operation.request && requests[key][1].push(operation)
+      }
+    })
+  }
+
+
+
   async sendOutcomeOperationToServer(formData) {
     try {
       const url = 'http://sumincrmserver.holod30.ru/api/request'
@@ -332,11 +336,13 @@ class RequestPageMeh extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ formData, token: this.state.token }),
+        body: JSON.stringify({ request:formData, token: this.state.token }),
       })
 
       const data = await response.json()
+      // console.log(data);
       // console.log(response);
+
       const tmpRequests = JSON.parse(localStorage.getItem('originState'))
       const state = this.state
 
@@ -575,9 +581,9 @@ class RequestPageMeh extends React.Component {
           sortOperatoions={this.sortOperatoions}
           changeFilter={this.changeFilter}
           uniqueFilters={uniqueFilters}
-          // ref={(func) => {
-          //   this._rpkHeader = func
-          // }}
+          ref={(func) => {
+            this._rpkHeader = func
+          }}
         />
         <RPKRequestChangeDialog
           changeOperation={this.changeOperation}

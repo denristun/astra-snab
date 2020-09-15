@@ -1,311 +1,343 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import classes from "./RPKOutcomePage.module.scss";
-import "font-awesome/css/font-awesome.min.css";
-
-
+import React from 'react'
+import ReactDOM from 'react-dom'
+import classes from './RPKOutcomePage.module.scss'
+import 'font-awesome/css/font-awesome.min.css'
 
 // import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Box, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
+import {
+  Grid,
+  Box,
+  TextField,
+  FormControlLabel,
+  FormControl,
+  RadioGroup,
+  Radio
+} from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import Button from '@material-ui/core/Button'
+import SaveIcon from '@material-ui/icons/Save'
 
-let insertClasses = [classes.RPKOutcomePage];
+let insertClasses = [classes.RPKOutcomePage]
 
 export default class RPKOutcomePage extends React.Component {
   constructor(props) {
-    super(props);
-    this.modal = document.createElement("div");
+    super(props)
+    this.modal = document.createElement('div')
+    this.acFreeSolo = {
+      client: '',
+      organization: '',
+    }
+    this.operationType = 'income'
     this.state = {
       formData: {
         isValid: false,
-        type: "outcome",
+        type: 'outcome',
         status: false,
         textFields: {
           value: {
             key: Math.random(),
             autoFocus: false,
-            name: "value",
+            name: 'value',
             fullWidth: true,
-            id: "outcomeFormInput",
-            label: "Расход",
-            type: "number",
+            id: 'outcomeFormInput',
+            label: 'Расход',
+            type: 'number',
             multiline: false,
             rowsMax: 1,
-            defaultValue: "",
-            variant: "filled",
+            defaultValue: '',
+            variant: 'filled',
             touched: false,
             isValid: false,
             validation: {
               required: true,
               minLength: 1,
             },
-            helperText: "",
+            helperText: '',
             error: false,
           },
           organization: {
             key: Math.random(),
-            name: "organization",
+            name: 'organization',
             fullWidth: true,
-            id: "outcomeFormInput",
-            label: "Организация",
-            type: "autocomplete",
+            id: 'outcomeFormInput',
+            label: 'Организация',
+            type: 'autocomplete',
             multiline: false,
             rowsMax: 1,
-            defaultValue: "",
-            variant: "filled",
+            defaultValue: '',
+            variant: 'filled',
             touched: false,
             isValid: false,
             validation: {
               required: true,
               minLength: 3,
             },
-            helperText: "",
+            helperText: '',
             autoFocus: false,
             error: false,
           },
           client: {
             key: Math.random(),
-            name: "client",
+            name: 'client',
             fullWidth: true,
-            id: "outcomeFormInput",
-            label: "Контрагент",
-            type: "autocomplete",
+            id: 'outcomeFormInput',
+            label: 'Контрагент',
+            type: 'autocomplete',
             multiline: false,
             rowsMax: 1,
-            defaultValue: "",
-            variant: "filled",
+            defaultValue: '',
+            variant: 'filled',
             touched: false,
             isValid: false,
             validation: {
               required: true,
               minLength: 3,
             },
-            helperText: "",
+            helperText: '',
             autoFocus: false,
             error: false,
           },
           destination: {
             key: Math.random(),
-            name: "destination",
+            name: 'destination',
             fullWidth: true,
-            id: "outcomeFormInput",
-            label: "Назначение платежа",
-            type: "multiline",
+            id: 'outcomeFormInput',
+            label: 'Назначение платежа',
+            type: 'multiline',
             multiline: true,
             rowsMax: 4,
-            defaultValue: "",
-            variant: "filled",
+            defaultValue: 'Не заполнено',
+            variant: 'filled',
             touched: false,
             isValid: true,
             validation: {
               required: true,
               minLength: 3,
             },
-            helperText: "",
+            helperText: '',
             autoFocus: false,
             error: false,
           },
           comment: {
             key: Math.random(),
-            name: "comment",
+            name: 'comment',
             fullWidth: true,
-            id: "outcomeFormInput",
-            label: "Комментарий",
-            type: "multiline",
+            id: 'outcomeFormInput',
+            label: 'Комментарий',
+            type: 'multiline',
             multiline: true,
             rowsMax: 4,
-            defaultValue: "",
-            variant: "filled",
+            defaultValue: 'Не заполнено',
+            variant: 'filled',
             touched: false,
             isValid: false,
             validation: {
               required: true,
               minLength: 3,
             },
-            helperText: "",
+            helperText: '',
             autoFocus: false,
             error: false,
           },
         },
       },
-    };
+    }
   }
 
   componentDidMount() {
-    document.body.appendChild(this.modal);
+    document.body.appendChild(this.modal)
     // this.setListeners();
   }
 
   componentWillUnmount() {
-    document.body.removeChild(this.modal);
+    document.body.removeChild(this.modal)
   }
 
   buttonLoaderActivator = (prop) => {
     switch (prop) {
-      case "show":
-        document.querySelector("#formButton").style.display = "none";
-        document.querySelector(".lds-dual-ring").style.display = "block";
-        break;
-      case "hide":
-        document.querySelector("#formButton").style.display = null;
-        document.querySelector(".lds-dual-ring").style.display = "none";
-        break;
+      case 'show':
+        document.querySelector('#formButton').style.display = 'none'
+        document.querySelector('.lds-dual-ring').style.display = 'block'
+        break
+      case 'hide':
+        document.querySelector('#formButton').style.display = null
+        document.querySelector('.lds-dual-ring').style.display = 'none'
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   getFormatDate = (date) => {
-    let day = date.getDate().toString();
-    let month = (date.getMonth()+1).toString();
-    let year = date.getFullYear().toString();
+    let day = date.getDate().toString()
+    let month = (date.getMonth() + 1).toString()
+    let year = date.getFullYear().toString()
 
     if (day.length < 2) {
-      day = "0" + day;
+      day = '0' + day
     }
     if (month.length < 2) {
-      month = "0" + month;
+      month = '0' + month
     }
 
-    return day + "." + month + "." + year;
-  };
+    return day + '.' + month + '.' + year
+  }
 
   validateForm = () => {
-    const state = this.state;
-    const textFields = state.formData.textFields;
+    const state = this.state
+    const textFields = state.formData.textFields
     // console.log(this.state.formData.textFields);
-    let isFormValid = true;
+    let isFormValid = true
     Object.keys(textFields).forEach((key) => {
-      const textField = textFields[key];
+      const textField = textFields[key]
+
+      if (textField.name === 'client') {
+        if (this.acFreeSolo.client !== '') {
+          textField.defaultValue = this.acFreeSolo.client
+        } else {
+          textField.defaultValue = textFields[key].defaultValue
+        }
+      } else {
+        textField.defaultValue = textFields[key].defaultValue
+      }
+
       const validations = this.textFieldValidation(
         textField.defaultValue,
         textField.validation
-      );
-      isFormValid = isFormValid && validations.isValid;
+      )
+      isFormValid = isFormValid && validations.isValid
 
-      textField.touched = true;
-      textField.defaultValue = textFields[key].defaultValue;
-      textField.isValid = validations.isValid;
+      textField.touched = true
+      textField.isValid = validations.isValid
       textField.isValid === false
         ? (textField.helperText = validations.validationFailedMessage)
-        : (textField.helperText = "");
+        : (textField.helperText = '')
 
+      if (!textField.isValid && textField.name === 'client') {
+        textField.defaultValue = ''
+      }
       // console.log(textField);
 
-      textField.key = Math.random();
-      state.formData.textFields[key] = { ...textField };
-    });
+      textField.key = Math.random()
+      state.formData.textFields[key] = { ...textField }
+    })
 
     this.setState({
       formData: state.formData,
-    });
+    })
 
     // console.log(this.state.formData.textFields);
-    return isFormValid;
-  };
+    return isFormValid
+  }
 
   addButtonClicked = () => {
-    this.buttonLoaderActivator("show");
-    const formDataValid = this.validateForm();
+    this.buttonLoaderActivator('show')
+    const formDataValid = this.validateForm()
     // console.log(formData);
     if (formDataValid) {
-      const stateTextFields = this.state.formData.textFields;
-      let formTextFields = {};
+      const stateTextFields = this.state.formData.textFields
+      let formTextFields = {}
       Object.keys(stateTextFields).forEach((key) => {
-        formTextFields[key] = stateTextFields[key].defaultValue;
-      });
-      formTextFields.value = +(+formTextFields.value).toFixed(2);
-      formTextFields.request = this.props.request;
-      formTextFields.date = this.getFormatDate(new Date());
-      formTextFields.status = '';
-      formTextFields.type = "outcome";
+        formTextFields[key] = stateTextFields[key].defaultValue
+      })
+      formTextFields.value = +(+formTextFields.value).toFixed(2)
+      formTextFields.request = this.props.request
+      formTextFields.date = this.getFormatDate(new Date())
+      formTextFields.status = ''
+      formTextFields.type = this.operationType
 
-      this.props.addOutcomeOperation(formTextFields);
+      this.props.addOutcomeOperation(formTextFields)
     }
 
     // this.props.closeModal();
     // this.resetTextfields();
-    // this.buttonLoaderActivator("hide");
-  };
+    this.buttonLoaderActivator('hide')
+  }
 
   resetTextfields = () => {
-    const formData = this.state.formData;
-    Object.keys(formData.textFields).forEach(key => {
-      formData.textFields[key].defaultValue = '';
-    });
+    const formData = this.state.formData
+    Object.keys(formData.textFields).forEach((key) => {
+      formData.textFields[key].defaultValue = ''
+    })
 
-    this.setState({formData});
+    this.setState({ formData })
   }
 
   textFieldValidate = (textFieldName, value) => {
-    const state = this.state;
-    const textField = state.formData.textFields[textFieldName];
+    const state = this.state
+    const textField = state.formData.textFields[textFieldName]
 
-    if (textField.type === "number") {
-
-      if (value === '') { //При наличии . в инпуте
-        return;
+    if (textField.type === 'number') {
+      if (value === '') {
+        //При наличии . в инпуте
+        return
       }
 
-      textField.touched = true;
-      textField.defaultValue = value.toString();
-      const validations = this.textFieldValidation(value, textField.validation);
-      textField.isValid = validations.isValid;
+      textField.touched = true
+      textField.defaultValue = value.toString()
+      const validations = this.textFieldValidation(value, textField.validation)
+      textField.isValid = validations.isValid
       textField.isValid === false
         ? (textField.helperText = validations.validationFailedMessage)
-        : (textField.helperText = "");
-      textField.autoFocus = true;
+        : (textField.helperText = '')
+      textField.autoFocus = true
       // console.log(textField);
 
-      textField.key = Math.random();
-      state.formData.textFields[textFieldName] = { ...textField };
+      textField.key = Math.random()
+      state.formData.textFields[textFieldName] = { ...textField }
     } else {
-      textField.defaultValue = value;
-      if (textField.type === "autocomplete") {
-        textField.key = Math.random();
+      textField.defaultValue = value
+      if (textField.type === 'autocomplete') {
+        textField.key = Math.random()
       }
     }
 
     this.setState({
       formData: state.formData,
-    });
+    })
 
     // console.log(this.state.formData.textFields[textFieldName]);
-  };
+  }
 
   textFieldValidation = (value, validations) => {
-    let isValid = true;
-    let validationFailedMessage = "";
+    let isValid = true
+    let validationFailedMessage = ''
 
     if (value === null) {
-      value = "";
+      value = ''
     }
 
     Object.keys(validations).forEach((validation) => {
-      if (validation === "required") {
-        isValid = value.trim().length >= 0 && isValid;
+      if (validation === 'required') {
+        isValid = value.trim().length >= 0 && isValid
         isValid === false
-          ? (validationFailedMessage = "Поле не заполнено")
-          : (validationFailedMessage = "");
+          ? (validationFailedMessage = 'Поле не заполнено')
+          : (validationFailedMessage = '')
       }
-      if (validation === "minLength") {
-        isValid = value.trim().length >= validations[validation] && isValid;
+      if (validation === 'minLength') {
+        isValid = value.trim().length >= validations[validation] && isValid
         isValid === false
           ? (validationFailedMessage =
-              "Недостаточно символов. Минимум: " + validations[validation])
-          : (validationFailedMessage = "");
+              'Недостаточно символов. Минимум: ' + validations[validation])
+          : (validationFailedMessage = '')
       }
-    });
+    })
 
-    return { isValid, validationFailedMessage };
-  };
+    return { isValid, validationFailedMessage }
+  }
+
+  autocompleteInputHandler = (value, textFieldName) => {
+    this.acFreeSolo[textFieldName] = value
+  }
+
+  checkBoxHandler = (event) => {
+    this.operationType = event
+  }
 
   render() {
     // console.log(this.props.uniqueValues);
     return ReactDOM.createPortal(
-      <div className={insertClasses.join(" ")}>
+      <div className={insertClasses.join(' ')}>
         <div className="backdrop">
           <div className="modal">
             <form autoComplete="off">
@@ -361,19 +393,52 @@ export default class RPKOutcomePage extends React.Component {
                     }
                   />
                 </Box>
+                <Box mt={2}>
+                  <FormControl component="fieldset">
+                    <RadioGroup
+                      row
+                      aria-label="Тип операции"
+                      name="operationType"
+                      defaultValue={this.operationType}
+                      onChange={(event) =>
+                        this.checkBoxHandler(event.target.value)
+                      }
+                    >
+                      <FormControlLabel
+                        value="income"
+                        control={<Radio color="primary" />}
+                        label="Приход"
+                      />
+                      <FormControlLabel
+                        value="outcome"
+                        control={<Radio color="primary" />}
+                        label="Расход"
+                      />
+                      <FormControlLabel
+                        value="invoice"
+                        control={<Radio color="primary" />}
+                        label="Накладная"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Box>
                 <Box mb={2}>
                   <Autocomplete
                     // freeSolo
                     // disableClearable
                     key={this.state.formData.textFields.organization.key}
                     name={this.state.formData.textFields.organization.name}
-                    fullWidth={this.state.formData.textFields.organization.fullWidth}
+                    fullWidth={
+                      this.state.formData.textFields.organization.fullWidth
+                    }
                     id={
                       this.state.formData.textFields.organization.id +
                       this.state.formData.textFields.organization.key.toString()
                     }
                     label={this.state.formData.textFields.organization.label}
-                    variant={this.state.formData.textFields.organization.variant}
+                    variant={
+                      this.state.formData.textFields.organization.variant
+                    }
                     defaultValue={
                       this.state.formData.textFields.organization.defaultValue
                     }
@@ -383,9 +448,13 @@ export default class RPKOutcomePage extends React.Component {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label={this.state.formData.textFields.organization.label}
+                        label={
+                          this.state.formData.textFields.organization.label
+                        }
                         margin="normal"
-                        variant={this.state.formData.textFields.organization.variant}
+                        variant={
+                          this.state.formData.textFields.organization.variant
+                        }
                         InputProps={{ ...params.InputProps }}
                       />
                     )}
@@ -406,22 +475,23 @@ export default class RPKOutcomePage extends React.Component {
                   this.state.formData.textFields.organization.touched ? (
                     <div
                       style={{
-                        color: "#f44336",
-                        display: "block",
-                        fontSize: "0.75rem",
+                        color: '#f44336',
+                        display: 'block',
+                        fontSize: '0.75rem',
                         marginLeft: 14,
                         marginRight: 14,
                       }}
                     >
-                      Поле "{this.state.formData.textFields.organization.label}" не заполнено!
+                      Поле "{this.state.formData.textFields.organization.label}"
+                      не заполнено!
                     </div>
                   ) : (
-                    ""
+                    ''
                   )}
                 </Box>
                 <Box mb={2}>
                   <Autocomplete
-                    // freeSolo
+                    freeSolo
                     // disableClearable
                     key={this.state.formData.textFields.client.key}
                     name={this.state.formData.textFields.client.name}
@@ -456,28 +526,29 @@ export default class RPKOutcomePage extends React.Component {
                         newInputValue
                       )
                     }
-                    // onInputChange={(event, value) =>
-                    //   this.textFieldValidate(
-                    //     this.state.formData.textFields.client.name,
-                    //     value
-                    //   )
-                    // }
+                    onInputChange={(event, value) =>
+                      this.autocompleteInputHandler(
+                        value,
+                        this.state.formData.textFields.client.name
+                      )
+                    }
                   />
                   {!this.state.formData.textFields.client.isValid &&
                   this.state.formData.textFields.client.touched ? (
                     <div
                       style={{
-                        color: "#f44336",
-                        display: "block",
-                        fontSize: "0.75rem",
+                        color: '#f44336',
+                        display: 'block',
+                        fontSize: '0.75rem',
                         marginLeft: 14,
                         marginRight: 14,
                       }}
                     >
-                      Поле "{this.state.formData.textFields.client.label}" не заполнено!
+                      Поле "{this.state.formData.textFields.client.label}" не
+                      заполнено!
                     </div>
                   ) : (
-                    ""
+                    ''
                   )}
                 </Box>
                 <Box mb={2}>
@@ -578,7 +649,7 @@ export default class RPKOutcomePage extends React.Component {
                   </Button>
                   <div
                     className="lds-dual-ring"
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                   ></div>
                 </Box>
               </Grid>
@@ -587,6 +658,6 @@ export default class RPKOutcomePage extends React.Component {
         </div>
       </div>,
       this.modal
-    );
+    )
   }
 }

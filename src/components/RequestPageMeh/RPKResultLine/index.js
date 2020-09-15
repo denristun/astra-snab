@@ -27,7 +27,10 @@ export default (props) => {
               {parseFloat(+props.operation.invoice).toFixed(2) + " руб."}
             </td>
             <td style={{backgroundColor:'#3f51b5'}}>{(+props.operation.income-(+props.operation.outcome)).toFixed(2) + " руб."}</td>
-            <td></td>
+            <td style={{backgroundColor:'#3f51b5'}}> 
+              <span style={{fontSize:10, marginRight:20}}>Поступление-Накладная: </span>
+              {(+props.operation.income-(+props.operation.invoice)).toFixed(2) + " руб."}
+            </td>
             <td></td>
           </tr>
         </tbody>

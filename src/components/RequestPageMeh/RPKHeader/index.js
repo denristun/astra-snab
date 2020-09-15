@@ -623,7 +623,7 @@ class RPKHeader extends React.Component {
                   </div>
                 </th>
                 <th>
-                  Списание
+                  Банк
                   <br />
                   <div
                     className={classes.filter}
